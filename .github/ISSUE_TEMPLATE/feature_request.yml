@@ -1,6 +1,6 @@
 name: 기능 요청
 description: 새로운 기능, UI 개선 또는 문서 보강을 제안해 주세요.
-labels: ["✨ 기능"]
+labels: ['✨ 기능']
 body:
   - type: textarea
     id: description
