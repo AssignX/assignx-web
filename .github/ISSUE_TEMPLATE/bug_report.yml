@@ -1,0 +1,59 @@
+name: 버그 리포트
+description: 프로젝트의 문제를 신고하여 버그를 수정하고 개선하는 데 도움을 주세요.
+labels: ["🐞 버그 수정"]
+body:
+  - type: textarea
+    id: current-behavior
+    attributes:
+      label: ⚠️ 문제 상황
+      description: 발생한 문제를 설명하고, 오류 메시지 또는 예상치 못한 동작을 포함해 주세요.
+      placeholder: 현재 상황을 설명해 주세요.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: ✅ 예상 동작
+      description: 기대했던 동작을 설명해 주세요.
+      placeholder: 기대했던 결과를 알려 주세요.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: ✍️ 재연 방법
+      description: 문제를 재연할 수 있는 단계를 상세히 설명해 주세요.
+      placeholder: |
+        1. 이 환경에서...
+        2. 이 설정으로...
+        3. '...' 명령 실행...
+        4. 오류 발생...
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 💾 관련 로그
+      description: 관련된 로그 출력을 복사하여 붙여넣어 주세요. 자동으로 코드 형식으로 표시됩니다.
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 📋 참고 자료
+      description: 관련 링크나 참고할 수 있는 내용이 있다면 추가해 주세요.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: issue-confirmation
+    attributes:
+      label: ✅ 체크리스트
+      options:
+        - label: 이 이슈에 적절한 라벨을 추가했습니다.
+          required: true
