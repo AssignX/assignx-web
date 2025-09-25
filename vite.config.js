@@ -4,10 +4,9 @@ import tailwindcss from '@tailwindcss/vite';
 import svgr from 'vite-plugin-svgr';
 import path from 'path';
 
-
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss(), svgr()],
+  plugins: [svgr(), react(), tailwindcss()],
   // eslint-disable-next-line no-undef
   resolve: { alias: { '@': path.resolve(__dirname, './src') } },
 });
