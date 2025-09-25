@@ -1,3 +1,4 @@
-export { ReactComponent as SaveIcon } from './save.svg?react';
-export { ReactComponent as PlusIcon } from './plus.svg?react';
-export { ReactComponent as SearchIcon } from './search.svg?react';
+// src/icons/index.js
+export { default as SearchIcon } from './search.svg?react';
+export { default as SaveIcon } from './save.svg?react';
+export { default as PlusIcon } from './plus.svg?react';
