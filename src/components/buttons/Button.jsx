@@ -1,5 +1,5 @@
-import React from "react"
-
+import React from "react";
+import PropTypes from "prop-types";
 
 export default function Button({
     text = "button",
@@ -47,3 +47,11 @@ export default function Button({
         </button>
     );
 }
+
+Button.PropTypes = {
+    text: PropTypes.string.isRequired, // 반드시 문자열
+    color: PropTypes.oneOf(["red", "lightgray", "gold"]), // 3개 중 하나
+    textSize: PropTypes.string, // Tailwind 사이즈 클래스
+    Icon: PropTypes.elementType, // react component
+    onClick: PropTypes.func, // 함수 -  클릭 이벤트 핸들러
+};
