@@ -20,7 +20,7 @@ function SectionHeader({
   //   buttonsData = [],
 }) {
   return (
-    <div className='border-border-sectionbottom flex h-[40px] items-center border-b pb-[10px]'>
+    <div className='border-border-sectionbottom flex h-[40px] items-end border-b pb-[10px]'>
       <div className='flex w-full flex-row items-center gap-[5px]'>
         <span
           className='text-text-main leading-[22px] font-bold'
