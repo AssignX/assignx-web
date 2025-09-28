@@ -4,8 +4,8 @@ import './styles/font.css';
 import SyPage from './pages/sy/Sy.jsx';
 import AdminHomePage from './pages/admin/Home.jsx';
 import { SearchIcon, SaveIcon, PlusIcon } from '@/assets/icons';
-import Button from '@/assets/buttons/Button';
-import ButtonGroup from '@/assets/buttons/ButtonGroup';
+import Button from '@/components/buttons/Button';
+import ButtonGroup from '@/components/buttons/ButtonGroup';
 
 export default function App() {
   return (
