@@ -2,3 +2,4 @@
 export { default as SearchIcon } from './search.svg?react';
 export { default as SaveIcon } from './save.svg?react';
 export { default as PlusIcon } from './plus.svg?react';
+export { default as CheckIcon } from './check.svg?react';
