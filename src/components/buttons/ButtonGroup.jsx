@@ -2,6 +2,13 @@ import React from "react";
 import PropTypes from "prop-types";
 import Button from "./Button";
 
+/**
+ * ButtonGroup 컴포넌트
+ * @param {Array} buttons - 버튼 데이터 배열 [{ text, color, Icon, onClick }]
+ * @param {"row" | "col"} direction - 버튼 정렬 방향 (기본값: "row")
+ * @param {string} gap - 버튼 사이 간격 (Tailwind gap 클래스, 기본값: "gap-[5px]")
+ */
+
 export default function ButtonGroup({
     buttons=[],
     direction = "row", // "row" || "col"

@@ -1,6 +1,16 @@
 import React from "react";
 import PropTypes from "prop-types";
 
+/**
+ * Button 컴포넌트
+ * @param {string} text - 버튼에 표시될 텍스트 (기본값: "button")
+ * @param {string} color - 버튼 색상 ("red" | "lightgray" | "gold")
+ * @param {string} textSize - 텍스트 크기 (Tailwind text-클래스, 기본값: "text-sm")
+ * @param {React.ElementType} Icon - 버튼 안에 표시할 아이콘 컴포넌트
+ * @param {function} onClick - 클릭 이벤트 핸들러
+ */
+
+
 export default function Button({
     text = "button",
     color = "gray", // red | 
