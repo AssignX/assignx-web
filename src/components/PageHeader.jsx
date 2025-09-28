@@ -20,7 +20,7 @@ function PageHeader({
   //   buttonsData = [],
 }) {
   return (
-    <div className='border-border-sectionbottom flex items-center border-b pb-[10px]'>
+    <div className='border-border-sectionbottom flex items-end border-b pb-[10px]'>
       <div className='flex w-full flex-col gap-[5px]'>
         <div className='flex flex-row gap-[10px]'>
           <p

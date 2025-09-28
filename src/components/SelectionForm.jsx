@@ -27,7 +27,7 @@ function SelectionForm({ leftText, rightText, selected, setSelected }) {
 function SelectButton({ text, onClick, isSelected }) {
   return (
     <button
-      className={`flex flex-row items-center gap-[5px] rounded-[16px] border px-[8px] py-[3px] ${isSelected ? 'border-red text-red' : 'border-dark-gray text-dark-gray'}`}
+      className={`flex flex-row items-center rounded-[16px] border px-[8px] py-[3px] leading-[17px] ${isSelected ? 'border-red text-red' : 'border-dark-gray text-dark-gray'}`}
       style={{ fontSize: '14px', cursor: 'pointer' }}
       onClick={onClick}
     >
