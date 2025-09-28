@@ -2,6 +2,7 @@ import PageHeader from '../components/PageHeader';
 import SectionHeader from '../components/SectionHeader';
 import { useState } from 'react';
 import dayjs from 'dayjs';
+import BreadCrumb from '../components/BreadCrumb';
 
 function ComponentTest() {
   const [selected, setSelected] = useState(true);
@@ -33,6 +34,7 @@ function ComponentTest() {
         subtitle='2건'
         hasWeekPicker={false}
       />
+      <BreadCrumb parentText='상위 메뉴' childText='하위 메뉴' />
     </div>
   );
 }
