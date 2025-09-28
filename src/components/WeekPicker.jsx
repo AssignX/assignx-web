@@ -27,7 +27,7 @@ function WeekPicker({ date, setDate }) {
         <ChevronLeftIcon />
       </button>
       <span
-        className='text-[14px] leading-[17px] font-medium'
+        className='text-[14px] leading-[17px] font-medium whitespace-nowrap'
         style={{ cursor: 'pointer' }}
       >
         {label}
