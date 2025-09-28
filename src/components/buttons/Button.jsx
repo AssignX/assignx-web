@@ -33,6 +33,7 @@ export default function Button({
         <button
             type="button"
             onClick={onClick}
+            style={{ cursor: 'pointer' }}
             className={`
                 flex items-center justify-center gap-1
                 ${selected.bg} ${selected.text} ${selected.hover}
