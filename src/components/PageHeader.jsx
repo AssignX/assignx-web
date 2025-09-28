@@ -1,6 +1,16 @@
 import PropTypes from 'prop-types';
 import SelectionForm from './SelectionForm';
 // import Button from './Button';
+
+/**
+ * PageHeader 컴포넌트
+ * @props {string} title - 페이지 헤더의 제목 (필수!)
+ * @props {string} helperText - 페이지 헤더의 도움말 텍스트
+ * @props {boolean} hasConfirmSelection - 확정/미확정 선택 폼 표시 여부 (기본값: false)
+ * @props {boolean} selected - 확정 / 미확정 선택 상태, true: 확정
+ * @props {function} setSelected - selected setter
+ * @props {array} buttonsData - buttonGroup에 필요한 button data 배열
+ */
 function PageHeader({
   title,
   helperText,

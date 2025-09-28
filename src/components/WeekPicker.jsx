@@ -6,6 +6,10 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@/assets/icons';
 dayjs.extend(isoWeek);
 
 // without onOpenPicker prop
+/**
+ * @props {object} date - date (dayjs 객체)
+ * @props {function} setDate - date setter
+ */
 function WeekPicker({ date, setDate }) {
   const goPrev = () => setDate(date.add(-7, 'day'));
   const goNext = () => setDate(date.add(7, 'day'));

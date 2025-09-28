@@ -2,6 +2,15 @@ import PropTypes from 'prop-types';
 import WeekPicker from './WeekPicker';
 // import Button from './Button';
 
+/**
+ * SectionHeader 컴포넌트
+ * @props {string} title - 섹션 헤더의 제목 (필수!)
+ * @props {string} subtitle - 섹션 헤더의 부제목
+ * @props {boolean} hasWeekPicker - WeekPicker 표시 여부 (기본값: false)
+ * @props {object} date - date (dayjs 객체)
+ * @props {function} setDate - date setter
+ * @props {array} buttonsData - buttonGroup에 필요한 button data 배열
+ */
 function SectionHeader({
   title,
   subtitle,
