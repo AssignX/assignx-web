@@ -1,3 +1,4 @@
+// 실험용
 import { useMemo, useState } from 'react';
 import VerticalTable from './VerticalTable';
 import { InputCell } from './cells/InputCell';
@@ -12,7 +13,6 @@ const timeOptions = [
   { value: '2025/12/15(금) 16:30~18:00', label: '2025/12/15(금) 16:30~18:00' },
 ];
 
-// 최초에 보여줄 데이터
 const initialData = [
   {
     id: '1',
@@ -90,7 +90,7 @@ export default function Prof_UndeterminedSubject() {
             initialValue={cell.getValue()}
             rowId={row.id}
             columnKey={column.id}
-            updateData={updateData} // InputCell도 updateData를 prop으로 받는다고 가정
+            updateData={updateData}
           />
         ),
       },
