@@ -62,15 +62,16 @@ export default function Prof_UndeterminedSubject() {
 
   const columns = useMemo(
     () => [
-      { accessorKey: 'courseName', header: '과목명', size: 200, minSize: 150 },
+      { accessorKey: 'id', header: 'ID', size: 50 },
+      { accessorKey: 'courseName', header: '과목명', size: 150 },
       { accessorKey: 'courseCode', header: '과목코드', size: 100 },
-      { accessorKey: 'section', header: '분반', size: 60 },
+      { accessorKey: 'section', header: '분반', size: 50 },
       { accessorKey: 'lectureTime', header: '강의시간', size: 200 },
       { accessorKey: 'enrolled', header: '수강인원', size: 80 },
       {
         accessorKey: 'requestedTime',
         header: '신청 시간',
-        size: 250,
+        size: 300,
         cell: ({ row, column, cell }) => (
           <DropdownCell
             initialValue={cell.getValue()}
@@ -84,7 +85,7 @@ export default function Prof_UndeterminedSubject() {
       {
         accessorKey: 'classroom',
         header: '강의실',
-        size: 150,
+        size: 120,
         cell: ({ row, column, cell }) => (
           <InputCell
             initialValue={cell.getValue()}

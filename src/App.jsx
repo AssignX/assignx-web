@@ -37,7 +37,7 @@ export default function App() {
             <div className='w-[1120px]'>
               <Admin_EditClassRoomTable />
             </div>
-            <div>
+            <div className='w-[1100px]'>
               <Prof_UndeterminedSubject />
             </div>
           </div>
