@@ -4,6 +4,9 @@ import './styles/font.css';
 import SyPage from './pages/sy/Sy.jsx';
 import AdminHomePage from './pages/admin/Home.jsx';
 import { SearchIcon, SaveIcon, PlusIcon } from '@/assets/icons';
+import SY_ClassRoomTable from './components/table/SY_ClassRoomTable.jsx';
+import Admin_EditClassRoomTable from './components/table/Admin_EditClassRoomTable.jsx';
+import Prof_UndeterminedSubject from './components/table/Prof_UndeterminedSubject.jsx';
 
 export default function App() {
   return (
@@ -18,6 +21,23 @@ export default function App() {
             <SearchIcon width={40} height={40} />
             <SaveIcon width={40} height={40} />
             <PlusIcon width={40} height={40} />
+          </div>
+        }
+      />
+      <Route
+        path='tabletest'
+        element={
+          <div>
+            <h1>tabletest</h1>
+            <div className='w-[500px]'>
+              <SY_ClassRoomTable />
+            </div>
+            <div className='w-[1120px]'>
+              <Admin_EditClassRoomTable />
+            </div>
+            <div>
+              <Prof_UndeterminedSubject />
+            </div>
           </div>
         }
       />
