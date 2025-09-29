@@ -17,7 +17,7 @@ export function DropdownCell({
     <select
       value={initialValue}
       onChange={onChange}
-      className='w-full border border-gray-300 px-2.5 py-2.5 text-sm'
+      className='h-8 w-full border border-gray-300 px-2.5 text-sm'
     >
       {options.map((option) => (
         <option key={option.value} value={option.value}>
