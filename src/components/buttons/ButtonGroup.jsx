@@ -16,13 +16,14 @@ export default function ButtonGroup({
 }) {
   return (
     <div
-      className={`flex ${direction === 'col' ? 'flex-col' : 'flex-row'}${gap}`}
+      className={`flex ${direction === 'col' ? 'flex-col' : 'flex-row'} ${gap}`}
     >
       {buttons.map((btn, index) => (
         <Button
           key={index}
           text={btn.text}
           color={btn.color}
+          textSize={btn.textSize}
           Icon={btn.Icon}
           onClick={btn.onClick}
         />
@@ -36,6 +37,7 @@ ButtonGroup.propTypes = {
     PropTypes.shape({
       text: PropTypes.string.isRequired,
       color: PropTypes.oneOf(['red', 'lightgray', 'gold']),
+      textSize: PropTypes.string,
       Icon: PropTypes.elementType,
       onClick: PropTypes.func,
     })

@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 
 export default function Button({
   text = 'button',
-  color = 'gray', // red |
+  color = 'lightgray', // red |
   textSize = 'text-sm',
   Icon,
   onClick,
@@ -43,10 +43,10 @@ export default function Button({
       type='button'
       onClick={onClick}
       style={{ cursor: 'pointer' }}
-      className={`flex items-center justify-center gap-1 ${selected.bg} ${selected.text} ${selected.hover}w-auto h-[30px] ${textSize} ${Icon ? 'px-[10px]' : 'px-4'} ouline-none rounded-none font-normal transition duration-200 focus:ring-0`}
+      className={`flex h-[30px] w-auto items-center justify-center gap-1 ${selected.bg} ${selected.text} ${selected.hover} ${textSize} ${Icon ? 'px-[10px]' : 'px-4'} font-normal transition duration-200 outline-none focus:rounded-none focus:ring-0`}
     >
       {Icon && (
-        <Icon className='relative top-[1px]' w-4 h-4 aria-hidden='true' />
+        <Icon className='relative top-[1px] h-4 w-4' aria-hidden='true' />
       )}
       {text}
     </button>
@@ -54,7 +54,7 @@ export default function Button({
 }
 
 Button.propTypes = {
-  text: PropTypes.string.isRequired, // 반드시 문자열
+  text: PropTypes.string, // 반드시 문자열
   color: PropTypes.oneOf(['red', 'lightgray', 'gold']), // 3개 중 하나
   textSize: PropTypes.string, // Tailwind 사이즈 클래스
   Icon: PropTypes.elementType, // react component
