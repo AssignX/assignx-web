@@ -4,6 +4,7 @@ import './styles/font.css';
 import SyPage from './pages/sy/Sy.jsx';
 import AdminHomePage from './pages/admin/Home.jsx';
 import { SearchIcon, SaveIcon, PlusIcon } from '@/assets/icons';
+import BarTestPage from '@/pages/test/BarTestPage.jsx';
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
           </div>
         }
       />
+      <Route path='bartest' element={<BarTestPage />} />
     </Routes>
   );
 }
