@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import WeekPicker from '../WeekPicker';
 import ButtonGroup from '../buttons/ButtonGroup';
-import Button from '../buttons/Button';
 
 /**
  * SectionHeader 컴포넌트
@@ -18,7 +17,7 @@ function SectionHeader({
   hasWeekPicker = false,
   date,
   setDate,
-  //   buttonsData = [],
+  buttonsData = [],
 }) {
   return (
     <div className='border-border-sectionbottom flex h-[40px] items-end border-b pb-[10px]'>
@@ -41,7 +40,9 @@ function SectionHeader({
       {hasWeekPicker && (
         <WeekPicker date={date || new Date()} setDate={setDate || (() => {})} />
       )}
-      <div className='gap-[8px]'>{/* Buttons */}</div>
+      {buttonsData.length > 0 && (
+        <ButtonGroup direction='row' buttons={buttonsData} />
+      )}
     </div>
   );
 }
@@ -52,7 +53,7 @@ SectionHeader.propTypes = {
   hasWeekPicker: PropTypes.bool,
   date: PropTypes.object,
   setDate: PropTypes.func,
-  //   buttonsData: PropTypes.arrayOf(PropTypes.node),
+  buttonsData: PropTypes.arrayOf(PropTypes.node),
 };
 
 export default SectionHeader;
