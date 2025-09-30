@@ -47,7 +47,9 @@ function PageHeader({
           </p>
         )}
       </div>
-      <ButtonGroup direction='row' buttons={buttonsData} />
+      {buttonsData.length > 0 && (
+        <ButtonGroup direction='row' buttons={buttonsData} />
+      )}
     </div>
   );
 }
