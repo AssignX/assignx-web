@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
-import WeekPicker from './WeekPicker';
-// import Button from './Button';
+import WeekPicker from '../WeekPicker';
+import ButtonGroup from '../buttons/ButtonGroup';
+import Button from '../buttons/Button';
 
 /**
  * SectionHeader 컴포넌트

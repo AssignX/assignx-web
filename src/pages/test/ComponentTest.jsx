@@ -1,8 +1,8 @@
-import PageHeader from '../components/PageHeader';
-import SectionHeader from '../components/SectionHeader';
 import { useState } from 'react';
 import dayjs from 'dayjs';
-import BreadCrumb from '../components/BreadCrumb';
+import PageHeader from '@/components/headers/PageHeader';
+import SectionHeader from '@/components/headers/SectionHeader';
+import BreadCrumb from '@/components/BreadCrumb';
 
 function ComponentTest() {
   const [selected, setSelected] = useState(true);
