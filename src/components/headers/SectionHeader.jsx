@@ -6,7 +6,7 @@ import ButtonGroup from '../buttons/ButtonGroup';
  * SectionHeader 컴포넌트
  * @props {string} title - 섹션 헤더의 제목 (필수!)
  * @props {string} subtitle - 섹션 헤더의 부제목
- * @props {boolean} hasWeekPicker - WeekPicker 표시 여부 (기본값: false)
+ * @props {string} controlGroup - 우측 컨트롤 그룹 종류 ('none', 'weekPicker', 'buttonGroup')
  * @props {object} date - date (dayjs 객체)
  * @props {function} setDate - date setter
  * @props {array} buttonsData - buttonGroup에 필요한 button data 배열
@@ -14,7 +14,7 @@ import ButtonGroup from '../buttons/ButtonGroup';
 function SectionHeader({
   title,
   subtitle,
-  hasWeekPicker = false,
+  controlGroup = 'none',
   date,
   setDate,
   buttonsData = [],
@@ -37,10 +37,10 @@ function SectionHeader({
           </span>
         )}
       </div>
-      {hasWeekPicker && (
+      {controlGroup === 'weekPicker' && (
         <WeekPicker date={date || new Date()} setDate={setDate || (() => {})} />
       )}
-      {buttonsData.length > 0 && (
+      {controlGroup === 'buttonGroup' && buttonsData.length > 0 && (
         <ButtonGroup direction='row' buttons={buttonsData} />
       )}
     </div>
@@ -50,7 +50,7 @@ function SectionHeader({
 SectionHeader.propTypes = {
   title: PropTypes.string.isRequired,
   subtitle: PropTypes.string,
-  hasWeekPicker: PropTypes.bool,
+  controlGroup: PropTypes.oneOf(['none', 'weekPicker', 'buttonGroup']),
   date: PropTypes.object,
   setDate: PropTypes.func,
   buttonsData: PropTypes.arrayOf(PropTypes.node),

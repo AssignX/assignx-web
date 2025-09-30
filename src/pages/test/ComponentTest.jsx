@@ -25,14 +25,23 @@ function ComponentTest() {
       <SectionHeader
         title='섹션 헤더입니다1'
         subtitle='2건'
-        hasWeekPicker={true}
+        controlGroup='weekPicker'
         date={date}
         setDate={setDate}
       />
       <SectionHeader
         title='섹션 헤더입니다2'
         subtitle='2건'
-        hasWeekPicker={false}
+        controlGroup='buttonGroup'
+        buttonsData={[
+          { text: '버튼', color: 'red', onClick: () => alert('버튼1 클릭') },
+          {
+            text: '버튼2',
+            color: 'lightgray',
+            onClick: () => alert('버튼2 클릭'),
+          },
+          { text: '버튼3', color: 'gold', onClick: () => alert('버튼3 클릭') },
+        ]}
       />
       <BreadCrumb parentText='상위 메뉴' childText='하위 메뉴' />
     </div>
