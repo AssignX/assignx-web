@@ -21,7 +21,7 @@ function PageHeader({
 }) {
   return (
     <div className='border-border-sectionbottom flex items-end border-b pb-[10px]'>
-      <div className='flex w-full flex-col gap-[5px]'>
+      <div className='flex flex-1 flex-col gap-[5px]'>
         <div className='flex flex-row gap-[10px]'>
           <p
             className='text-text-main leading-[23px] font-bold'
