@@ -1,8 +1,8 @@
-// 실험용
 import { useMemo, useState } from 'react';
 import VerticalTable from './VerticalTable';
 import { InputCell } from './cells/InputCell';
 import { DropdownCell } from './cells/DropdownCell';
+import { PlusCell } from './cells/PlusCell';
 
 const timeOptions = [
   { value: '', label: '시간을 선택해주세요.' },
@@ -48,16 +48,41 @@ const initialData = [
 
 export default function Prof_UndeterminedSubject() {
   const [data, setData] = useState(initialData);
+  const [newRows, setNewRows] = useState([]);
 
-  const updateData = (rowIndex, columnId, value) => {
+  const updateData = (rowId, columnId, value) => {
     setData((old) =>
-      old.map((row) => {
-        if (row.id === rowIndex) {
-          return { ...row, [columnId]: value };
-        }
-        return row;
-      })
+      old.map((row) => (row.id === rowId ? { ...row, [columnId]: value } : row))
     );
+  };
+
+  const handleAddNewRow = () => {
+    setNewRows((current) => [...current, {}]);
+  };
+
+  const handleNewRowChange = (rowIndex, columnKey, value) => {
+    setNewRows((current) =>
+      current.map((row, index) =>
+        index === rowIndex ? { ...row, [columnKey]: value } : row
+      )
+    );
+  };
+
+  const handleSaveNewRow = (rowIndex) => {
+    const newRowData = newRows[rowIndex];
+    if (!newRowData || Object.keys(newRowData).length === 0) {
+      alert('Please enter data before saving.');
+      return;
+    }
+    setData((current) => [
+      ...current,
+      { ...newRowData, id: `new_${Date.now()}` },
+    ]);
+    handleDeleteNewRow(rowIndex);
+  };
+
+  const handleDeleteNewRow = (rowIndex) => {
+    setNewRows((current) => current.filter((_, index) => index !== rowIndex));
   };
 
   const columns = useMemo(
@@ -92,6 +117,7 @@ export default function Prof_UndeterminedSubject() {
             rowId={row.id}
             columnKey={column.id}
             updateData={updateData}
+            disabled={true}
           />
         ),
       },
@@ -102,7 +128,29 @@ export default function Prof_UndeterminedSubject() {
   return (
     <div>
       <h1 className='mb-4 text-xl font-bold'>강의 시간 신청</h1>
-      <VerticalTable columns={columns} data={data} selectable={true} />
+      <div className='mb-4'>
+        <button
+          onClick={handleAddNewRow}
+          className='rounded border px-4 py-2 text-sm font-semibold text-black shadow-sm'
+        >
+          추가
+        </button>
+      </div>
+
+      <VerticalTable
+        columns={columns}
+        data={data}
+        selectable={true}
+        newRows={newRows}
+        onNewRowChange={handleNewRowChange}
+        renderNewRowActions={(rowIndex) => (
+          <div className='flex items-center justify-center space-x-2'>
+            <button onClick={() => handleSaveNewRow(rowIndex)} title='Save Row'>
+              <PlusCell />
+            </button>
+          </div>
+        )}
+      />
     </div>
   );
 }

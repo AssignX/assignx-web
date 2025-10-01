@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import VerticalTable from './VerticalTable';
+import { PlusCell } from './cells/PlusCell';
 
 const initialData = [
   {
@@ -25,18 +26,42 @@ const initialData = [
   },
 ];
 
-const emptyNewRow = {
-  buildingNo: '',
-  buildingName: '',
-  roomNo: '',
-  capacity: '',
-};
-
 export default function Admin_EditClassRoomTable() {
-  const [newRowData, setNewRowData] = useState(emptyNewRow);
+  const [data, setData] = useState(initialData);
+  const [newRows, setNewRows] = useState([]);
 
-  const handleNewRowChange = (columnId, value) => {
-    setNewRowData((prev) => ({ ...prev, [columnId]: value }));
+  const handleAddNewRow = () => {
+    setNewRows((current) => [...current, {}]);
+  };
+
+  const handleNewRowChange = (rowIndex, columnKey, value) => {
+    setNewRows((current) =>
+      current.map((row, index) =>
+        index === rowIndex ? { ...row, [columnKey]: value } : row
+      )
+    );
+  };
+
+  const handleSaveNewRow = (rowIndex) => {
+    const newRowData = newRows[rowIndex];
+    if (
+      !newRowData.buildingNo ||
+      !newRowData.buildingName ||
+      !newRowData.roomNo ||
+      !newRowData.capacity
+    ) {
+      alert('모든 필드를 입력해주세요.');
+      return;
+    }
+    setData((current) => [
+      ...current,
+      { ...newRowData, id: `new_${Date.now()}` },
+    ]);
+    handleDeleteNewRow(rowIndex);
+  };
+
+  const handleDeleteNewRow = (rowIndex) => {
+    setNewRows((current) => current.filter((_, index) => index !== rowIndex));
   };
 
   const columns = useMemo(
@@ -47,30 +72,10 @@ export default function Admin_EditClassRoomTable() {
         size: 50,
         cell: ({ row }) => row.index + 1,
       },
-      {
-        accessorKey: 'buildingNo',
-        header: '건물 번호',
-        size: 200,
-        cell: ({ cell }) => cell.getValue(),
-      },
-      {
-        accessorKey: 'buildingName',
-        header: '건물 이름',
-        size: 420,
-        cell: ({ cell }) => cell.getValue(),
-      },
-      {
-        accessorKey: 'roomNo',
-        header: '강의실 번호',
-        size: 200,
-        cell: ({ cell }) => cell.getValue(),
-      },
-      {
-        accessorKey: 'capacity',
-        header: '수용인원',
-        size: 200,
-        cell: ({ cell }) => cell.getValue(),
-      },
+      { accessorKey: 'buildingNo', header: '건물 번호', size: 200 },
+      { accessorKey: 'buildingName', header: '건물 이름', size: 420 },
+      { accessorKey: 'roomNo', header: '강의실 번호', size: 200 },
+      { accessorKey: 'capacity', header: '수용인원', size: 200 },
     ],
     []
   );
@@ -78,13 +83,28 @@ export default function Admin_EditClassRoomTable() {
   return (
     <div>
       <h1 className='mb-4 text-xl font-bold'>수정 가능한 강의실 목록</h1>
+      <div>
+        <button
+          onClick={handleAddNewRow}
+          className='rounded border px-4 py-2 text-sm font-semibold text-black shadow-sm'
+        >
+          새로운 강의실 추가
+        </button>
+      </div>
+
       <VerticalTable
         columns={columns}
-        data={initialData}
+        data={data}
         selectable={true}
-        useNewRow={true}
-        newRowState={newRowData}
+        newRows={newRows}
         onNewRowChange={handleNewRowChange}
+        renderNewRowActions={(rowIndex) => (
+          <div className='flex items-center justify-center space-x-2'>
+            <button onClick={() => handleSaveNewRow(rowIndex)} title='Save Row'>
+              <PlusCell />
+            </button>
+          </div>
+        )}
       />
     </div>
   );
