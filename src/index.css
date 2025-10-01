@@ -2,6 +2,7 @@
 
 @theme {
   --color-red: #c30d19;
+  --color-blue: #0000ff;
   --color-light-gray: #e2e4e9;
   --color-gray: #7a7a78;
   --color-dark-gray: #5d6067;
@@ -10,11 +11,12 @@
   --color-menus-primary: #7f7368;
   --color-menus-second: #e0e0e0;
   --color-border-submenubottom: #0000001a;
-  --color-border-sectionbottom: #393939;
+  --color-border-sectionbottom: #303030;
   --color-table-border: #d5d5d8;
   --color-table-header-background: #f1f2f4;
   --color-table-header-text: #222222;
   --color-gnb-border: #e0e0e0;
   --color-text-main: #333333;
   --color-text-sub: #555555;
+  --color-breadcrumb: #858186;
 }
