@@ -1,3 +1,5 @@
+// VerticalTable.jsx
+
 import {
   useReactTable,
   getCoreRowModel,
@@ -7,7 +9,6 @@ import {
 import { useState } from 'react';
 import { SelectionColumn } from './SelectionColumn';
 import PropTypes from 'prop-types';
-import { PlusCell } from './cells/PlusCell';
 import { InputCell } from './cells/InputCell';
 
 /**
@@ -16,25 +17,23 @@ import { InputCell } from './cells/InputCell';
  * @param {array} data - 테이블에 표시할 실제 데이터 배열 (기본값: [])
  * @param {function} updateSelection - 행 선택 상태가 변경될 때 호출되는 콜백 함수. 선택된 row ID 배열을 인자로 받음
  * @param {boolean} selectable - 행 선택 체크박스 표시 여부 (기본값: false)
- * @param {boolean} useNewRow - 테이블 하단에 '새로운 행 입력' 기능을 사용할지 여부 (기본값: false)
- * @param {object} newRowState - '새로운 행'의 각 컬럼에 해당하는 상태 객체. 부모 컴포넌트에서 관리 (기본값: {})
- * @param {function} onNewRowChange - '새로운 행'의 InputCell 값이 변경될 때 호출되는 콜백 함수. (columnKey, value)를 인자로 받음
+ * @param {array} newRows - 테이블 하단에 추가할 새로운 행들의 데이터 배열 (기본값: [])
+ * @param {function} onNewRowChange - '새로운 행'의 InputCell 값이 변경될 때 호출되는 콜백 함수. (rowIndex, columnKey, value)를 인자로 받음
+ * @param {function} renderNewRowActions - '새로운 행'의 첫 번째 액션 셀을 렌더링하는 함수. (rowIndex)를 인자로 받음
  */
-
 export default function VerticalTable({
   columns,
   data = [],
   updateSelection,
   selectable = false,
-  useNewRow = false,
-  newRowState = {},
+  newRows = [],
   onNewRowChange = () => {},
+  renderNewRowActions = () => null,
 }) {
   const [rowSelection, setRowSelection] = useState({});
 
   const handleRowSelectionChange = (updater) => {
     setRowSelection(updater);
-
     if (updateSelection) {
       const newSelection =
         typeof updater === 'function' ? updater(rowSelection) : updater;
@@ -44,31 +43,33 @@ export default function VerticalTable({
       updateSelection(selectedRowIds);
     }
   };
+
   const tableColumns = selectable ? [SelectionColumn, ...columns] : columns;
 
   const table = useReactTable({
     data,
     columns: tableColumns,
-
     ...(selectable && {
       state: { rowSelection },
       onRowSelectionChange: handleRowSelectionChange,
       getRowId: (row) => row.id,
     }),
-
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
   });
 
+  // 'SelectionColumn'을 제외한 실제 데이터 컬럼만 new row 렌더링에 사용
+  const dataColumns = columns;
+
   return (
-    <table className='w-full table-fixed border-collapse border border-[#D5D5D8]'>
+    <table className='border-table-border w-full table-fixed border-collapse border'>
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
               <th
                 key={header.id}
-                className='h-10 border border-[#D5D5D8] bg-[#F1F2F4] px-2 py-1 text-center'
+                className='border-table-border bg-table-header-background text-table-header-text h-10 border px-2 py-1 text-center'
                 style={{ width: header.getSize() }}
               >
                 {header.isPlaceholder
@@ -91,7 +92,7 @@ export default function VerticalTable({
             {row.getVisibleCells().map((cell) => (
               <td
                 key={cell.id}
-                className='h-10 border border-[#D5D5D8] px-2 py-1 text-center'
+                className='border-table-border h-10 border px-2 py-1 text-center'
               >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </td>
@@ -99,33 +100,35 @@ export default function VerticalTable({
           </tr>
         ))}
       </tbody>
-      {useNewRow && (
+      {newRows.length > 0 && (
         <tfoot>
-          <tr>
-            {selectable && (
-              <td className='h-10 border border-[#D5D5D8] px-2 py-1 text-center'></td>
-            )}
-            <td className='h-10 border border-[#D5D5D8] px-2 py-1 text-center'>
-              <div className='flex items-center justify-center'>
-                <PlusCell />
-              </div>
-            </td>
-            {columns.slice(1).map((column) => (
-              <td
-                key={column.accessorKey}
-                className='h-10 border border-[#D5D5D8] px-2 py-1 text-center'
-              >
-                <InputCell
-                  initialValue={newRowState[column.accessorKey] || ''}
-                  rowId='new-row'
-                  columnKey={column.accessorKey}
-                  updateData={(rowId, columnKey, value) =>
-                    onNewRowChange(columnKey, value)
-                  }
-                />
+          {newRows.map((newRowData, rowIndex) => (
+            <tr key={`new-row-${rowIndex}`}>
+              {selectable && (
+                <td className='border-table-border h-10 border'></td>
+              )}
+              <td className='border-table-border h-10 border px-2 py-1 text-center'>
+                <div className='flex items-center justify-center'>
+                  {renderNewRowActions(rowIndex)}
+                </div>
               </td>
-            ))}
-          </tr>
+              {dataColumns.slice(1).map((column) => (
+                <td
+                  key={column.accessorKey}
+                  className='border-table-border h-10 border px-2 py-1 text-center'
+                >
+                  <InputCell
+                    initialValue={newRowData[column.accessorKey] || ''}
+                    rowId={`new-${rowIndex}`}
+                    columnKey={column.accessorKey}
+                    updateData={(rowId, columnKey, value) =>
+                      onNewRowChange(rowIndex, columnKey, value)
+                    }
+                  />
+                </td>
+              ))}
+            </tr>
+          ))}
         </tfoot>
       )}
     </table>
@@ -137,7 +140,7 @@ VerticalTable.propTypes = {
   data: PropTypes.array,
   updateSelection: PropTypes.func,
   selectable: PropTypes.bool,
-  useNewRow: PropTypes.bool,
-  newRowState: PropTypes.object,
+  newRows: PropTypes.array,
   onNewRowChange: PropTypes.func,
+  renderNewRowActions: PropTypes.func,
 };
