@@ -4,16 +4,88 @@ import dayjs from 'dayjs';
 import { CalendarDaysIcon } from '@/assets/icons';
 import ButtonGroup from '../buttons/ButtonGroup';
 
-function DateTimeRangePicker() {
+// // 시간 문자열 파싱 함수 "HH:mm" -> {h, m}
+// const parseTime = (str) => {
+//   if (!str) return null;
+//   const [h, m] = str.split(':').map((v) => parseInt(v, 10));
+//   if (Number.isNaN(h) || Number.isNaN(m)) return null;
+//   return { h, m };
+// };
+
+// // date 객체 통합 함수
+// const combineDateAndTime = (date, timeStr) => {
+//   if (!date || !timeStr) return undefined;
+//   const t = parseTime(timeStr);
+//   if (!t) return undefined;
+//   const d = new Date(date);
+//   d.setHours(t.h, t.m, 0, 0);
+//   return d;
+// };
+
+// placeholer 생성 함수
+const formatPlaceholder = (date, startStr, endStr) => {
+  if (!date || !startStr || !endStr) return '날짜/시간을 선택해 주세요.';
+  const d = dayjs(date);
+  if (!d.isValid()) return '날짜/시간을 선택해 주세요.';
+  return `${d.format('YYYY.MM.DD.')} ${startStr}~${endStr}`;
+};
+
+function DateTimeRangePicker({
+  initialDate,
+  initialStart,
+  initialEnd,
+  // onUpdate,
+}) {
+  const [date, setDate] = useState(() => {
+    if (!initialDate) return undefined;
+    if (initialDate instanceof Date) return initialDate;
+    const d = dayjs(initialDate, 'YYYY-MM-DD', true);
+    return d.isValid() ? d.toDate() : undefined;
+  });
+  const [startStr, setStartStr] = useState(() => {
+    if (!initialStart) return '';
+    if (initialStart instanceof Date)
+      return dayjs(initialStart).format('HH:mm');
+    return initialStart;
+  });
+  const [endStr, setEndStr] = useState(() => {
+    if (!initialEnd) return '';
+    if (initialEnd instanceof Date) return dayjs(initialEnd).format('HH:mm');
+    return initialEnd;
+  });
+
+  // PopOver 상태 관리 변수
   const [open, setOpen] = useState(false);
   const popoverRef = useRef(null);
 
+  // 시간 관리 변수
   const [editDate, setEditDate] = useState(new Date());
   const [editStart, setEditStart] = useState('09:00');
   const [editEnd, setEditEnd] = useState('12:00');
 
-  const handleCancel = () => setOpen(false);
+  // handlers
+  const handleCancel = () => {
+    setEditDate(date ?? new Date());
+    setEditStart(startStr || '09:00');
+    setEditEnd(endStr || '12:00');
+    setOpen(true);
+  };
   const handleUpdate = () => {
+    const [sh, sm] = (editStart || '').split(':').map(Number);
+    const [eh, em] = (editEnd || '').split(':').map(Number);
+    const endIsBeforeStart =
+      Number.isFinite(sh) &&
+      Number.isFinite(sm) &&
+      Number.isFinite(eh) &&
+      Number.isFinite(em) &&
+      (eh < sh || (eh === sh && em < sm));
+
+    const finalStart = editStart;
+    const finalEnd = endIsBeforeStart ? editStart : editEnd;
+
+    setDate(editDate);
+    setStartStr(finalStart);
+    setEndStr(finalEnd);
     setOpen(false);
   };
 
@@ -29,19 +101,22 @@ function DateTimeRangePicker() {
     return () => document.removeEventListener('mousedown', onDocMouseDown);
   }, [open]);
 
+  const placeholder = formatPlaceholder(date, startStr, endStr);
+
   return (
     <div className='relative inline-flex w-full'>
-      {/* 트리거 (버튼 대용) */}
+      {/* Trigger */}
       <button
         type='button'
         onClick={() => setOpen(!open)}
         className='border-light-gray flex w-full items-center justify-between border p-[10px]'
         style={{ cursor: 'pointer', fontSize: '13px' }}
       >
-        <span className='leading-[16px]'>text</span>
+        <span className='leading-[16px]'>{placeholder}</span>
         <CalendarDaysIcon />
       </button>
-      {/* Popover 패널 */}
+
+      {/* Popover */}
       {open && (
         <>
           <div
@@ -52,7 +127,7 @@ function DateTimeRangePicker() {
           >
             <div>
               <div className='flex flex-col gap-2'>
-                {/* 좌측: 날짜 */}
+                {/* 상단: 날짜 */}
                 <div>
                   <div className='text-text-sub mb-1 text-xs'>날짜</div>
                   <input
@@ -70,13 +145,12 @@ function DateTimeRangePicker() {
                   />
                 </div>
 
-                {/* 우측: 시간 범위 */}
+                {/* 하단: 시간 범위 */}
                 <div>
                   <div className='text-text-sub mb-1 text-xs'>시간</div>
                   <div className='flex items-center gap-2'>
                     <input
                       type='time'
-                      step={300} // 5분 단위
                       className='border-light-gray w-full rounded border px-2 py-1 text-sm'
                       value={editStart}
                       onChange={(e) => setEditStart(e.target.value)}
@@ -84,7 +158,6 @@ function DateTimeRangePicker() {
                     <span className='text-sm'>~</span>
                     <input
                       type='time'
-                      step={300}
                       className='border-light-gray w-full rounded border px-2 py-1 text-sm'
                       value={editEnd}
                       onChange={(e) => setEditEnd(e.target.value)}
@@ -94,7 +167,7 @@ function DateTimeRangePicker() {
               </div>
             </div>
 
-            {/* 푸터 액션 */}
+            {/* Footer */}
             <div className='flex items-center justify-end pt-3'>
               <ButtonGroup
                 buttons={[
@@ -111,18 +184,18 @@ function DateTimeRangePicker() {
 }
 
 DateTimeRangePicker.propTypes = {
-  // initialDate: PropTypes.oneOfType([
-  //   PropTypes.instanceOf(Date),
-  //   PropTypes.string, // "YYYY-MM-DD"
-  // ]),
-  // initialStart: PropTypes.oneOfType([
-  //   PropTypes.instanceOf(Date),
-  //   PropTypes.string, // "HH:mm"
-  // ]),
-  // initialEnd: PropTypes.oneOfType([
-  //   PropTypes.instanceOf(Date),
-  //   PropTypes.string, // "HH:mm"
-  // ]),
+  initialDate: PropTypes.oneOfType([
+    PropTypes.instanceOf(Date),
+    PropTypes.string, // "YYYY-MM-DD"
+  ]),
+  initialStart: PropTypes.oneOfType([
+    PropTypes.instanceOf(Date),
+    PropTypes.string, // "HH:mm"
+  ]),
+  initialEnd: PropTypes.oneOfType([
+    PropTypes.instanceOf(Date),
+    PropTypes.string, // "HH:mm"
+  ]),
   // onUpdate: PropTypes.func,
 };
 
