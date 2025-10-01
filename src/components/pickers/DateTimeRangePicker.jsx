@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import { CalendarDaysIcon } from '@/assets/icons';
@@ -16,6 +16,18 @@ function DateTimeRangePicker() {
   const handleUpdate = () => {
     setOpen(false);
   };
+
+  useEffect(() => {
+    if (!open) return;
+    const onDocMouseDown = (e) => {
+      if (!popoverRef.current) return;
+      if (!popoverRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onDocMouseDown);
+    return () => document.removeEventListener('mousedown', onDocMouseDown);
+  }, [open]);
 
   return (
     <div className='relative inline-flex w-full'>
