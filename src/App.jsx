@@ -5,13 +5,12 @@ import SyPage from './pages/sy/Sy.jsx';
 import AdminHomePage from './pages/admin/Home.jsx';
 import ComponentTest from './pages/test/ComponentTest.jsx';
 import ButtonTestPage from './pages/test/ButtonTestPage.jsx';
-import ComponentTest from './pages/ComponentTest.jsx';
 import { SearchIcon, SaveIcon, PlusIcon } from '@/assets/icons';
-import SY_ClassRoomTable from './components/table/SY_ClassRoomTable.jsx';
-import Admin_EditClassRoomTable from './components/table/Admin_EditClassRoomTable.jsx';
-import Prof_UndeterminedSubject from './components/table/Prof_UndeterminedSubject.jsx';
-import SY_SearchTable from './components/table/SY_SearchTable.jsx';
-import Prof_1stExamTable from './components/table/Prof_1stExamTable.jsx';
+import SYClassRoomTable from './components/table/test/SYClassRoomTable.jsx';
+import AdminEditClassRoomTable from './components/table/test/AdminEditClassRoomTable.jsx';
+import ProfUndeterminedSubject from './components/table/test/ProfUndeterminedSubject.jsx';
+import SYSearchTable from './components/table/test/SYSearchTable.jsx';
+import Prof1stExamTable from './components/table/test/Prof1stExamTable.jsx';
 
 export default function App() {
   return (
@@ -37,19 +36,19 @@ export default function App() {
           <div>
             <h1>tabletest</h1>
             <div className='w-[500px]'>
-              <SY_ClassRoomTable />
+              <SYClassRoomTable />
             </div>
             <div className='w-[1120px]'>
-              <Admin_EditClassRoomTable />
+              <AdminEditClassRoomTable />
             </div>
             <div className='w-[1100px]'>
-              <Prof_UndeterminedSubject />
+              <ProfUndeterminedSubject />
             </div>
             <div>
-              <SY_SearchTable />
+              <SYSearchTable />
             </div>
             <div className='w-[1300px]'>
-              <Prof_1stExamTable />
+              <Prof1stExamTable />
             </div>
           </div>
         }
