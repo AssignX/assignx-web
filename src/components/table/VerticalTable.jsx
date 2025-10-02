@@ -66,7 +66,7 @@ export default function VerticalTable({
             {headerGroup.headers.map((header) => (
               <th
                 key={header.id}
-                className='border-table-border bg-table-header-background text-table-header-text h-10 border px-2 py-1 text-center'
+                className='border-table-border bg-table-header-background text-table-header-text h-[41px] border p-1 text-center'
                 style={{ width: header.getSize() }}
               >
                 {header.isPlaceholder
@@ -89,7 +89,7 @@ export default function VerticalTable({
             {row.getVisibleCells().map((cell) => (
               <td
                 key={cell.id}
-                className='border-table-border h-10 border px-2 py-1 text-center'
+                className='border-table-border h-[41px] border p-1 text-center'
               >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </td>
@@ -102,9 +102,9 @@ export default function VerticalTable({
           {newRows.map((newRowData, rowIndex) => (
             <tr key={`new-row-${rowIndex}`}>
               {selectable && (
-                <td className='border-table-border h-10 border'></td>
+                <td className='border-table-border h-[41px] border'></td>
               )}
-              <td className='border-table-border h-10 border px-2 py-1 text-center'>
+              <td className='border-table-border h-[41px] border p-1 text-center'>
                 <div className='flex items-center justify-center'>
                   {renderNewRowActions(rowIndex)}
                 </div>
@@ -112,7 +112,7 @@ export default function VerticalTable({
               {dataColumns.slice(1).map((column) => (
                 <td
                   key={column.accessorKey}
-                  className='border-table-border h-10 border px-2 py-1 text-center'
+                  className='border-table-border h-[41px] border p-1 text-center'
                 >
                   <InputCell
                     value={newRowData[column.accessorKey] || ''}
