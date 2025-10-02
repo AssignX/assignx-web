@@ -1,5 +1,3 @@
-// VerticalTable.jsx
-
 import {
   useReactTable,
   getCoreRowModel,
@@ -58,7 +56,6 @@ export default function VerticalTable({
     getFilteredRowModel: getFilteredRowModel(),
   });
 
-  // 'SelectionColumn'을 제외한 실제 데이터 컬럼만 new row 렌더링에 사용
   const dataColumns = columns;
 
   return (
@@ -118,11 +115,13 @@ export default function VerticalTable({
                   className='border-table-border h-10 border px-2 py-1 text-center'
                 >
                   <InputCell
-                    initialValue={newRowData[column.accessorKey] || ''}
-                    rowId={`new-${rowIndex}`}
-                    columnKey={column.accessorKey}
-                    updateData={(rowId, columnKey, value) =>
-                      onNewRowChange(rowIndex, columnKey, value)
+                    value={newRowData[column.accessorKey] || ''}
+                    onChange={(e) =>
+                      onNewRowChange(
+                        rowIndex,
+                        column.accessorKey,
+                        e.target.value
+                      )
                     }
                   />
                 </td>
