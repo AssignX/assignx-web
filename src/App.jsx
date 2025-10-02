@@ -3,6 +3,8 @@ import './styles/font.css';
 
 import SyPage from './pages/sy/Sy.jsx';
 import AdminHomePage from './pages/admin/Home.jsx';
+import ComponentTest from './pages/test/ComponentTest.jsx';
+import ButtonTestPage from './pages/test/ButtonTestPage.jsx';
 import ComponentTest from './pages/ComponentTest.jsx';
 import { SearchIcon, SaveIcon, PlusIcon } from '@/assets/icons';
 import SY_ClassRoomTable from './components/table/SY_ClassRoomTable.jsx';
@@ -17,6 +19,7 @@ export default function App() {
       <Route index element={<SyPage />} />
       <Route path='admin' element={<AdminHomePage />} />
       <Route path='components' element={<ComponentTest />} />
+      <Route path='buttontest' element={<ButtonTestPage />} />
       <Route
         path='icontest'
         element={
