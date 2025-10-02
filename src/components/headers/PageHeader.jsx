@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import SelectionForm from './SelectionForm';
-// import Button from './Button';
+import SelectionForm from '../SelectionForm';
+import ButtonGroup from '../buttons/ButtonGroup';
 
 /**
  * PageHeader 컴포넌트
@@ -17,11 +17,11 @@ function PageHeader({
   hasConfirmSelection = false,
   selected,
   setSelected,
-  //   buttonsData = [],
+  buttonsData = [],
 }) {
   return (
     <div className='border-border-sectionbottom flex items-end border-b pb-[10px]'>
-      <div className='flex w-full flex-col gap-[5px]'>
+      <div className='flex flex-1 flex-col gap-[5px]'>
         <div className='flex flex-row gap-[10px]'>
           <p
             className='text-text-main leading-[23px] font-bold'
@@ -47,7 +47,9 @@ function PageHeader({
           </p>
         )}
       </div>
-      <div className='gap-[8px]'>{/* Buttons */}</div>
+      {buttonsData.length > 0 && (
+        <ButtonGroup direction='row' buttons={buttonsData} />
+      )}
     </div>
   );
 }
@@ -58,7 +60,7 @@ PageHeader.propTypes = {
   hasConfirmSelection: PropTypes.bool,
   selected: PropTypes.bool,
   setSelected: PropTypes.func,
-  //   buttonsData: PropTypes.arrayOf(PropTypes.node),
+  buttonsData: PropTypes.arrayOf(PropTypes.node),
 };
 
 export default PageHeader;
