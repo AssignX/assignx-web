@@ -39,7 +39,7 @@ export default function SideBar({ menus = [], headerTitle = '메뉴' }) {
                     onClick={() => {
                       navigate(sub.path);
                     }} // 페이지 이동
-                    className={`block h-[40px] w-full cursor-pointer px-[10px] text-left text-base hover:bg-[var(--color-light-gray)] ${
+                    className={`hover:bg-light-gray block h-[40px] w-full cursor-pointer px-[10px] text-left text-base ${
                       sub.isSelected
                         ? 'text-[var(--color-gold)]'
                         : 'text-[var(--color-main)]'
