@@ -7,26 +7,14 @@ export default function NavBarTest() {
     {
       title: '열린 메뉴',
       subItems: [
-        {
-          label: '선택된 서브 메뉴',
-          path: '/sub1',
-          color: 'var(--color-main)',
-        },
+        { label: '선택된 서브 메뉴', path: '/sub1', isSelected: true },
       ],
     },
     {
       title: '닫힌 메뉴',
       subItems: [
-        {
-          label: '서브 메뉴 1',
-          path: '/sub2',
-          color: 'text-[var(--color-gold)]',
-        },
-        {
-          label: '서브 메뉴 2',
-          path: '/sub3',
-          color: 'text-[var(--color-main)]',
-        },
+        { label: '서브 메뉴 1', path: '/sub2', isSelected: false },
+        { label: '서브 메뉴 2', path: '/sub3', isSelected: false },
       ],
     },
   ];
