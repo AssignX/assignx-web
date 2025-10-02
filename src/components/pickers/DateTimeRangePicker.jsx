@@ -4,23 +4,23 @@ import dayjs from 'dayjs';
 import { CalendarDaysIcon } from '@/assets/icons';
 import ButtonGroup from '../buttons/ButtonGroup';
 
-// // 시간 문자열 파싱 함수 "HH:mm" -> {h, m}
-// const parseTime = (str) => {
-//   if (!str) return null;
-//   const [h, m] = str.split(':').map((v) => parseInt(v, 10));
-//   if (Number.isNaN(h) || Number.isNaN(m)) return null;
-//   return { h, m };
-// };
+// 시간 문자열 파싱 함수 "HH:mm" -> {h, m}
+const parseTime = (str) => {
+  if (!str) return null;
+  const [h, m] = str.split(':').map((v) => parseInt(v, 10));
+  if (Number.isNaN(h) || Number.isNaN(m)) return null;
+  return { h, m };
+};
 
-// // date 객체 통합 함수
-// const combineDateAndTime = (date, timeStr) => {
-//   if (!date || !timeStr) return undefined;
-//   const t = parseTime(timeStr);
-//   if (!t) return undefined;
-//   const d = new Date(date);
-//   d.setHours(t.h, t.m, 0, 0);
-//   return d;
-// };
+// date 객체 통합 함수
+const combineDateAndTime = (date, timeStr) => {
+  if (!date || !timeStr) return undefined;
+  const t = parseTime(timeStr);
+  if (!t) return undefined;
+  const d = new Date(date);
+  d.setHours(t.h, t.m, 0, 0);
+  return d;
+};
 
 // placeholer 생성 함수
 const formatPlaceholder = (date, startStr, endStr) => {
@@ -34,7 +34,7 @@ function DateTimeRangePicker({
   initialDate,
   initialStart,
   initialEnd,
-  // onUpdate,
+  onUpdate,
 }) {
   const [date, setDate] = useState(() => {
     if (!initialDate) return undefined;
@@ -64,6 +64,12 @@ function DateTimeRangePicker({
   const [editEnd, setEditEnd] = useState('12:00');
 
   // handlers
+  const openEditor = () => {
+    setEditDate(date ?? new Date());
+    setEditStart(startStr || '09:00');
+    setEditEnd(endStr || '12:00');
+    setOpen(true);
+  };
   const handleCancel = () => {
     setEditDate(date ?? new Date());
     setEditStart(startStr || '09:00');
@@ -87,6 +93,12 @@ function DateTimeRangePicker({
     setStartStr(finalStart);
     setEndStr(finalEnd);
     setOpen(false);
+
+    if (onUpdate) {
+      const from = combineDateAndTime(editDate, finalStart);
+      const to = combineDateAndTime(editDate, finalEnd);
+      onUpdate({ range: { from, to } });
+    }
   };
 
   useEffect(() => {
@@ -108,7 +120,7 @@ function DateTimeRangePicker({
       {/* Trigger */}
       <button
         type='button'
-        onClick={() => setOpen(!open)}
+        onClick={openEditor}
         className='border-light-gray flex w-full items-center justify-between border p-[10px]'
         style={{ cursor: 'pointer', fontSize: '13px' }}
       >
@@ -127,7 +139,7 @@ function DateTimeRangePicker({
           >
             <div>
               <div className='flex flex-col gap-2'>
-                {/* 상단: 날짜 */}
+                {/* 상단: DatePicker */}
                 <div>
                   <div className='text-text-sub mb-1 text-xs'>날짜</div>
                   <input
@@ -145,7 +157,7 @@ function DateTimeRangePicker({
                   />
                 </div>
 
-                {/* 하단: 시간 범위 */}
+                {/* 하단: TimePicker */}
                 <div>
                   <div className='text-text-sub mb-1 text-xs'>시간</div>
                   <div className='flex items-center gap-2'>
@@ -196,7 +208,7 @@ DateTimeRangePicker.propTypes = {
     PropTypes.instanceOf(Date),
     PropTypes.string, // "HH:mm"
   ]),
-  // onUpdate: PropTypes.func,
+  onUpdate: PropTypes.func,
 };
 
 export default DateTimeRangePicker;
