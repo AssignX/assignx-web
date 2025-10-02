@@ -23,7 +23,7 @@ export default function HorizontalTable({ items = [] }) {
             item.label ? (
               <React.Fragment key={item.id}>
                 <th
-                  className='border-table-border bg-table-header-background text-table-header-text h-10 border px-3 py-1 text-center'
+                  className='border-table-border bg-table-header-background text-table-header-text h-[41px] border p-1 text-center'
                   style={{ width: item.labelWidth || 'auto' }}
                 >
                   {item.required && (
@@ -32,7 +32,7 @@ export default function HorizontalTable({ items = [] }) {
                   {item.label}
                 </th>
                 <td
-                  className='border-table-border h-10 border px-2 py-1 align-middle'
+                  className='border-table-border h-[41px] border p-1 align-middle'
                   style={{ width: item.contentWidth || 'auto' }}
                 >
                   {item.content}
@@ -41,7 +41,7 @@ export default function HorizontalTable({ items = [] }) {
             ) : (
               <td
                 key={item.id}
-                className='border-table-border h-10 border px-2 py-1 align-middle'
+                className='border-table-border h-[41px] border p-1 align-middle'
                 style={{ width: item.contentWidth || 'auto' }}
               >
                 {item.content}
