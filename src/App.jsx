@@ -8,7 +8,8 @@ import { SearchIcon, SaveIcon, PlusIcon } from '@/assets/icons';
 import SY_ClassRoomTable from './components/table/SY_ClassRoomTable.jsx';
 import Admin_EditClassRoomTable from './components/table/Admin_EditClassRoomTable.jsx';
 import Prof_UndeterminedSubject from './components/table/Prof_UndeterminedSubject.jsx';
-import SearchPage from './components/table/SY_SearchTable.jsx';
+import SY_SearchTable from './components/table/SY_SearchTable.jsx';
+import Prof_1stExamTable from './components/table/Prof_1stExamTable.jsx';
 
 export default function App() {
   return (
@@ -42,7 +43,10 @@ export default function App() {
               <Prof_UndeterminedSubject />
             </div>
             <div>
-              <SearchPage />
+              <SY_SearchTable />
+            </div>
+            <div className='w-[1300px]'>
+              <Prof_1stExamTable />
             </div>
           </div>
         }

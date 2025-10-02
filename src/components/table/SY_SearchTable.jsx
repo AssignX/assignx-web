@@ -2,25 +2,35 @@ import { useState } from 'react';
 import HorizontalTable from './HorizontalTable';
 import { DropdownCell } from './cells/DropdownCell';
 import { InputCell } from './cells/InputCell';
-import { SearchIcon } from '@/assets/icons';
+import { SearchCell } from './cells/SearchCell';
 
 const yearOptions = [
   { value: '2025', label: '2025' },
   { value: '2024', label: '2024' },
-  { value: '2023', label: '2023' },
 ];
 const semesterOptions = [
   { value: '1', label: '1학기' },
   { value: '2', label: '2학기' },
 ];
 
-export default function SearchPage() {
+export default function SY_SearchTable() {
   const [filters, setFilters] = useState({
     year: '2025',
-    semester: '2',
+    semester: '1',
     buildingNum: '',
     buildingName: '',
   });
+
+  // --- 모달 관련 상태 및 핸들러를 alert으로 대체 ---
+  const handleBuildingSearch = (searchValue) => {
+    handleFilterChange('buildingNum', searchValue);
+
+    if (searchValue) {
+      alert(`(시뮬레이션) 모달을 엽니다.\n입력된 초기값: '${searchValue}'`);
+    } else {
+      alert('(시뮬레이션) 모달을 엽니다 (초기값 없음).');
+    }
+  };
 
   const handleFilterChange = (columnKey, value) => {
     setFilters((prev) => ({ ...prev, [columnKey]: value }));
@@ -72,11 +82,9 @@ export default function SearchPage() {
       contentWidth: '355px',
       content: (
         <div className='flex items-center gap-1'>
-          <InputCell
+          <SearchCell
             initialValue={filters.buildingNum}
-            rowId='filters'
-            columnKey='buildingNum'
-            updateData={updateFilters}
+            onSearch={handleBuildingSearch}
           />
           <InputCell
             initialValue={filters.buildingName}
