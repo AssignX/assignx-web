@@ -88,7 +88,7 @@ export default function Admin_EditClassRoomTable() {
           onClick={handleAddNewRow}
           className='rounded border px-4 py-2 text-sm font-semibold text-black shadow-sm'
         >
-          새로운 강의실 추가
+          추가
         </button>
       </div>
 
