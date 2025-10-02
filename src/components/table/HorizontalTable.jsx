@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 /**
+ * 가로형 테이블
  * `items` 배열의 객체에 `label`이 없으면 단독 `<td>` 셀로 렌더링
  * @param {Array<Object>} items - 테이블에 표시할 항목 배열.
  * item : 각 셀을 정의하는 객체 배열
