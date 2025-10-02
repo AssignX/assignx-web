@@ -30,12 +30,7 @@ const formatPlaceholder = (date, startStr, endStr) => {
   return `${d.format('YYYY.MM.DD.')} ${startStr}~${endStr}`;
 };
 
-function DateTimeRangePicker({
-  initialDate,
-  initialStart,
-  initialEnd,
-  onUpdate,
-}) {
+function DateTimePicker({ initialDate, initialStart, initialEnd, onUpdate }) {
   const [date, setDate] = useState(() => {
     if (!initialDate) return undefined;
     if (initialDate instanceof Date) return initialDate;
@@ -195,7 +190,7 @@ function DateTimeRangePicker({
   );
 }
 
-DateTimeRangePicker.propTypes = {
+DateTimePicker.propTypes = {
   initialDate: PropTypes.oneOfType([
     PropTypes.instanceOf(Date),
     PropTypes.string, // "YYYY-MM-DD"
@@ -211,4 +206,4 @@ DateTimeRangePicker.propTypes = {
   onUpdate: PropTypes.func,
 };
 
-export default DateTimeRangePicker;
+export default DateTimePicker;

@@ -3,14 +3,13 @@ import SectionHeader from '../components/SectionHeader';
 import { useState, useCallback } from 'react';
 import dayjs from 'dayjs';
 import BreadCrumb from '../components/BreadCrumb';
-import DateTimeRangePicker from '../components/pickers/DateTimeRangePicker';
+import DateTimePicker from '../components/pickers/DateTimePicker';
 
 function ComponentTest() {
   const [selected, setSelected] = useState(true);
   const [date, setDate] = useState(dayjs());
 
   const [range, setRange] = useState({ from: null, to: null });
-
   const handleUpdate = useCallback(({ range }) => {
     setRange(range);
   }, []);
@@ -49,7 +48,7 @@ function ComponentTest() {
             ? `${dayjs(range.from).format('YYYY.MM.DD. HH:mm')} ~ ${dayjs(range.to).format('HH:mm')}`
             : '아직 선택되지 않았어요'}
         </div>
-        <DateTimeRangePicker
+        <DateTimePicker
           initialDate='2025-09-20'
           initialStart='12:10'
           initialEnd='23:24'
