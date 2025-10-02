@@ -1,6 +1,6 @@
-import HorizontalTable from './HorizontalTable';
+import HorizontalTable from '../HorizontalTable';
 
-export default function Prof_1stExamTable() {
+export default function Prof1stExamTable() {
   const allItemsInOneRow = [
     {
       id: 'year',

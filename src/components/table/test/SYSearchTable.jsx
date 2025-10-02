@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import HorizontalTable from './HorizontalTable';
-import { DropdownCell } from './cells/DropdownCell';
-import { InputCell } from './cells/InputCell';
-import { SearchCell } from './cells/SearchCell';
+import HorizontalTable from '../HorizontalTable';
+import { DropdownCell } from '../cells/DropdownCell';
+import { InputCell } from '../cells/InputCell';
+import { SearchCell } from '../cells/SearchCell';
 
 const yearOptions = [
   { value: '2025', label: '2025' },
@@ -13,7 +13,7 @@ const semesterOptions = [
   { value: '2', label: '2학기' },
 ];
 
-export default function SY_SearchTable() {
+export default function SYSearchTable() {
   const [filters, setFilters] = useState({
     year: '2025',
     semester: '1',

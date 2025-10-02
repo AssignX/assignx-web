@@ -1,11 +1,7 @@
-// 실험용
-
 import { useMemo } from 'react';
-import VerticalTable from './VerticalTable';
+import VerticalTable from '../VerticalTable';
 
-export default function SY_ClassRoomTable() {
-  //const [selection, setSelection] = useState([]);
-
+export default function SYClassRoomTable() {
   const columns = useMemo(
     () => [
       { accessorKey: 'no', header: 'No', size: 50 },

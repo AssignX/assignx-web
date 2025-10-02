@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import VerticalTable from './VerticalTable';
-import { PlusCell } from './cells/PlusCell';
+import VerticalTable from '../VerticalTable';
+import { PlusCell } from '../cells/PlusCell';
 
 const initialData = [
   {
@@ -26,7 +26,7 @@ const initialData = [
   },
 ];
 
-export default function Admin_EditClassRoomTable() {
+export default function AdminEditClassRoomTable() {
   const [data, setData] = useState(initialData);
   const [newRows, setNewRows] = useState([]);
 
