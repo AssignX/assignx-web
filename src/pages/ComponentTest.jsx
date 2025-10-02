@@ -1,12 +1,19 @@
 import PageHeader from '../components/PageHeader';
 import SectionHeader from '../components/SectionHeader';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import dayjs from 'dayjs';
 import BreadCrumb from '../components/BreadCrumb';
+import DateTimeRangePicker from '../components/pickers/DateTimeRangePicker';
 
 function ComponentTest() {
   const [selected, setSelected] = useState(true);
   const [date, setDate] = useState(dayjs());
+
+  const [range, setRange] = useState({ from: null, to: null });
+
+  const handleUpdate = useCallback(({ range }) => {
+    setRange(range);
+  }, []);
 
   return (
     <div className='flex flex-col gap-[40px] p-4'>
@@ -35,6 +42,20 @@ function ComponentTest() {
         hasWeekPicker={false}
       />
       <BreadCrumb parentText='상위 메뉴' childText='하위 메뉴' />
+      <div className='w-[300px]'>
+        <div className='text-sm text-gray-600'>
+          현재 값:{' '}
+          {range.from && range.to
+            ? `${dayjs(range.from).format('YYYY.MM.DD. HH:mm')} ~ ${dayjs(range.to).format('HH:mm')}`
+            : '아직 선택되지 않았어요'}
+        </div>
+        <DateTimeRangePicker
+          initialDate='2025-09-20'
+          initialStart='12:10'
+          initialEnd='23:24'
+          onUpdate={handleUpdate}
+        />
+      </div>
     </div>
   );
 }
