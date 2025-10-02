@@ -3,7 +3,7 @@ import './styles/font.css';
 
 import SyPage from './pages/sy/Sy.jsx';
 import AdminHomePage from './pages/admin/Home.jsx';
-import ComponentTest from './pages/ComponentTest.jsx';
+import ComponentTest from './pages/test/ComponentTest.jsx';
 import ButtonTestPage from './pages/test/ButtonTestPage.jsx';
 
 export default function App() {
