@@ -27,41 +27,26 @@ const initialData = [
 ];
 
 export default function AdminEditClassRoomTable() {
-  const [data, setData] = useState(initialData);
   const [newRows, setNewRows] = useState([]);
 
   const handleAddNewRow = () => {
-    setNewRows((current) => [...current, {}]);
+    const newRow = {
+      id: `new-${Date.now()}`,
+      buildingNo: '',
+      buildingName: '',
+      roomNo: '',
+      capacity: 0,
+      isNew: true,
+    };
+    setNewRows((current) => [...current, newRow]);
   };
 
-  const handleNewRowChange = (rowIndex, columnKey, value) => {
+  const handleNewRowChange = (rowId, columnKey, value) => {
     setNewRows((current) =>
-      current.map((row, index) =>
-        index === rowIndex ? { ...row, [columnKey]: value } : row
+      current.map((row) =>
+        row.id === rowId ? { ...row, [columnKey]: value } : row
       )
     );
-  };
-
-  const handleSaveNewRow = (rowIndex) => {
-    const newRowData = newRows[rowIndex];
-    if (
-      !newRowData.buildingNo ||
-      !newRowData.buildingName ||
-      !newRowData.roomNo ||
-      !newRowData.capacity
-    ) {
-      alert('모든 필드를 입력해주세요.');
-      return;
-    }
-    setData((current) => [
-      ...current,
-      { ...newRowData, id: `new_${Date.now()}` },
-    ]);
-    handleDeleteNewRow(rowIndex);
-  };
-
-  const handleDeleteNewRow = (rowIndex) => {
-    setNewRows((current) => current.filter((_, index) => index !== rowIndex));
   };
 
   const columns = useMemo(
@@ -94,15 +79,13 @@ export default function AdminEditClassRoomTable() {
 
       <VerticalTable
         columns={columns}
-        data={data}
+        data={initialData}
         selectable={true}
         newRows={newRows}
         onNewRowChange={handleNewRowChange}
-        renderNewRowActions={(rowIndex) => (
+        renderNewRowActions={() => (
           <div className='flex items-center justify-center space-x-2'>
-            <button onClick={() => handleSaveNewRow(rowIndex)} title='Save Row'>
-              <PlusCell />
-            </button>
+            <PlusCell />
           </div>
         )}
       />
