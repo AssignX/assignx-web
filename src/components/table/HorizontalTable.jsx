@@ -16,19 +16,17 @@ import PropTypes from 'prop-types';
 
 export default function HorizontalTable({ items = [] }) {
   return (
-    <table className='border-table-border w-full table-auto border-collapse border'>
+    <table className='border-table-border w-full table-auto border-collapse border text-[13px]'>
       <tbody>
         <tr>
           {items.map((item) =>
             item.label ? (
               <React.Fragment key={item.id}>
                 <th
-                  className='border-table-border bg-table-header-background text-table-header-text h-[41px] border p-1 text-center'
+                  data-required={item.required}
+                  className={`border-table-border bg-table-header-background text-table-header-text data-[required=true]:text-red h-[41px] border p-1 text-center data-[required=true]:before:mr-1 data-[required=true]:before:content-['*']`}
                   style={{ width: item.labelWidth || 'auto' }}
                 >
-                  {item.required && (
-                    <span className='mr-1 text-red-500'>*</span>
-                  )}
                   {item.label}
                 </th>
                 <td
