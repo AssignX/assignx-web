@@ -59,7 +59,7 @@ export default function VerticalTable({
   const dataColumns = columns;
 
   return (
-    <table className='border-table-border w-full table-fixed border-collapse border'>
+    <table className='border-table-border w-full table-fixed border-collapse border text-[13px]'>
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id}>
@@ -100,13 +100,13 @@ export default function VerticalTable({
       {newRows.length > 0 && (
         <tfoot>
           {newRows.map((newRowData, rowIndex) => (
-            <tr key={`new-row-${rowIndex}`}>
+            <tr key={newRowData.id || `new-row-${rowIndex}`}>
               {selectable && (
                 <td className='border-table-border h-[41px] border'></td>
               )}
               <td className='border-table-border h-[41px] border p-1 text-center'>
                 <div className='flex items-center justify-center'>
-                  {renderNewRowActions(rowIndex)}
+                  {renderNewRowActions(newRowData.id)}
                 </div>
               </td>
               {dataColumns.slice(1).map((column) => (
@@ -118,7 +118,7 @@ export default function VerticalTable({
                     value={newRowData[column.accessorKey] || ''}
                     onChange={(e) =>
                       onNewRowChange(
-                        rowIndex,
+                        newRowData.id,
                         column.accessorKey,
                         e.target.value
                       )
