@@ -8,7 +8,7 @@ export function InputCell({
   disabled,
   className,
 }) {
-  const defaultClassName = `h-8 w-full border border-table-border p-2.5 text-sm ${
+  const defaultClassName = `h-8 w-full border border-table-border p-2.5 text-[13px] ${
     disabled ? 'bg-inputCell-disabled' : ''
   }`;
 
