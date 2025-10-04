@@ -36,7 +36,11 @@ export function SearchCell({ initialValue, onSearch }) {
       <button
         type='button'
         onClick={handleSearchClick}
+<<<<<<< HEAD
         className='border-table-border flex h-8 w-8 flex-shrink-0 items-center justify-center border-y border-r p-1'
+=======
+        className='border-table-border h-8 w-8 flex-shrink-0 items-center border-y border-r p-1'
+>>>>>>> 9b823e9c17d4eb9acf1b6909d8dc309729df0563
         aria-label='Search'
       >
         <SearchIcon />
