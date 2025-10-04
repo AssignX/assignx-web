@@ -4,7 +4,7 @@ export default function Prof1stExamTable() {
   const allItemsInOneRow = [
     {
       id: 'year',
-      label: '개설년도',
+      label: '개설연도',
       labelWidth: '120px',
       contentWidth: '180px',
       required: true,
