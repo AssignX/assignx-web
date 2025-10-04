@@ -3,6 +3,8 @@ import HorizontalTable from '../HorizontalTable';
 import { DropdownCell } from '../cells/DropdownCell';
 import { InputCell } from '../cells/InputCell';
 import { SearchCell } from '../cells/SearchCell';
+import Button from '../../buttons/Button';
+import { SearchIcon } from '@/assets/icons';
 
 const yearOptions = [
   { value: '2025', label: '2025' },
@@ -47,7 +49,7 @@ export default function SYSearchTable() {
   const filterItems = [
     {
       id: 'year',
-      label: '개설년도',
+      label: '개설연도',
       labelWidth: '130px',
       contentWidth: '150px',
       content: (
@@ -100,12 +102,13 @@ export default function SYSearchTable() {
       id: 'search-button',
       contentWidth: '355px',
       content: (
-        <button
+        <Button
+          text='조회'
+          color='lightgray'
+          textSize='text-sm'
+          Icon={SearchIcon}
           onClick={handleSearch}
-          className='w-[65px] rounded bg-gray-600 px-4 py-1.5 text-sm text-white hover:bg-gray-700'
-        >
-          조회
-        </button>
+        />
       ),
     },
   ];
