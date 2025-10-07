@@ -12,6 +12,7 @@ import AdminEditClassRoomTable from './components/table/test/AdminEditClassRoomT
 import ProfUndeterminedSubject from './components/table/test/ProfUndeterminedSubject.jsx';
 import SYSearchTable from './components/table/test/SYSearchTable.jsx';
 import Prof1stExamTable from './components/table/test/Prof1stExamTable.jsx';
+import ModalTestPage from './pages/test/ModalTestPage.jsx';
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
       <Route path='components' element={<ComponentTest />} />
       <Route path='buttontest' element={<ButtonTestPage />} />
       <Route path='bartest' element={<BarTestPage />} />
+      <Route path='modaltest' element={<ModalTestPage />} />
       <Route
         path='icontest'
         element={
