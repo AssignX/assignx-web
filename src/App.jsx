@@ -13,6 +13,7 @@ import ProfUndeterminedSubject from './components/table/test/ProfUndeterminedSub
 import SYSearchTable from './components/table/test/SYSearchTable.jsx';
 import Prof1stExamTable from './components/table/test/Prof1stExamTable.jsx';
 import ModalTestPage from './pages/test/ModalTestPage.jsx';
+import ModalTableTestPage from './pages/test/ModalTableTestPage.jsx';
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
       <Route path='buttontest' element={<ButtonTestPage />} />
       <Route path='bartest' element={<BarTestPage />} />
       <Route path='modaltest' element={<ModalTestPage />} />
+      <Route path='modaltabletest' element={<ModalTableTestPage />} />
       <Route
         path='icontest'
         element={
