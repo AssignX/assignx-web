@@ -3,6 +3,22 @@ import PropTypes from 'prop-types';
 import Button from './buttons/Button.jsx';
 import { CloseIcon } from '@/assets/icons';
 
+/**
+ * Modal 컴포넌트
+ * 화면 중앙에 표시되는 모달 창으로, 제목 / 본문 / 확인 및 취소 버튼을 포함합니다.
+ * content에는 단순 문자열뿐 아니라 테이블, 폼 등 React 노드를 자유롭게 전달할 수 있습니다.
+ *
+ * @param {string} title - 모달 상단에 표시할 제목 (기본값: "제목")
+ * @param {React.ReactNode} content - 모달 본문에 표시할 내용 (문자열 또는 JSX 컴포넌트)
+ * @param {string} confirmText - 확인 버튼에 표시할 텍스트 (기본값: "확인")
+ * @param {string} cancelText - 취소 버튼에 표시할 텍스트 (기본값: "취소")
+ * @param {function} onConfirm - 확인 버튼 클릭 시 실행할 함수
+ * @param {function} onCancel - 취소 버튼 클릭 시 실행할 함수
+ * @param {function} onClose - 닫기(X) 버튼 클릭 시 실행할 함수
+ * @param {string} width - 모달의 너비 (단위 포함, 예: "400px")
+ * @param {string} height - 모달의 높이 (단위 포함, 예: "200px")
+ */
+
 export default function Modal({
   title = '제목',
   content = '내용을 입력하세요.',
