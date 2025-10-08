@@ -58,8 +58,12 @@ export default function SYClassRoomTable() {
   return (
     <div>
       <h1>강의실 목록</h1>
-
-      <VerticalTable columns={columns} data={data} selectable={isSelectable} />
+      <VerticalTable
+        headerHeight={39.4}
+        columns={columns}
+        data={data}
+        selectable={isSelectable}
+      />
     </div>
   );
 }
