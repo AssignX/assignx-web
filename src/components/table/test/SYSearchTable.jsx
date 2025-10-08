@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import HorizontalTable from '../HorizontalTable';
-import { DropdownCell } from '../cells/DropdownCell';
-import { InputCell } from '../cells/InputCell';
-import { SearchCell } from '../cells/SearchCell';
+import DropdownCell from '../cells/DropdownCell';
+import InputCell from '../cells/InputCell';
+import SearchCell from '../cells/SearchCell';
 import Button from '../../buttons/Button';
 import { SearchIcon } from '@/assets/icons';
 
@@ -59,6 +59,7 @@ export default function SYSearchTable() {
           rowId='filters'
           columnKey='year'
           updateData={updateFilters}
+          height={32}
         />
       ),
     },
@@ -74,6 +75,7 @@ export default function SYSearchTable() {
           rowId='filters'
           columnKey='semester'
           updateData={updateFilters}
+          height={32}
         />
       ),
     },
@@ -87,6 +89,7 @@ export default function SYSearchTable() {
           <SearchCell
             initialValue={filters.buildingNum}
             onSearch={handleBuildingSearch}
+            height={32}
           />
           <InputCell
             initialValue={filters.buildingName}
@@ -94,6 +97,7 @@ export default function SYSearchTable() {
             columnKey='buildingName'
             updateData={updateFilters}
             disabled={true}
+            height={32}
           />
         </div>
       ),
