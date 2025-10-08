@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
  * @param {function} onBlur - 입력 필드가 포커스를 잃었을 때 호출되는 콜백 함수 (선택)
  * @param {boolean} disabled - 입력 필드를 비활성화할지 여부 (기본값: false)
  * @param {string} className - 추가적으로 적용할 Tailwind CSS 클래스 문자열 (선택)
- * @param {number} height - 입력 필드의 높이(px). (기본값: 26px(row=35px일 때), sy페이지만 32px로 설정(row=41px일 때))
+ * @param {number} height - 입력 필드의 높이(px).  (기본값(VerticalTable): 26px(row=35px일 때), HorizontalTable은 32px로 설정(row=41px일 때))
  */
 
 export default function InputCell({
