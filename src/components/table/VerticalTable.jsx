@@ -14,6 +14,7 @@ import InputCell from './cells/InputCell';
  * @param {array} columns - 테이블의 열을 정의하는 객체 배열 (필수)
  * @param {array} data - 테이블에 표시할 실제 데이터 배열 (기본값: [])
  * @param {number} headerHeight - 테이블 헤더의 높이 (기본값: 32px, sy페이지만 39.4px로 설정)
+ * @param {number} maxHeight - 테이블의 최대 높이 (px 단위, 기본값: 700px). 이 높이를 초과하면 스크롤이 생성됨.
  * @param {function} updateSelection - 행 선택 상태가 변경될 때 호출되는 콜백 함수. 선택된 row ID 배열을 인자로 받음
  * @param {boolean} selectable - 행 선택 체크박스 표시 여부 (기본값: false)
  * @param {array} newRows - 테이블 하단에 추가할 새로운 행들의 데이터 배열 (기본값: [])
@@ -24,6 +25,7 @@ export default function VerticalTable({
   columns,
   data = [],
   headerHeight = 32,
+  maxHeight = 700,
   updateSelection,
   selectable = false,
   newRows = [],
@@ -61,78 +63,86 @@ export default function VerticalTable({
   const dataColumns = columns;
 
   return (
-    <table className='border-table-border w-full table-fixed border-collapse border text-[13px]'>
-      <thead>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <th
-                key={header.id}
-                className={`border-table-border bg-table-header-background text-table-header-text border p-1 text-center`}
-                style={{ width: header.getSize(), height: `${headerHeight}px` }}
-              >
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody>
-        {table.getRowModel().rows.map((row) => (
-          <tr
-            key={row.id}
-            className={selectable && row.getIsSelected() ? 'select_row' : ''}
-          >
-            {row.getVisibleCells().map((cell) => (
-              <td
-                key={cell.id}
-                className='border-table-border h-[35px] border p-1 text-center'
-              >
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-      {newRows.length > 0 && (
-        <tfoot>
-          {newRows.map((newRowData, rowIndex) => (
-            <tr key={newRowData.id || `new-row-${rowIndex}`}>
-              {selectable && (
-                <td className='border-table-border h-[35px] border'></td>
-              )}
-              <td className='border-table-border h-[35px] border p-1 text-center'>
-                <div className='flex items-center justify-center'>
-                  {renderNewRowActions(newRowData.id)}
-                </div>
-              </td>
-              {dataColumns.slice(1).map((column) => (
-                <td
-                  key={column.accessorKey}
-                  className='border-table-border h-[35px] border p-1 text-center'
+    <div className='overflow-y-auto' style={{ maxHeight: `${maxHeight}px` }}>
+      <table className='border-table-border w-full table-fixed border-separate border-spacing-0 text-[13px]'>
+        <thead className='sticky top-0 z-10'>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th
+                  key={header.id}
+                  className={`border-table-border bg-table-header-background text-table-header-text border p-1 text-center first:border-l`}
+                  style={{
+                    width: header.getSize(),
+                    height: `${headerHeight}px`,
+                  }}
                 >
-                  <InputCell
-                    value={newRowData[column.accessorKey] || ''}
-                    onChange={(e) =>
-                      onNewRowChange(
-                        newRowData.id,
-                        column.accessorKey,
-                        e.target.value
-                      )
-                    }
-                  />
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map((row) => (
+            <tr
+              key={row.id}
+              className={selectable && row.getIsSelected() ? 'select_row' : ''}
+            >
+              {row.getVisibleCells().map((cell) => (
+                <td
+                  key={cell.id}
+                  className='border-table-border h-[35px] border-b border-l p-1 text-center last:border-r last:border-b'
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
             </tr>
           ))}
-        </tfoot>
-      )}
-    </table>
+        </tbody>
+        {newRows.length > 0 && (
+          <tfoot className='sticky bottom-0 z-10'>
+            {newRows.map((newRowData, rowIndex) => (
+              <tr
+                key={newRowData.id || `new-row-${rowIndex}`}
+                className='bg-white'
+              >
+                {selectable && (
+                  <td className='border-table-border h-[35px] border-b border-l last:border-r last:border-b'></td>
+                )}
+                <td className='border-table-border h-[35px] border-b border-l p-1 text-center last:border-r last:border-b'>
+                  <div className='flex items-center justify-center'>
+                    {renderNewRowActions(newRowData.id)}
+                  </div>
+                </td>
+                {dataColumns.slice(1).map((column) => (
+                  <td
+                    key={column.accessorKey}
+                    className='border-table-border h-[35px] border-b border-l p-1 text-center last:border-r last:border-b'
+                  >
+                    <InputCell
+                      value={newRowData[column.accessorKey] || ''}
+                      onChange={(e) =>
+                        onNewRowChange(
+                          newRowData.id,
+                          column.accessorKey,
+                          e.target.value
+                        )
+                      }
+                    />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tfoot>
+        )}
+      </table>
+    </div>
   );
 }
 
@@ -140,6 +150,7 @@ VerticalTable.propTypes = {
   columns: PropTypes.array.isRequired,
   data: PropTypes.array,
   headerHeight: PropTypes.number,
+  maxHeight: PropTypes.number,
   updateSelection: PropTypes.func,
   selectable: PropTypes.bool,
   newRows: PropTypes.array,
