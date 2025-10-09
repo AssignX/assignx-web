@@ -37,7 +37,7 @@ export default function Modal({
         style={{ width, height }}
       >
         {/* 헤더 */}
-        <div className='flex items-center justify-between rounded-t-md bg-[var(--color-dark-gray)] px-4 py-3'>
+        <div className='flex items-center justify-between bg-[var(--color-dark-gray)] px-4 py-3'>
           <span className='text-sm font-bold text-white'>{title}</span>
           <button
             onClick={onClose}
