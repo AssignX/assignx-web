@@ -79,7 +79,7 @@ export default function ProfUndeterminedSubject() {
       {
         accessorKey: 'classroom',
         header: '강의실',
-        size: 150,
+        size: 120,
         cell: ({ row, column, cell }) => (
           <SearchCell
             initialValue={cell.getValue() || ''}
