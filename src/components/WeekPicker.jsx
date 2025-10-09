@@ -15,13 +15,9 @@ function WeekPicker({ date, setDate }) {
   const goNext = () => setDate(date.add(7, 'day'));
 
   const getWeekLabel = (d) => {
-    const year = d.year();
-    const month = d.month() + 1;
-
-    const firstDayOfMonth = dayjs(`${year}-${month}-01`);
-    const weekOfMonth = d.isoWeek() - firstDayOfMonth.isoWeek() + 1;
-
-    return `${year}년 ${month}월 ${weekOfMonth}주차`;
+    const start = d.isoWeekday(1);
+    const end = d.isoWeekday(7);
+    return `${start.format('YYYY/MM/DD')} ~ ${end.format('YYYY/MM/DD')}`;
   };
 
   const label = getWeekLabel(date);
