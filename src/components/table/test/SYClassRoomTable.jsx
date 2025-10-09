@@ -49,6 +49,157 @@ export default function SYClassRoomTable() {
         buildingName: 'IT대학5호관(IT융복합관)',
         room: '251',
       },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
+      {
+        id: '251',
+        no: 6,
+        buildingName: 'IT대학5호관(IT융복합관)',
+        room: '251',
+      },
     ],
     []
   );
@@ -58,12 +209,8 @@ export default function SYClassRoomTable() {
   return (
     <div>
       <h1>강의실 목록</h1>
-      <VerticalTable
-        headerHeight={39.4}
-        columns={columns}
-        data={data}
-        selectable={isSelectable}
-      />
+
+      <VerticalTable columns={columns} data={data} selectable={isSelectable} />
     </div>
   );
 }
