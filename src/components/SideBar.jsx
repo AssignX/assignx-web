@@ -31,25 +31,28 @@ export default function SideBar({ menus = [], headerTitle = '메뉴' }) {
               </span>
             </button>
             {/* 서브 메뉴 버튼 */}
-            {openIndex === index && (
-              <div className='bg-white'>
-                {menu.subItems.map((sub, i) => (
-                  <button
-                    key={i}
-                    onClick={() => {
-                      navigate(sub.path);
-                    }} // 페이지 이동
-                    className={`hover:bg-light-gray block h-[40px] w-full cursor-pointer px-[10px] text-left text-base ${
-                      sub.isSelected
-                        ? 'text-[var(--color-gold)]'
-                        : 'text-[var(--color-main)]'
-                    }`}
-                  >
-                    {sub.label}
-                  </button>
-                ))}
-              </div>
-            )}
+            <div
+              className={`overflow-hidden bg-white transition-[max-height] duration-500 ease-in-out ${
+                openIndex === index ? 'max-h-[500px]' : 'max-h-0'
+              } divide-y divide-[var(--color-table-border)]`}
+            >
+              {menu.subItems.map((sub, i) => (
+                <button
+                  key={i}
+                  onClick={() => navigate(sub.path)}
+                  style={{
+                    transitionDelay: `${openIndex === index ? i * 150 : (menu.subItems.length - i) * 150}ms`,
+                  }}
+                  className={`block h-[40px] w-full cursor-pointer px-[10px] text-left text-base hover:bg-[var(--color-light-gray)] ${
+                    sub.isSelected
+                      ? 'text-[var(--color-gold)]'
+                      : 'text-[var(--color-main)]'
+                  }`}
+                >
+                  {sub.label}
+                </button>
+              ))}
+            </div>
           </div>
         ))}
       </div>
