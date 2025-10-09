@@ -71,7 +71,7 @@ export default function VerticalTable({
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className={`border-table-border bg-table-header-background text-table-header-text border p-1 text-center first:border-l`}
+                  className={`border-table-border bg-table-header-background text-table-header-text border-t border-b border-l p-1 text-center first:border-l last:border-r`}
                   style={{
                     width: header.getSize(),
                     height: `${headerHeight}px`,
@@ -97,7 +97,7 @@ export default function VerticalTable({
               {row.getVisibleCells().map((cell) => (
                 <td
                   key={cell.id}
-                  className='border-table-border h-[35px] border-b border-l p-1 text-center last:border-r last:border-b'
+                  className='border-table-border h-[35px] border-b border-l p-1 text-center last:border-r'
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
@@ -113,9 +113,9 @@ export default function VerticalTable({
                 className='bg-white'
               >
                 {selectable && (
-                  <td className='border-table-border h-[35px] border-b border-l last:border-r last:border-b'></td>
+                  <td className='border-table-border h-[35px] border-b border-l last:border-r'></td>
                 )}
-                <td className='border-table-border h-[35px] border-b border-l p-1 text-center last:border-r last:border-b'>
+                <td className='border-table-border h-[35px] border-b border-l p-1 text-center last:border-r'>
                   <div className='flex items-center justify-center'>
                     {renderNewRowActions(newRowData.id)}
                   </div>
@@ -123,7 +123,7 @@ export default function VerticalTable({
                 {dataColumns.slice(1).map((column) => (
                   <td
                     key={column.accessorKey}
-                    className='border-table-border h-[35px] border-b border-l p-1 text-center last:border-r last:border-b'
+                    className='border-table-border h-[35px] border-b border-l p-1 text-center last:border-r'
                   >
                     <InputCell
                       value={newRowData[column.accessorKey] || ''}
