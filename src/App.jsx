@@ -35,7 +35,7 @@ export default function App() {
         element={
           <div>
             <h1>tabletest</h1>
-            <div className='w-[500px]'>
+            <div className='w-[506px]'>
               <SYClassRoomTable />
             </div>
             <div className='w-[1120px]'>
