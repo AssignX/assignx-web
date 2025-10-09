@@ -29,12 +29,23 @@ export default function Modal({
   onClose,
   width,
   height,
+  minWidth = '900px',
+  maxWidth = '70vw',
+  minHeight = '600px',
+  maxHeight = '80vh',
 }) {
   return (
     <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/30'>
       <div
         className={`relative flex h-auto max-h-[80vh] min-h-[600px] w-auto max-w-[70vw] min-w-[900px] flex-col bg-[var(--color-white)] shadow-lg`}
-        style={{ width: width || 'auto', height: height || 'auto' }}
+        style={{
+          width: width || 'auto',
+          height: height || 'auto',
+          minWidth,
+          maxWidth,
+          minHeight,
+          maxHeight,
+        }}
       >
         {/* 헤더 */}
         <div className='flex items-center justify-between bg-[var(--color-dark-gray)] px-4 py-2'>
@@ -86,4 +97,8 @@ Modal.propTypes = {
   onClose: PropTypes.func,
   width: PropTypes.string,
   height: PropTypes.string,
+  minWidth: PropTypes.string,
+  maxWidth: PropTypes.string,
+  minHeight: PropTypes.string,
+  maxHeight: PropTypes.string,
 };

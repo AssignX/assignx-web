@@ -74,6 +74,8 @@ export default function ModalTableTestPage() {
           onClose={() => setIsOpen(false)}
           width
           height
+          maxWidth='400px'
+          maxHeight='200px'
         />
       )}
     </div>

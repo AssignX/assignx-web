@@ -8,4 +8,5 @@ export { default as ChevronDownIcon } from './chevron-down.svg?react';
 export { default as ChevronLeftIcon } from './chevron-left.svg?react';
 export { default as ChevronRightIcon } from './chevron-right.svg?react';
 export { default as HouseIcon } from './house.svg?react';
+export { default as CalendarDaysIcon } from './calendar-days.svg?react';
 export { default as CloseIcon } from './closebutton.svg?react';

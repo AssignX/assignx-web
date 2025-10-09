@@ -43,6 +43,8 @@ export default function ModalTestPage() {
           onClose={handleClose}
           width
           height
+          maxWidth='400px'
+          maxHeight='200px'
         />
       )}
     </div>
