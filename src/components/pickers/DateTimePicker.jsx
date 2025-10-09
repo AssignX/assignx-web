@@ -30,6 +30,18 @@ const formatPlaceholder = (date, startStr, endStr) => {
   return `${d.format('YYYY.MM.DD.')} ${startStr}~${endStr}`;
 };
 
+// endTime 자동 설정 함수
+const addMinutesToTime = (timeStr, minutes) => {
+  const t = parseTime(timeStr);
+  if (!t) return timeStr;
+  let total = t.h * 60 + t.m + minutes;
+  total = ((total % (24 * 60)) + 24 * 60) % (24 * 60);
+  const h = Math.floor(total / 60);
+  const m = total % 60;
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${pad(h)}:${pad(m)}`;
+};
+
 function DateTimePicker({ initialDate, initialStart, initialEnd, onUpdate }) {
   const [date, setDate] = useState(() => {
     if (!initialDate) return undefined;
@@ -160,7 +172,11 @@ function DateTimePicker({ initialDate, initialStart, initialEnd, onUpdate }) {
                       type='time'
                       className='border-light-gray w-full rounded border px-2 py-1 text-sm'
                       value={editStart}
-                      onChange={(e) => setEditStart(e.target.value)}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        setEditStart(v);
+                        setEditEnd(addMinutesToTime(v, 90));
+                      }}
                     />
                     <span className='text-sm'>~</span>
                     <input
