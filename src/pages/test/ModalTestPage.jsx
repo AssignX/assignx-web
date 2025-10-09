@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Modal from '@/components/Modal.jsx';
+import BaseModal from '@/components/modal/BaseModal.jsx';
 import Button from '@/components/buttons/Button.jsx';
 
 export default function ModalTestPage() {
@@ -33,7 +33,7 @@ export default function ModalTestPage() {
       />
 
       {isOpen && (
-        <Modal
+        <BaseModal
           title='일정 수정'
           content='일정을 수정하시겠습니까?'
           confirmText='확인'
@@ -41,8 +41,8 @@ export default function ModalTestPage() {
           onConfirm={handleConfirm}
           onCancel={handleCancel}
           onClose={handleClose}
-          width='420px'
-          height='220px'
+          width
+          height
         />
       )}
     </div>

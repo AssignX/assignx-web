@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Button from './buttons/Button.jsx';
+import Button from '../buttons/Button.jsx';
 import { CloseIcon } from '@/assets/icons';
 
 /**
@@ -15,8 +15,8 @@ import { CloseIcon } from '@/assets/icons';
  * @param {function} onConfirm - 확인 버튼 클릭 시 실행할 함수
  * @param {function} onCancel - 취소 버튼 클릭 시 실행할 함수
  * @param {function} onClose - 닫기(X) 버튼 클릭 시 실행할 함수
- * @param {string} width - 모달의 너비 (단위 포함, 예: "400px")
- * @param {string} height - 모달의 높이 (단위 포함, 예: "200px")
+ * @param {string} width - 모달의 너비
+ * @param {string} height - 모달의 높이
  */
 
 export default function Modal({
@@ -27,17 +27,17 @@ export default function Modal({
   onConfirm,
   onCancel,
   onClose,
-  width = '400px',
-  height = '200px',
+  width,
+  height,
 }) {
   return (
     <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/30'>
       <div
-        className='relative flex flex-col rounded-md bg-[var(--color-white)] shadow-lg'
-        style={{ width, height }}
+        className={`relative flex h-auto max-h-[80vh] min-h-[600px] w-auto max-w-[90vw] min-w-[900px] flex-col bg-[var(--color-white)] shadow-lg`}
+        style={{ width: width || 'auto', height: height || 'auto' }}
       >
         {/* 헤더 */}
-        <div className='flex items-center justify-between bg-[var(--color-dark-gray)] px-4 py-3'>
+        <div className='flex items-center justify-between bg-[var(--color-dark-gray)] px-4 py-2.5'>
           <span className='text-sm font-bold text-white'>{title}</span>
           <button
             onClick={onClose}

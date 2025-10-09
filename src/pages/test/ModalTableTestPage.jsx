@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Modal from '@/components/Modal.jsx';
+import TableModal from '@/components/modal/TableModal.jsx';
 import HorizontalTable from '@/components/table/HorizontalTable.jsx';
 import SectionHeader from '@/components/headers/SectionHeader.jsx';
 import Button from '@/components/buttons/Button.jsx';
@@ -57,7 +57,7 @@ export default function ModalTableTestPage() {
       <Button text='건물 조회' color='gold' onClick={() => setIsOpen(true)} />
 
       {isOpen && (
-        <Modal
+        <TableModal
           title='건물 조회'
           content={
             <div className='flex flex-col gap-4'>
@@ -72,8 +72,8 @@ export default function ModalTableTestPage() {
           onConfirm={() => setIsOpen(false)}
           onCancel={() => setIsOpen(false)}
           onClose={() => setIsOpen(false)}
-          width='900px'
-          height='600px'
+          width
+          height
         />
       )}
     </div>
