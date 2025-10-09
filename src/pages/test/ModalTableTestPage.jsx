@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import TableModal from '@/components/modal/TableModal.jsx';
 import HorizontalTable from '@/components/table/HorizontalTable.jsx';
 import SectionHeader from '@/components/headers/SectionHeader.jsx';

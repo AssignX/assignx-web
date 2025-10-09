@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import BaseModal from '@/components/modal/BaseModal.jsx';
 import Button from '@/components/buttons/Button.jsx';
 
