@@ -116,16 +116,12 @@ function WeekPicker({ date, setDate }) {
                 <button
                   key={startOfWeek.valueOf()}
                   type='button'
+                  style={{ cursor: 'pointer' }}
                   onClick={() => {
                     setDate(startOfWeek);
                     setOpen(false);
                   }}
-                  className={[
-                    'rounded p-2 text-center text-[12px]',
-                    isSelected
-                      ? 'bg-blue-50 ring-blue-200'
-                      : 'hover:bg-gray-50',
-                  ].join(' ')}
+                  className={`rounded p-2 text-center text-[12px] ${isSelected ? 'bg-blue-50' : 'hover:bg-light-gray'}`}
                 >
                   {index}주차
                 </button>
