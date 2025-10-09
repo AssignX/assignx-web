@@ -64,6 +64,19 @@ export default function ModalTableTestPage() {
               <SectionHeader title='건물 검색' />
               <div className='border-t border-[var(--color-light-gray)] pt-3'>
                 <HorizontalTable items={buildingSearchItems} />
+                <HorizontalTable items={buildingSearchItems} />
+                <HorizontalTable items={buildingSearchItems} />
+                <HorizontalTable items={buildingSearchItems} />
+                <HorizontalTable items={buildingSearchItems} />
+                <HorizontalTable items={buildingSearchItems} />
+                <HorizontalTable items={buildingSearchItems} />
+                <HorizontalTable items={buildingSearchItems} />
+                <HorizontalTable items={buildingSearchItems} />
+                <HorizontalTable items={buildingSearchItems} />
+                <HorizontalTable items={buildingSearchItems} />
+                <HorizontalTable items={buildingSearchItems} />
+                <HorizontalTable items={buildingSearchItems} />
+                <HorizontalTable items={buildingSearchItems} />
               </div>
             </div>
           }

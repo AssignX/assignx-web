@@ -33,7 +33,7 @@ export default function Modal({
   return (
     <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/30'>
       <div
-        className={`relative flex h-auto max-h-[80vh] min-h-[600px] w-auto max-w-[90vw] min-w-[900px] flex-col bg-[var(--color-white)] shadow-lg`}
+        className={`relative flex h-auto max-h-[80vh] min-h-[600px] w-auto max-w-[70vw] min-w-[900px] flex-col bg-[var(--color-white)] shadow-lg`}
         style={{ width: width || 'auto', height: height || 'auto' }}
       >
         {/* 헤더 */}
@@ -48,15 +48,15 @@ export default function Modal({
           </button>
         </div>
 
-        {/* 본문 + 버튼 영역 */}
-        <div className='flex flex-1 flex-col justify-between px-4 py-4'>
-          {/* 본문 내용 */}
-          <div className='text-sm leading-relaxed text-[var(--color-text-main)]'>
+        {/* 본문: 스크롤 가능 영역 - header와 footer는 고정 */}
+        <div className='flex min-h-0 flex-1 flex-col px-4 py-4'>
+          {/* 본문 내용: overflow auto로 스크롤 허용, min-h-0 필요 */}
+          <div className='overflow-auto text-sm leading-relaxed text-[var(--color-text-main)]'>
             {content}
           </div>
 
           {/* 버튼 영역 */}
-          <div className='mt-10 flex justify-center gap-4'>
+          <div className='mt-4 flex justify-center gap-4'>
             <Button
               text={confirmText}
               color='red'
