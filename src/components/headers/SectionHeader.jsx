@@ -9,7 +9,7 @@ import SelectionForm from '../SelectionForm';
  * @props {string} subtitle - 섹션 헤더의 부제목
  * @props {string} controlGroup - 우측 컨트롤 그룹 종류 ('none', 'weekPicker', 'buttonGroup')
  * @props {boolean} hasConfirmSelection - 확정/미확정 선택 폼 표시 여부 (기본값: false)
- * @props {boolean} selected - 확정 / 미확정 선택 상태, true: 확정
+ * @props {boolean} selected - 수업 / 시험 선택 상태, true: 수업
  * @props {function} setSelected - selected setter
  * @props {object} date - date (dayjs 객체)
  * @props {function} setDate - date setter
@@ -50,8 +50,8 @@ function SectionHeader({
 
         {hasConfirmSelection && (
           <SelectionForm
-            leftText='확정'
-            rightText='미확정'
+            leftText='수업'
+            rightText='시험'
             selected={selected}
             setSelected={setSelected}
           />
