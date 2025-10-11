@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import WeekPicker from '../WeekPicker';
+import WeekPicker from '../pickers/WeekPicker';
 import ButtonGroup from '../buttons/ButtonGroup';
 
 /**
