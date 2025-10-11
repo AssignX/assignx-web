@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import VerticalTable from '../VerticalTable';
-import { DropdownCell } from '../cells/DropdownCell';
-import { SearchCell } from '../cells/SearchCell';
+import DropdownCell from '../cells/DropdownCell';
+import SearchCell from '../cells/SearchCell';
 
 const timeOptions = [
   { value: '', label: '시간을 선택해주세요.' },
@@ -79,7 +79,7 @@ export default function ProfUndeterminedSubject() {
       {
         accessorKey: 'classroom',
         header: '강의실',
-        size: 150,
+        size: 120,
         cell: ({ row, column, cell }) => (
           <SearchCell
             initialValue={cell.getValue() || ''}
