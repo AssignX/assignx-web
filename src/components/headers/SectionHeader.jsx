@@ -4,7 +4,7 @@ import ButtonGroup from '../buttons/ButtonGroup';
 
 /**
  * SectionHeader 컴포넌트
- * @props {string} title - 섹션 헤더의 제목 (필수!)
+ * @props {string} title - 섹션 헤더의 제목
  * @props {string} subtitle - 섹션 헤더의 부제목
  * @props {string} controlGroup - 우측 컨트롤 그룹 종류 ('none', 'weekPicker', 'buttonGroup')
  * @props {object} date - date (dayjs 객체)
@@ -12,7 +12,7 @@ import ButtonGroup from '../buttons/ButtonGroup';
  * @props {array} buttonsData - buttonGroup에 필요한 button data 배열
  */
 function SectionHeader({
-  title,
+  title = '',
   subtitle,
   controlGroup = 'none',
   date,
@@ -22,12 +22,14 @@ function SectionHeader({
   return (
     <div className='border-border-sectionbottom flex h-[40px] items-end border-b pb-[10px]'>
       <div className='flex flex-1 flex-row items-center gap-[5px]'>
-        <span
-          className='text-text-main leading-[22px] font-bold'
-          style={{ fontSize: '18px' }}
-        >
-          {title}
-        </span>
+        {title && (
+          <span
+            className='text-text-main leading-[22px] font-bold'
+            style={{ fontSize: '18px' }}
+          >
+            {title}
+          </span>
+        )}
         {subtitle && (
           <span
             className='text-text-sub leading-[16px]'
@@ -48,7 +50,7 @@ function SectionHeader({
 }
 
 SectionHeader.propTypes = {
-  title: PropTypes.string.isRequired,
+  title: PropTypes.string,
   subtitle: PropTypes.string,
   controlGroup: PropTypes.oneOf(['none', 'weekPicker', 'buttonGroup']),
   date: PropTypes.object,
