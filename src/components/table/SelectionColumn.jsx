@@ -14,7 +14,7 @@ export const SelectionColumn = {
       onChange={row.getToggleSelectedHandler()}
     />
   ),
-  size: 35,
+  size: 30,
   enableSorting: false,
   enableHiding: false,
 };
