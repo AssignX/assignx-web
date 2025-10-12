@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import BaseModal from '@/components/modal/BaseModal.jsx';
+import Modal from '@/components/modal/Modal.jsx';
 import Button from '@/components/buttons/Button.jsx';
 
 export default function ModalTestPage() {
@@ -33,7 +33,7 @@ export default function ModalTestPage() {
       />
 
       {isOpen && (
-        <BaseModal
+        <Modal
           title='일정 수정'
           content='일정을 수정하시겠습니까?'
           confirmText='확인'

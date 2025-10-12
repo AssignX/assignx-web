@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import TableModal from '@/components/modal/TableModal.jsx';
+import Modal from '@/components/modal/Modal.jsx';
 import HorizontalTable from '@/components/table/HorizontalTable.jsx';
 import SectionHeader from '@/components/headers/SectionHeader.jsx';
 import Button from '@/components/buttons/Button.jsx';
@@ -57,12 +57,12 @@ export default function ModalTableTestPage() {
       <Button text='건물 조회' color='gold' onClick={() => setIsOpen(true)} />
 
       {isOpen && (
-        <TableModal
+        <Modal
           title='건물 조회'
           content={
             <div className='flex flex-col gap-4'>
               <SectionHeader title='건물 검색' />
-              <div className='border-t border-[var(--color-light-gray)] pt-3'>
+              <div className='border-[var(--color-light-gray)]'>
                 <HorizontalTable items={buildingSearchItems} />
               </div>
             </div>
@@ -74,8 +74,9 @@ export default function ModalTableTestPage() {
           onClose={() => setIsOpen(false)}
           width
           height
-          maxWidth='400px'
-          maxHeight='200px'
+          maxWidth='900px'
+          maxHeight='900px'
+          minHeight='600px'
         />
       )}
     </div>
