@@ -16,7 +16,7 @@ import PropTypes from 'prop-types';
 
 export default function HorizontalTable({ items = [] }) {
   return (
-    <table className='border-table-border w-full table-auto border-collapse border text-[13px]'>
+    <table className='border-table-border w-full table-auto border-collapse border bg-white text-[13px]'>
       <tbody>
         <tr>
           {items.map((item) =>
