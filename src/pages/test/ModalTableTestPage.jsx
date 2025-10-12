@@ -3,7 +3,7 @@ import Modal from '@/components/modal/Modal.jsx';
 import HorizontalTable from '@/components/table/HorizontalTable.jsx';
 import SectionHeader from '@/components/headers/SectionHeader.jsx';
 import Button from '@/components/buttons/Button.jsx';
-import { SearchCell } from '@/components/table/cells/SearchCell.jsx';
+import SearchCell from '@/components/table/cells/SearchCell.jsx';
 import { SearchIcon } from '@/assets/icons';
 
 export default function ModalTableTestPage() {
