@@ -40,12 +40,24 @@ function buildSlots(startHHMM, endHHMM) {
 }
 
 /**
- * @param {{
- *   start: string, // "08:00"
- *   end: string,   // "18:00"
- *   days: string[], // ["월", "화", ... "일"]
- *   entries?: Record<string, string>, // e.g. { "월-0A": "대학글쓰기\nCLTF0205054", "수-2B": "종합설계프로젝트1\n ITEC0401003" }
- * }} props
+ * Timetable 컴포넌트
+ * @props {string} start - 시작 시간 ("HH:mm" 형식, 예: "08:00")
+ * @props {string} end - 종료 시간 ("HH:mm" 형식, 예: "18:00")
+ * @props {string[]} days - 요일 배열 (예: ["월", "화", "수", "목", "금", "토", "일"])
+ * @props {Object.<string, string>} [entries] - 시간표에 표시할 데이터 객체 (기본값: {})
+ *   키 형식: "요일-슬롯" (예: "월-0A", "수-2B")
+ *   값: 해당 칸에 표시할 텍스트 (\n 가능)
+ *
+ * @example
+ * <Timetable
+ *   start="08:00"
+ *   end="18:00"
+ *   days={["월", "화", "수", "목", "금"]}
+ *   entries={{
+ *     "월-0A": "대학글쓰기\nCLTF0205054",
+ *     "수-2B": "종합설계프로젝트1\nITEC0401003",
+ *   }}
+ * />
  */
 function Timetable({ start, end, days, entries = {} }) {
   const slots = buildSlots(start, end);
