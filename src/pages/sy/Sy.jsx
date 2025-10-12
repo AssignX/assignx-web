@@ -2,7 +2,7 @@ import { useState } from 'react';
 import dayjs from 'dayjs';
 import PageHeader from '@/components/headers/PageHeader';
 import SectionHeader from '@/components/headers/SectionHeader';
-import SySearchTable from './SySearchTable';
+import ClassRoomSearchTable from '../../components/table/ClassRoomSearchTable';
 import SyClassRoomTable from './SyClassRoomTable';
 
 export default function Sy() {
@@ -12,7 +12,7 @@ export default function Sy() {
   return (
     <div className='bg-light-gray p-5'>
       <PageHeader title='강의실 시간표 조회' />
-      <SySearchTable />
+      <ClassRoomSearchTable />
       <section className='flex h-[764px] flex-row gap-2.5 py-2.5'>
         <div className='w-[500px]'>
           <SectionHeader title='강의실 목록' />

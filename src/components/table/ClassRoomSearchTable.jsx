@@ -12,7 +12,7 @@ const semesterOptions = [
   { value: '2', label: '2학기' },
 ];
 
-export default function SyClassRoomTable() {
+export default function ClassRoomSearchTable() {
   const [filters, setFilters] = useState({
     year: '2025',
     semester: '1',
