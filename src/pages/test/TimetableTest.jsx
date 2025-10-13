@@ -1,4 +1,4 @@
-import Timetable from '../../components/table/TimeTable';
+import Timetable from '../../components/TimeTable';
 
 export default function TimetableTest() {
   const days = ['월', '화', '수', '목', '금', '토', '일'];
