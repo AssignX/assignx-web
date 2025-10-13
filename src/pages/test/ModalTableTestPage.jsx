@@ -3,7 +3,7 @@ import Modal from '@/components/modal/Modal.jsx';
 import HorizontalTable from '@/components/table/HorizontalTable.jsx';
 import SectionHeader from '@/components/headers/SectionHeader.jsx';
 import Button from '@/components/buttons/Button.jsx';
-import InputCell from '@/components/table/cells/InputCell.jsx';
+import SearchCell from '@/components/table/cells/SearchCell.jsx';
 import { SearchIcon } from '@/assets/icons';
 
 export default function ModalTableTestPage() {
@@ -31,12 +31,11 @@ export default function ModalTableTestPage() {
       contentWidth: '500px',
       content: (
         <div className='flex items-center gap-1'>
-          {/* InputCell */}
+          {/* SearchCell */}
           <div className='w-[200px]'>
-            <InputCell
+            <SearchCell
               initialValue={buildingNum}
               onSearch={handleBuildingSearch}
-              height={32}
             />
           </div>
 
