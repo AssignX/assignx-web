@@ -7,6 +7,7 @@ import ComponentTest from './pages/test/ComponentTest.jsx';
 import ButtonTestPage from './pages/test/ButtonTestPage.jsx';
 import IconTestPage from './pages/test/IconTestPage.jsx';
 import TableTestPage from './pages/test/TableTestPage.jsx';
+import TimetableTest from './pages/test/TimetableTest.jsx';
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
       <Route path='buttontest' element={<ButtonTestPage />} />
       <Route path='icontest' element={<IconTestPage />} />
       <Route path='tabletest' element={<TableTestPage />} />
+      <Route path='timetable' element={<TimetableTest />} />
     </Routes>
   );
 }
