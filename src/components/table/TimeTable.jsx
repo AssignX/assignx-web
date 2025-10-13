@@ -47,6 +47,7 @@ function buildSlots(startHHMM, endHHMM) {
  * @props {Object.<string, string>} [entries] - 시간표에 표시할 데이터 객체 (기본값: {})
  *   키 형식: "요일-슬롯" (예: "월-0A", "수-2B")
  *   값: 해당 칸에 표시할 텍스트 (\n 가능)
+ * @props {string} [maxHeight] - 테이블 최대 높이 (예: "400px"), 지정 시 스크롤 가능 (기본 height: auto)
  *
  * @example
  * <Timetable
@@ -59,54 +60,59 @@ function buildSlots(startHHMM, endHHMM) {
  *   }}
  * />
  */
-function Timetable({ start, end, days, entries = {} }) {
+function Timetable({ start, end, days, entries = {}, maxHeight }) {
   const slots = buildSlots(start, end);
 
   return (
-    <table className='w-full table-fixed border-collapse text-[13px]'>
-      {/* 헤더 */}
-      <thead>
-        <tr>
-          <th className='border-table-border bg-table-header-background h-[40px] w-[120px] border p-2 text-center'>
-            시간
-          </th>
-          {days.map((d) => (
-            <th
-              key={d}
-              className='border-table-border bg-table-header-background border p-2 text-center'
-            >
-              {d}
+    <div
+      className={`w-full ${maxHeight ? 'overflow-y-auto' : ''}`}
+      style={maxHeight ? { maxHeight } : undefined}
+    >
+      <table className='w-full table-fixed border-collapse text-[13px]'>
+        {/* 헤더 */}
+        <thead>
+          <tr>
+            <th className='border-table-border bg-table-header-background h-[40px] w-[120px] border p-2 text-center'>
+              시간
             </th>
-          ))}
-        </tr>
-      </thead>
-
-      {/* 바디 */}
-      <tbody>
-        {slots.map((slot) => (
-          <tr key={slot.key}>
-            {/* 왼쪽 시간 라벨 */}
-            <td className='border-table-border w-fit border px-[8px] py-[4px] text-center align-middle whitespace-nowrap'>
-              <div className='text-text-main'>{slot.label}</div>
-              <div className='text-text-main'>{slot.rangeText}</div>
-            </td>
-
-            {/* 요일별 셀 */}
-            {days.map((d) => {
-              const cellKey = `${d}-${slot.label}`; // 예: "월-0A"
-              return (
-                <td
-                  key={cellKey}
-                  className='border-table-border text-text-main h-[50px] min-h-[50px] w-full border px-[8px] py-[4px] text-center'
-                >
-                  {entries[cellKey] || ''}
-                </td>
-              );
-            })}
+            {days.map((d) => (
+              <th
+                key={d}
+                className='border-table-border bg-table-header-background border p-2 text-center'
+              >
+                {d}
+              </th>
+            ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+
+        {/* 바디 */}
+        <tbody>
+          {slots.map((slot) => (
+            <tr key={slot.key}>
+              {/* 왼쪽 시간 라벨 */}
+              <td className='border-table-border w-fit border px-[8px] py-[4px] text-center align-middle whitespace-nowrap'>
+                <div className='text-text-main'>{slot.label}</div>
+                <div className='text-text-main'>{slot.rangeText}</div>
+              </td>
+
+              {/* 요일별 셀 */}
+              {days.map((d) => {
+                const cellKey = `${d}-${slot.label}`; // 예: "월-0A"
+                return (
+                  <td
+                    key={cellKey}
+                    className='border-table-border text-text-main h-[50px] min-h-[50px] w-full border px-[8px] py-[4px] text-center'
+                  >
+                    {entries[cellKey] || ''}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
@@ -115,7 +121,7 @@ Timetable.propTypes = {
   end: PropTypes.string.isRequired,
   days: PropTypes.arrayOf(PropTypes.string).isRequired,
   entries: PropTypes.object,
-  // maxHeight: PropTypes.string,
+  maxHeight: PropTypes.string,
 };
 
 export default Timetable;
