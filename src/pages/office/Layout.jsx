@@ -26,9 +26,7 @@ export default function Layout({
         <SideBar headerTitle={headerTitle} menus={menus} />
 
         {/* 오른쪽 본문 영역 */}
-        <main className='flex-1 rounded-xl bg-white p-6 shadow-sm'>
-          {children}
-        </main>
+        <main className='flex-1 p-5'>{children}</main>
       </div>
     </div>
   );
