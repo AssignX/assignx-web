@@ -14,6 +14,9 @@ import SYSearchTable from './components/table/test/SYSearchTable.jsx';
 import Prof1stExamTable from './components/table/test/Prof1stExamTable.jsx';
 import ModalTestPage from './pages/test/ModalTestPage.jsx';
 import ModalTableTestPage from './pages/test/ModalTableTestPage.jsx';
+import IconTestPage from './pages/test/IconTestPage.jsx';
+import TableTestPage from './pages/test/TableTestPage.jsx';
+import TimetableTest from './pages/test/TimetableTest.jsx';
 
 export default function App() {
   return (
@@ -25,40 +28,9 @@ export default function App() {
       <Route path='bartest' element={<BarTestPage />} />
       <Route path='modaltest' element={<ModalTestPage />} />
       <Route path='modaltabletest' element={<ModalTableTestPage />} />
-      <Route
-        path='icontest'
-        element={
-          <div>
-            <h1>icontest</h1>
-            <SearchIcon width={40} height={40} />
-            <SaveIcon width={40} height={40} />
-            <PlusIcon width={40} height={40} />
-          </div>
-        }
-      />
-      <Route
-        path='tabletest'
-        element={
-          <div>
-            <h1>tabletest</h1>
-            <div className='w-[500px]'>
-              <SYClassRoomTable />
-            </div>
-            <div className='w-[1120px]'>
-              <AdminEditClassRoomTable />
-            </div>
-            <div className='w-[1100px]'>
-              <ProfUndeterminedSubject />
-            </div>
-            <div>
-              <SYSearchTable />
-            </div>
-            <div className='w-[1300px]'>
-              <Prof1stExamTable />
-            </div>
-          </div>
-        }
-      />
+      <Route path='icontest' element={<IconTestPage />} />
+      <Route path='tabletest' element={<TableTestPage />} />
+      <Route path='timetable' element={<TimetableTest />} />
     </Routes>
   );
 }
