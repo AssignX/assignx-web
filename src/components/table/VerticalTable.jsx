@@ -63,7 +63,10 @@ export default function VerticalTable({
   const dataColumns = columns;
 
   return (
-    <div className='overflow-y-auto' style={{ maxHeight: `${maxHeight}px` }}>
+    <div
+      className='h-full overflow-y-auto bg-white'
+      style={{ maxHeight: `${maxHeight}px` }}
+    >
       <table className='border-table-border w-full table-fixed border-separate border-spacing-0 text-[13px]'>
         <thead className='sticky top-0 z-10'>
           {table.getHeaderGroups().map((headerGroup) => (
