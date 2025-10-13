@@ -72,7 +72,7 @@ function Timetable({ startTime, endTime, dayRange, entries = {}, maxHeight }) {
         {/* 헤더 */}
         <thead>
           <tr>
-            <th className='border-table-border bg-table-header-background h-[40px] w-[120px] border p-2 text-center'>
+            <th className='border-table-border bg-table-header-background h-[40px] w-[104px] border p-2 text-center'>
               시간
             </th>
             {dayRange.map((d) => (
