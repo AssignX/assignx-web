@@ -41,9 +41,9 @@ function buildSlots(startHHMM, endHHMM) {
 
 /**
  * Timetable 컴포넌트
- * @props {string} start - 시작 시간 ("HH:mm" 형식, 예: "08:00")
- * @props {string} end - 종료 시간 ("HH:mm" 형식, 예: "18:00")
- * @props {string[]} days - 요일 배열 (예: ["월", "화", "수", "목", "금", "토", "일"])
+ * @props {string} startTime - 시작 시간 ("HH:mm" 형식, 예: "08:00")
+ * @props {string} endTime - 종료 시간 ("HH:mm" 형식, 예: "18:00")
+ * @props {string[]} dayRange - 요일 배열 (예: ["월", "화", "수", "목", "금", "토", "일"])
  * @props {Object.<string, string>} [entries] - 시간표에 표시할 데이터 객체 (기본값: {})
  *   키 형식: "요일-슬롯" (예: "월-0A", "수-2B")
  *   값: 해당 칸에 표시할 텍스트 (\n 가능)
@@ -51,17 +51,17 @@ function buildSlots(startHHMM, endHHMM) {
  *
  * @example
  * <Timetable
- *   start="08:00"
- *   end="18:00"
- *   days={["월", "화", "수", "목", "금"]}
+ *   startTime="08:00"
+ *   endTime="18:00"
+ *   dayRange={["월", "화", "수", "목", "금"]}
  *   entries={{
  *     "월-0A": "대학글쓰기\nCLTF0205054",
  *     "수-2B": "종합설계프로젝트1\nITEC0401003",
  *   }}
  * />
  */
-function Timetable({ start, end, days, entries = {}, maxHeight }) {
-  const slots = buildSlots(start, end);
+function Timetable({ startTime, endTime, dayRange, entries = {}, maxHeight }) {
+  const slots = buildSlots(startTime, endTime);
 
   return (
     <div
@@ -75,7 +75,7 @@ function Timetable({ start, end, days, entries = {}, maxHeight }) {
             <th className='border-table-border bg-table-header-background h-[40px] w-[120px] border p-2 text-center'>
               시간
             </th>
-            {days.map((d) => (
+            {dayRange.map((d) => (
               <th
                 key={d}
                 className='border-table-border bg-table-header-background border p-2 text-center'
@@ -97,7 +97,7 @@ function Timetable({ start, end, days, entries = {}, maxHeight }) {
               </td>
 
               {/* 요일별 셀 */}
-              {days.map((d) => {
+              {dayRange.map((d) => {
                 const cellKey = `${d}-${slot.label}`; // 예: "월-0A"
                 return (
                   <td
@@ -117,9 +117,9 @@ function Timetable({ start, end, days, entries = {}, maxHeight }) {
 }
 
 Timetable.propTypes = {
-  start: PropTypes.string.isRequired,
-  end: PropTypes.string.isRequired,
-  days: PropTypes.arrayOf(PropTypes.string).isRequired,
+  startTime: PropTypes.string.isRequired,
+  endTime: PropTypes.string.isRequired,
+  dayRange: PropTypes.arrayOf(PropTypes.string).isRequired,
   entries: PropTypes.object,
   maxHeight: PropTypes.string,
 };
