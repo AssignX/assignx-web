@@ -16,7 +16,6 @@ import ModalTestPage from './pages/test/ModalTestPage.jsx';
 import ModalTableTestPage from './pages/test/ModalTableTestPage.jsx';
 import IconTestPage from './pages/test/IconTestPage.jsx';
 import TableTestPage from './pages/test/TableTestPage.jsx';
-import BarTestPage from './pages/test/BarTestPage.jsx';
 import TimetableTest from './pages/test/TimetableTest.jsx';
 
 export default function App() {
