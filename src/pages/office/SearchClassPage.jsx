@@ -85,10 +85,14 @@ export default function SearchClassPage() {
       return;
     }
 
+    const lower = keyword.toLowerCase();
     const result = rooms.filter(
       (r) =>
-        r.buildingName.includes(keyword) ||
-        String(r.buildingNumber).includes(keyword)
+        r.collage.toLowerCase().includes(lower) ||
+        r.department.toLowerCase().includes(lower) ||
+        r.buildingName.toLowerCase().includes(lower) ||
+        String(r.buildingNumber).includes(keyword) ||
+        r.roomNumber.includes(keyword)
     );
 
     setFilteredRooms(result);
