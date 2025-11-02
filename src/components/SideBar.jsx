@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import PropTypes from 'prop-types';
 import { PlusIcon, MinusIcon } from '@/assets/bar';
@@ -9,7 +9,25 @@ export default function SideBar({ menus = [], headerTitle = '메뉴' }) {
   );
 
   const [openIndex, setOpenIndex] = useState(defaultOpenIndex);
+  const [heights, setHeights] = useState({});
+  const [isMounted, setIsMounted] = useState(false);
+  const menuRefs = useRef([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsMounted(true), 50);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // 메뉴별 실제 높이를 한 번 계산
+  useEffect(() => {
+    const newHeights = {};
+    menus.forEach((_, i) => {
+      const el = menuRefs.current[i];
+      if (el) newHeights[i] = el.scrollHeight;
+    });
+    setHeights(newHeights);
+  }, [menus]);
 
   const toggleMenu = (index) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -36,11 +54,14 @@ export default function SideBar({ menus = [], headerTitle = '메뉴' }) {
             </button>
             {/* 서브 메뉴 버튼 */}
             <div
-              className={`overflow-hidden bg-white transition-[max-height] ease-in-out ${
-                openIndex === index
-                  ? 'max-h-[500px] duration-500'
-                  : 'max-h-0 duration-300'
-              } divide-y divide-[var(--color-table-border)]`}
+              ref={(el) => (menuRefs.current[index] = el)}
+              style={{
+                maxHeight:
+                  openIndex === index ? `${heights[index] || 0}px` : '0px',
+                transition: isMounted ? 'max-height 0.3s ease-in-out' : 'none',
+                overflow: 'hidden',
+              }}
+              className='divide-y divide-[var(--color-table-border)] bg-white'
             >
               {menu.subItems.map((sub, i) => (
                 <button
