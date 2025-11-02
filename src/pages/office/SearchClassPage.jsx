@@ -1,134 +1,100 @@
 // src/pages/SearchClassPage.jsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Layout from '@/pages/office/Layout';
 import HorizontalTable from '@/components/table/HorizontalTable';
-import SearchCell from '@/components/table/cells/SearchCell';
 import InputCell from '@/components/table/cells/InputCell';
 import Button from '@/components/buttons/Button';
 import { SearchIcon } from '@/assets/icons';
-import VerticalTable from '../../components/table/VerticalTable';
+import VerticalTable from '@/components/table/VerticalTable';
+import apiClient from '@/api/apiClient';
 
 /**
  * SearchClassPage (강의실 조회 페이지)
- * - 나중에 API 연결 시 로직만 교체할 수 있도록 구조화됨
+ * - 기존 구조 유지, 더미 대신 API 연결
  */
 export default function SearchClassPage() {
-    /* ------------------ 🧩 임시 데이터 ------------------ */
-  const dummyBuildings = useMemo(
+  /* ------------------ 🧩 State ------------------ */
+  const [rooms, setRooms] = useState([]); // API로 불러온 전체 강의실
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [filteredRooms, setFilteredRooms] = useState([]); // 검색 결과 표시용
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  /* ------------------ ⚙️ Columns ------------------ */
+  const columns = useMemo(
     () => [
-      { buildingId: 1, buildingNumber: 401, buildingName: 'IT관' },
-      { buildingId: 2, buildingNumber: 402, buildingName: '공학관' },
-      { buildingId: 3, buildingNumber: 403, buildingName: '본관' },
+      {
+        accessorKey: 'no',
+        header: 'No',
+        size: 50,
+        cell: ({ row }) => row.index + 1,
+      },
+      { accessorKey: 'collage', header: '단과대학', size: 110 },
+      { accessorKey: 'department', header: '학과', size: 110 },
+      { accessorKey: 'buildingName', header: '건물명', size: 500 },
+      { accessorKey: 'buildingNumber', header: '건물번호', size: 77 },
+      { accessorKey: 'roomNumber', header: '호실번호', size: 77 },
+      { accessorKey: 'roomCapacity', header: '수용인원', size: 77 },
     ],
     []
   );
-  const dummyRooms = useMemo(
-    () => ({
-      1: [
-        {
-          roomId: 1,
-          collage: 'IT대학',
-          department: '컴퓨터학부',
-          buildingName: 'IT관',
-          buildingNumber: 401,
-          roomNumber: '101',
-          roomCapacity: 60,
-        },
-        {
-          roomId: 2,
-          collage: 'IT대학',
-          department: '컴퓨터학부',
-          buildingName: 'IT관',
-          buildingNumber: 401,
-          roomNumber: '102',
-          roomCapacity: 100,
-        },
-      ],
-      2: [
-        {
-          roomId: 3,
-          collage: '공과대학',
-          department: '기계공학과',
-          buildingName: '공학관',
-          buildingNumber: 402,
-          roomNumber: '201',
-          roomCapacity: 80,
-        },
-        {
-          roomId: 4,
-          collage: '공과대학',
-          department: '화학공학과',
-          buildingName: '공학관',
-          buildingNumber: 402,
-          roomNumber: '202',
-          roomCapacity: 60,
-        },
-      ],
-      3: [
-        {
-          roomId: 5,
-          collage: '인문대학',
-          department: '국어국문학과',
-          buildingName: '본관',
-          buildingNumber: 403,
-          roomNumber: '301',
-          roomCapacity: 120,
-        },
-      ],
-    }),
-    []
-  );
 
-  // 🔹 컬럼 정의만 따로 분리
-  const columns = [
-    {
-      accessorKey: 'no',
-      header: 'No',
-      size: 50,
-      cell: ({ row }) => row.index + 1,
-    },
-    { accessorKey: 'collage', header: '단과대학', size: 110 },
-    { accessorKey: 'department', header: '학과', size: 110 },
-    { accessorKey: 'buildingName', header: '건물명', size: 500 },
-    { accessorKey: 'buildingNumber', header: '건물번호', size: 77 },
-    { accessorKey: 'roomNumber', header: '호실번호', size: 77 },
-    { accessorKey: 'roomCapacity', header: '수용인원', size: 77 },
-  ];
+  /* ------------------ 📡 API 호출 ------------------ */
+  useEffect(() => {
+    const fetchRooms = async () => {
+      setLoading(true);
+      try {
+        // 1️⃣ 건물 목록 조회
+        const { data: buildings } = await apiClient.get('/api/building');
 
-  /* ------------------ 🧩 State ------------------ */
-  const [selectedBuilding, setSelectedBuilding] = useState('');
-  const [searchKeyword, setSearchKeyword] = useState('');
-  const [rooms, setRooms] = useState(dummyRooms[1]);
+        // 2️⃣ 각 건물 상세 조회 (병렬)
+        const detailResponses = await Promise.all(
+          buildings.map((b) => apiClient.get(`/api/building/${b.buildingId}`))
+        );
 
-  /* ------------------ ⚙️ Handlers ------------------ */
-  // 건물 선택 핸들러
-  const handleBuildingChange = (e) => {
-    const buildingId = e.target.value;
-    setSelectedBuilding(buildingId);
+        // 3️⃣ 데이터 병합
+        const merged = detailResponses.flatMap((res) =>
+          res.data.rooms.map((room) => ({
+            collage: 'IT대학', // 우선 더미
+            department: '컴퓨터학부', // 우선 더미
+            buildingName: res.data.buildingName,
+            buildingNumber: res.data.buildingNumber,
+            roomNumber: room.roomNumber,
+            roomCapacity: room.roomCapacity,
+          }))
+        );
 
-    // ✅ 나중에 여기서 API 연결 (예: GET /api/building/{buildingId})
-    const data = dummyRooms[buildingId] || [];
-    setRooms(data);
-  };
+        setRooms(merged);
+        setFilteredRooms(merged);
+      } catch (err) {
+        console.error('강의실 불러오기 실패:', err);
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // 검색 핸들러
-  const handleSearch = (keyword) => {
-    setSearchKeyword(keyword);
+    fetchRooms();
+  }, []);
 
-    // ✅ 나중에 API 연결 예정 (예: POST /api/building/search)
-    console.log('검색 요청:', keyword);
+  /* ------------------ 🔍 검색 기능 ------------------ */
+  const handleSearch = () => {
+    const keyword = searchKeyword.trim();
+    if (!keyword) {
+      setFilteredRooms(rooms);
+      return;
+    }
 
-    // 현재는 더미 필터
-    const filtered = dummyBuildings.filter(
-      (b) =>
-        b.buildingName.includes(keyword) ||
-        String(b.buildingNumber).includes(keyword)
+    const result = rooms.filter(
+      (r) =>
+        r.buildingName.includes(keyword) ||
+        String(r.buildingNumber).includes(keyword)
     );
-    console.log('검색 결과:', filtered);
+
+    setFilteredRooms(result);
   };
 
-  /* ------------------ 🎨 UI 구성요소 ------------------ */
-  // HorizontalTable 항목 정의
+  /* ------------------ 🎨 검색 폼 ------------------ */
   const searchFormItems = [
     {
       id: 'classroom-search',
@@ -136,7 +102,6 @@ export default function SearchClassPage() {
       labelWidth: '130px',
       content: (
         <div className='flex items-center gap-1'>
-          {/* Input은 고정 폭 */}
           <div className='w-[200px]'>
             <InputCell
               value={searchKeyword}
@@ -144,9 +109,13 @@ export default function SearchClassPage() {
               height={32}
             />
           </div>
-          {/* 버튼도 고정 폭 */}
           <div className='w-[70px]'>
-            <Button text='조회' Icon={SearchIcon} color='lightgray' />
+            <Button
+              text='조회'
+              Icon={SearchIcon}
+              color='lightgray'
+              onClick={handleSearch}
+            />
           </div>
         </div>
       ),
@@ -171,20 +140,23 @@ export default function SearchClassPage() {
         강의실 목록
       </h1>
 
-      {/* 🔍 검색 영역 */}
       <div className='h-[764px] w-[1100px] bg-white'>
-        <div className='w-full' style={{ tableLayout: 'fixed' }}>
-          <HorizontalTable items={searchFormItems} />
-        </div>
-        <div className='mt-[10px] w-full bg-white'>
-          <VerticalTable
-            columns={columns} // ✅ 선언된 컬럼 전달
-            data={rooms} // ✅ rooms 상태 전달
-            selectable={true}
-            headerHeight={32}
-            maxHeight={600}
-          />
-        </div>
+        <HorizontalTable items={searchFormItems} />
+
+        {loading && <p className='mt-3 text-gray-500'>불러오는 중...</p>}
+        {error && <p className='mt-3 text-red-500'>데이터 불러오기 실패</p>}
+
+        {!loading && !error && (
+          <div className='mt-[10px] w-full bg-white'>
+            <VerticalTable
+              columns={columns}
+              data={filteredRooms}
+              selectable={true}
+              headerHeight={32}
+              maxHeight={600}
+            />
+          </div>
+        )}
       </div>
     </Layout>
   );
