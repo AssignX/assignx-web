@@ -4,7 +4,11 @@ import PropTypes from 'prop-types';
 import { PlusIcon, MinusIcon } from '@/assets/bar';
 
 export default function SideBar({ menus = [], headerTitle = '메뉴' }) {
-  const [openIndex, setOpenIndex] = useState(null);
+  const defaultOpenIndex = menus.findIndex((menu) =>
+    menu.subItems.some((sub) => sub.isSelected)
+  );
+
+  const [openIndex, setOpenIndex] = useState(defaultOpenIndex);
   const navigate = useNavigate();
 
   const toggleMenu = (index) => {

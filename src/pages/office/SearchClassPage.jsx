@@ -128,10 +128,23 @@ export default function SearchClassPage() {
       username='사무실 님'
       headerTitle='사무실 메뉴'
       menus={[
+        { title: '과목', subItems: [{ label: '과목 목록', path: '/classes' }] },
+        {
+          title: '교수',
+          subItems: [{ label: '교수 목록', path: '/professors' }],
+        },
         {
           title: '강의실',
+          isOpen: true,
           subItems: [
             { label: '강의실 목록', path: '/classrooms', isSelected: true },
+          ],
+        },
+        {
+          title: '일정',
+          subItems: [
+            { label: '확정 목록', path: '/confirmed' },
+            { label: '미확정 목록', path: '/unconfirmed' },
           ],
         },
       ]}
@@ -151,7 +164,7 @@ export default function SearchClassPage() {
             <VerticalTable
               columns={columns}
               data={filteredRooms}
-              selectable={true}
+              selectable={false}
               headerHeight={32}
               maxHeight={600}
             />
