@@ -1,12 +1,13 @@
-export const SelectionColumn = {
+export const SelectionColumn = (singleSelect = false) => ({
   id: 'select',
-  header: ({ table }) => (
-    <input
-      type='checkbox'
-      checked={table.getIsAllRowsSelected()}
-      onChange={table.getToggleAllRowsSelectedHandler()}
-    />
-  ),
+  header: ({ table }) =>
+    singleSelect ? null : (
+      <input
+        type='checkbox'
+        checked={table.getIsAllRowsSelected()}
+        onChange={table.getToggleAllRowsSelectedHandler()}
+      />
+    ),
   cell: ({ row }) => (
     <input
       type='checkbox'
@@ -17,4 +18,4 @@ export const SelectionColumn = {
   size: 30,
   enableSorting: false,
   enableHiding: false,
-};
+});
