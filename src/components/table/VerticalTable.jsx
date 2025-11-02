@@ -40,11 +40,20 @@ export default function VerticalTable({
     let newSelection =
       typeof updater === 'function' ? updater(rowSelection) : updater;
 
-    if (singleSelect && Object.keys(newSelection).length > 1) {
-      const lastSelected = Object.keys(newSelection)
-        .filter((key) => newSelection[key])
-        .pop();
-      newSelection = { [lastSelected]: true };
+    if (singleSelect) {
+      const selectedIds = Object.keys(newSelection).filter(
+        (key) => newSelection[key]
+      );
+
+      let lastSelected;
+      if (selectedIds.length === 1) {
+        lastSelected = selectedIds[0];
+      } else if (selectedIds.length > 1) {
+        lastSelected = selectedIds.find((id) => !rowSelection[id]);
+      }
+
+      if (lastSelected) newSelection = { [lastSelected]: true };
+      else newSelection = {};
     }
 
     setRowSelection(newSelection);
