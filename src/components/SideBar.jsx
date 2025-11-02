@@ -36,17 +36,17 @@ export default function SideBar({ menus = [], headerTitle = '메뉴' }) {
             </button>
             {/* 서브 메뉴 버튼 */}
             <div
-              className={`overflow-hidden bg-white transition-[max-height] duration-500 ease-in-out ${
-                openIndex === index ? 'max-h-[500px]' : 'max-h-0'
+              className={`overflow-hidden bg-white transition-[max-height] ease-in-out ${
+                openIndex === index
+                  ? 'max-h-[500px] duration-500'
+                  : 'max-h-0 duration-300'
               } divide-y divide-[var(--color-table-border)]`}
             >
               {menu.subItems.map((sub, i) => (
                 <button
                   key={i}
                   onClick={() => navigate(sub.path)}
-                  style={{
-                    transitionDelay: `${openIndex === index ? i * 150 : (menu.subItems.length - i) * 150}ms`,
-                  }}
+                  style={{ transitionDelay: '0ms' }}
                   className={`block h-[40px] w-full cursor-pointer px-[10px] text-left text-base hover:bg-[var(--color-light-gray)] ${
                     sub.isSelected
                       ? 'text-[var(--color-gold)]'
