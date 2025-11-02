@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-const API = axios.create({
+const apiClient = axios.create({
   baseURL: 'https://api.knuassignx.site/',
   timeout: 10000,
   headers: { 'Content-Type': 'application/json' },
 });
 
-export default API;
+export default apiClient;
