@@ -17,6 +17,7 @@ import InputCell from './cells/InputCell';
  * @param {number} maxHeight - 테이블의 최대 높이 (px 단위, 기본값: 700px). 이 높이를 초과하면 스크롤이 생성됨.
  * @param {function} updateSelection - 행 선택 상태가 변경될 때 호출되는 콜백 함수. 선택된 row ID 배열을 인자로 받음
  * @param {boolean} selectable - 행 선택 체크박스 표시 여부 (기본값: false)
+ * @param {boolean} singleSelect - 단일 선택 모드 여부로 true: 한 번에 한 행만 선택 가능, false: 여러 행 동시 선택 가능 (기본값: false)
  * @param {array} newRows - 테이블 하단에 추가할 새로운 행들의 데이터 배열 (기본값: [])
  * @param {function} onNewRowChange - '새로운 행'의 InputCell 값이 변경될 때 호출되는 콜백 함수. (rowIndex, columnKey, value)를 인자로 받음
  * @param {function} renderNewRowActions - '새로운 행'의 첫 번째 액션 셀을 렌더링하는 함수. (rowIndex)를 인자로 받음
@@ -28,6 +29,7 @@ export default function VerticalTable({
   maxHeight = 700,
   updateSelection,
   selectable = false,
+  singleSelect = false,
   newRows = [],
   onNewRowChange = () => {},
   renderNewRowActions = () => null,
@@ -35,10 +37,19 @@ export default function VerticalTable({
   const [rowSelection, setRowSelection] = useState({});
 
   const handleRowSelectionChange = (updater) => {
-    setRowSelection(updater);
+    let newSelection =
+      typeof updater === 'function' ? updater(rowSelection) : updater;
+
+    if (singleSelect && Object.keys(newSelection).length > 1) {
+      const lastSelected = Object.keys(newSelection)
+        .filter((key) => newSelection[key])
+        .pop();
+      newSelection = { [lastSelected]: true };
+    }
+
+    setRowSelection(newSelection);
+
     if (updateSelection) {
-      const newSelection =
-        typeof updater === 'function' ? updater(rowSelection) : updater;
       const selectedRowIds = Object.keys(newSelection).filter(
         (key) => newSelection[key]
       );
@@ -46,7 +57,9 @@ export default function VerticalTable({
     }
   };
 
-  const tableColumns = selectable ? [SelectionColumn, ...columns] : columns;
+  const tableColumns = selectable
+    ? [SelectionColumn(singleSelect), ...columns]
+    : columns;
 
   const table = useReactTable({
     data,
@@ -156,6 +169,7 @@ VerticalTable.propTypes = {
   maxHeight: PropTypes.number,
   updateSelection: PropTypes.func,
   selectable: PropTypes.bool,
+  singleSelect: PropTypes.bool,
   newRows: PropTypes.array,
   onNewRowChange: PropTypes.func,
   renderNewRowActions: PropTypes.func,
