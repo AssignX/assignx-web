@@ -1,21 +1,18 @@
 import { useState } from 'react';
-import HorizontalTable from '../HorizontalTable';
-import DropdownCell from '../cells/DropdownCell';
-import InputCell from '../cells/InputCell';
-import SearchCell from '../cells/SearchCell';
-import Button from '../../buttons/Button';
+import HorizontalTable from '@/components/table/HorizontalTable';
+import DropdownCell from '@/components/table/cells/DropdownCell';
+import InputCell from '@/components/table/cells/InputCell';
+import SearchCell from '@/components/table/cells/SearchCell';
+import YearPickerCell from '@/components/table/cells/YearPickerCell';
+import Button from '@/components/buttons/Button';
 import { SearchIcon } from '@/assets/icons';
 
-const yearOptions = [
-  { value: '2025', label: '2025' },
-  { value: '2024', label: '2024' },
-];
 const semesterOptions = [
   { value: '1', label: '1학기' },
   { value: '2', label: '2학기' },
 ];
 
-export default function SYSearchTable() {
+export default function ClassRoomSearchTable() {
   const [filters, setFilters] = useState({
     year: '2025',
     semester: '1',
@@ -53,13 +50,11 @@ export default function SYSearchTable() {
       labelWidth: '130px',
       contentWidth: '150px',
       content: (
-        <DropdownCell
-          initialValue={filters.year}
-          options={yearOptions}
+        <YearPickerCell
           rowId='filters'
           columnKey='year'
+          initialValue={Number(filters.year)}
           updateData={updateFilters}
-          height={32}
         />
       ),
     },
@@ -117,10 +112,5 @@ export default function SYSearchTable() {
     },
   ];
 
-  return (
-    <div>
-      <h1 className='mb-4 text-xl font-bold'>강의실 조회</h1>
-      <HorizontalTable items={filterItems} />
-    </div>
-  );
+  return <HorizontalTable items={filterItems} />;
 }

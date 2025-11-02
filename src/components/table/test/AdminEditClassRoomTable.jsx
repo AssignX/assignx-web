@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import VerticalTable from '../VerticalTable';
-import { PlusCell } from '../cells/PlusCell';
+import PlusCell from '../cells/PlusCell';
 
 const initialData = [
   {
