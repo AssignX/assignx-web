@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import PropTypes from 'prop-types';
 import { PlusIcon, MinusIcon } from '@/assets/bar';
@@ -9,7 +9,19 @@ export default function SideBar({ menus = [], headerTitle = '메뉴' }) {
   );
 
   const [openIndex, setOpenIndex] = useState(defaultOpenIndex);
+  const [heights, setHeights] = useState({});
+  const menuRefs = useRef([]);
   const navigate = useNavigate();
+
+  // 메뉴별 실제 높이를 한 번 계산
+  useEffect(() => {
+    const newHeights = {};
+    menus.forEach((_, i) => {
+      const el = menuRefs.current[i];
+      if (el) newHeights[i] = el.scrollHeight;
+    });
+    setHeights(newHeights);
+  }, [menus]);
 
   const toggleMenu = (index) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -35,25 +47,31 @@ export default function SideBar({ menus = [], headerTitle = '메뉴' }) {
               </span>
             </button>
             {/* 서브 메뉴 버튼 */}
-            {openIndex === index && (
-              <div className='bg-white'>
-                {menu.subItems.map((sub, i) => (
-                  <button
-                    key={i}
-                    onClick={() => {
-                      navigate(sub.path);
-                    }} // 페이지 이동
-                    className={`hover:bg-light-gray block h-[40px] w-full cursor-pointer px-[10px] text-left text-base ${
-                      sub.isSelected
-                        ? 'text-[var(--color-gold)]'
-                        : 'text-[var(--color-main)]'
-                    }`}
-                  >
-                    {sub.label}
-                  </button>
-                ))}
-              </div>
-            )}
+            <div
+              ref={(el) => (menuRefs.current[index] = el)}
+              style={{
+                maxHeight:
+                  openIndex === index ? `${heights[index] || 0}px` : '0px',
+                transition: 'max-height 0.3s ease-in-out',
+                overflow: 'hidden',
+              }}
+              className='divide-y divide-[var(--color-table-border)] bg-white'
+            >
+              {menu.subItems.map((sub, i) => (
+                <button
+                  key={i}
+                  onClick={() => navigate(sub.path)}
+                  style={{ transitionDelay: '0ms' }}
+                  className={`block h-[40px] w-full cursor-pointer px-[10px] text-left text-base hover:bg-[var(--color-light-gray)] ${
+                    sub.isSelected
+                      ? 'text-[var(--color-gold)]'
+                      : 'text-[var(--color-main)]'
+                  }`}
+                >
+                  {sub.label}
+                </button>
+              ))}
+            </div>
           </div>
         ))}
       </div>
