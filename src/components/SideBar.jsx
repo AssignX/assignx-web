@@ -10,14 +10,8 @@ export default function SideBar({ menus = [], headerTitle = '메뉴' }) {
 
   const [openIndex, setOpenIndex] = useState(defaultOpenIndex);
   const [heights, setHeights] = useState({});
-  const [isMounted, setIsMounted] = useState(false);
   const menuRefs = useRef([]);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsMounted(true), 50);
-    return () => clearTimeout(timer);
-  }, []);
 
   // 메뉴별 실제 높이를 한 번 계산
   useEffect(() => {
@@ -58,7 +52,7 @@ export default function SideBar({ menus = [], headerTitle = '메뉴' }) {
               style={{
                 maxHeight:
                   openIndex === index ? `${heights[index] || 0}px` : '0px',
-                transition: isMounted ? 'max-height 0.3s ease-in-out' : 'none',
+                transition: 'max-height 0.3s ease-in-out',
                 overflow: 'hidden',
               }}
               className='divide-y divide-[var(--color-table-border)] bg-white'
