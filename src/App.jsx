@@ -17,6 +17,11 @@ import ModalTableTestPage from './pages/test/ModalTableTestPage.jsx';
 import IconTestPage from './pages/test/IconTestPage.jsx';
 import TableTestPage from './pages/test/TableTestPage.jsx';
 import TimetableTest from './pages/test/TimetableTest.jsx';
+import Professor from './pages/professor/Professor.jsx';
+import ApplicationStatusPage from './pages/professor/ApplicationStatusPage.jsx';
+import SubjectListPage from './pages/professor/SubjectListPage.jsx';
+import FirstApplicationPage from './pages/professor/FirstApplicationPage.jsx';
+import SecondApplicationPage from './pages/professor/SecondApplicationPage.jsx';
 
 export default function App() {
   return (
@@ -32,6 +37,14 @@ export default function App() {
       <Route path='tabletest' element={<TableTestPage />} />
       <Route path='bartest' element={<BarTestPage />} />
       <Route path='timetable' element={<TimetableTest />} />
+
+      {/* Professor Pages */}
+      <Route path='professor' element={<Professor />}>
+        <Route path='status' element={<ApplicationStatusPage />} />
+        <Route path='subject' element={<SubjectListPage />} />
+        <Route path='first' element={<FirstApplicationPage />} />
+        <Route path='second' element={<SecondApplicationPage />} />
+      </Route>
     </Routes>
   );
 }
