@@ -8,6 +8,9 @@ export default function NavBarTest() {
       title: '열린 메뉴',
       subItems: [
         { label: '선택된 서브 메뉴', path: '/sub1', isSelected: true },
+        { label: '서브 메뉴', path: '/sub1', isSelected: false },
+        { label: '서브 메뉴', path: '/sub1', isSelected: false },
+        { label: '서브 메뉴', path: '/sub1', isSelected: false },
       ],
     },
     {

@@ -30,6 +30,7 @@ export default function App() {
       <Route path='modaltabletest' element={<ModalTableTestPage />} />
       <Route path='icontest' element={<IconTestPage />} />
       <Route path='tabletest' element={<TableTestPage />} />
+      <Route path='bartest' element={<BarTestPage />} />
       <Route path='timetable' element={<TimetableTest />} />
     </Routes>
   );
