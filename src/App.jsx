@@ -18,6 +18,7 @@ import IconTestPage from './pages/test/IconTestPage.jsx';
 import TableTestPage from './pages/test/TableTestPage.jsx';
 import TimetableTest from './pages/test/TimetableTest.jsx';
 import SearchClassPage from './pages/office/SearchClassPage.jsx';
+import SearchProfessorPage from './pages/office/SearchProfessorPage.jsx';
 
 export default function App() {
   return (
@@ -34,6 +35,7 @@ export default function App() {
       <Route path='bartest' element={<BarTestPage />} />
       <Route path='timetable' element={<TimetableTest />} />
       <Route path='office/classrooms' element={<SearchClassPage />} />
+      <Route path='office/professors' element={<SearchProfessorPage />} />
     </Routes>
   );
 }
