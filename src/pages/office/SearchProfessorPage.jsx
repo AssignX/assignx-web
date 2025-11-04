@@ -57,6 +57,9 @@ export default function SearchProfessorPage() {
             <InputCell
               value={searchKeyword}
               onChange={(e) => setSearchKeyword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleSearch();
+              }}
               height={32}
             />
           </div>
