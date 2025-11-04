@@ -19,6 +19,7 @@ import TableTestPage from './pages/test/TableTestPage.jsx';
 import TimetableTest from './pages/test/TimetableTest.jsx';
 import SearchClassPage from './pages/office/SearchClassPage.jsx';
 import LoginPage from './pages/login/LoginPage.jsx';
+import SearchProfessorPage from './pages/office/SearchProfessorPage.jsx';
 
 export default function App() {
   return (
@@ -36,6 +37,7 @@ export default function App() {
       <Route path='timetable' element={<TimetableTest />} />
       <Route path='office/classrooms' element={<SearchClassPage />} />
       <Route path='login' element={<LoginPage />} />
+      <Route path='office/professors' element={<SearchProfessorPage />} />
     </Routes>
   );
 }
