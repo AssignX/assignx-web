@@ -7,6 +7,7 @@ import Button from '@/components/buttons/Button';
 import { SearchIcon } from '@/assets/icons';
 import VerticalTable from '@/components/table/VerticalTable';
 import apiClient from '@/api/apiClient';
+import PageHeader from '@/components/headers/PageHeader';
 
 /**
  * SearchClassPage (강의실 조회 페이지)
@@ -110,6 +111,9 @@ export default function SearchClassPage() {
             <InputCell
               value={searchKeyword}
               onChange={(e) => setSearchKeyword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleSearch();
+              }}
               height={32}
             />
           </div>
@@ -153,11 +157,9 @@ export default function SearchClassPage() {
         },
       ]}
     >
-      <h1 className='mb-5 text-2xl font-bold text-[var(--color-text-main)]'>
-        강의실 목록
-      </h1>
+      <PageHeader title='강의실 목록' />
 
-      <div className='h-[764px] w-[1100px] bg-white'>
+      <div className='h-[764px] w-full bg-white'>
         <HorizontalTable items={searchFormItems} />
 
         {loading && <p className='mt-3 text-gray-500'>불러오는 중...</p>}
