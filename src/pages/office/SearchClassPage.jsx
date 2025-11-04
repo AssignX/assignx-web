@@ -159,7 +159,7 @@ export default function SearchClassPage() {
     >
       <PageHeader title='강의실 목록' />
 
-      <div className='h-[764px] w-full bg-white'>
+      <div className='h-[764px] w-full bg-white pt-[20px]'>
         <HorizontalTable items={searchFormItems} />
 
         {loading && <p className='mt-3 text-gray-500'>불러오는 중...</p>}
