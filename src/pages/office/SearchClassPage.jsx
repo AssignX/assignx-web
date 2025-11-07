@@ -9,6 +9,7 @@ import VerticalTable from '@/components/table/VerticalTable';
 import apiClient from '@/api/apiClient';
 import PageHeader from '@/components/headers/PageHeader';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * SearchClassPage (강의실 조회 페이지)
@@ -22,6 +23,26 @@ export default function SearchClassPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { name, departmentName, departmentId } = useAuthStore();
+  const navigate = useNavigate();
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const logout = useAuthStore((state) => state.logout);
+
+  useEffect(() => {
+    if (!accessToken) {
+      navigate('/login');
+    }
+  }, [accessToken, navigate]);
+
+  const handleLogout = async () => {
+    try {
+      await apiClient.post('/api/auth/logout');
+    } catch (err) {
+      console.warn('서버 로그아웃 실패 (클라이언트만 처리)');
+    } finally {
+      logout();
+      navigate('/login');
+    }
+  };
 
   /* ------------------ ⚙️ Columns ------------------ */
   const columns = useMemo(
@@ -116,6 +137,7 @@ export default function SearchClassPage() {
     <Layout
       username={`${name ?? '사용자'} 님`}
       headerTitle={`${departmentName ?? ''} 메뉴`}
+      onLogout={handleLogout}
       menus={[
         { title: '과목', subItems: [{ label: '과목 목록', path: '/classes' }] },
         {
