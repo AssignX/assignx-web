@@ -104,7 +104,9 @@ function Timetable({ startTime, endTime, dayRange, entries = {}, maxHeight }) {
                     key={cellKey}
                     className='border-table-border text-text-main h-[50px] min-h-[50px] w-full border px-[8px] py-[4px] text-center'
                   >
-                    {entries[cellKey] || ''}
+                    <div className='whitespace-pre-line'>
+                      {entries[cellKey] || ''}
+                    </div>
                   </td>
                 );
               })}
