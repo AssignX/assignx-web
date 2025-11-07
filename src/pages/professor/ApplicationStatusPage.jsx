@@ -92,7 +92,7 @@ const dummySubjectTableRows = [
     id: '1',
     no: 1,
     subjectName: '자료구조',
-    subjectCode: 'CLTR0043',
+    subjectCode: 'ITEC0401',
     division: '001',
     classTime: '화 8B,9A,9B, 목 8B,9A,9B',
     realTime: ['화 16:30 ~ 18:00, 목 16:30 ~ 18:00'],
@@ -103,7 +103,7 @@ const dummySubjectTableRows = [
     id: '2',
     no: 2,
     subjectName: '알고리즘',
-    subjectCode: 'CSE301',
+    subjectCode: 'ITEC0401',
     division: '002',
     classTime: '화 8B,9A,9B, 목 8B,9A,9B',
     realTime: ['화 16:30 ~ 18:00, 목 16:30 ~ 18:00'],
@@ -114,7 +114,7 @@ const dummySubjectTableRows = [
     id: '3',
     no: 3,
     subjectName: '운영체제',
-    subjectCode: 'CSE321',
+    subjectCode: 'ITEC0401',
     division: '001',
     classTime: '금 8A,8B,9A,9B',
     realTime: ['금 10:00 ~ 12:45'],
@@ -122,6 +122,26 @@ const dummySubjectTableRows = [
     students: 55,
   },
 ];
+
+const timetableStart = '08:00';
+const timetableEnd = '20:00';
+const timetableDays = ['월', '화', '수', '목', '금'];
+
+const dummyTimeTableEntries = {
+  '월-0A': '자료구조\nITEC0401003',
+  '월-0B': '자료구조\nITEC0401003',
+  '월-1A': '자료구조\nITEC0401003',
+  '목-0A': '자료구조\nITEC0401003',
+  '목-0B': '자료구조\nITEC0401003',
+  '목-1A': '자료구조\nITEC0401003',
+  '화-2B': '알고리즘\nITEC0401003',
+  '화-3A': '알고리즘\nITEC0401003',
+  '화-3B': '알고리즘\nITEC0401003',
+  '금-0A': '운영체제\nITEC0401003',
+  '금-0B': '운영체제\nITEC0401003',
+  '금-1A': '운영체제\nITEC0401003',
+  '금-1B': '운영체제\nITEC0401003',
+};
 
 function ApplicationStatusPage() {
   const subtitle = 'N건';
@@ -235,7 +255,13 @@ function ApplicationStatusPage() {
       />
 
       <SectionHeader title='강의 시간표' />
-      {/* 타임테이블 */}
+      <TimeTable
+        startTime={timetableStart}
+        endTime={timetableEnd}
+        dayRange={timetableDays}
+        entries={dummyTimeTableEntries}
+        maxHeight='520px'
+      />
     </Section>
   );
 }
