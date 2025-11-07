@@ -8,7 +8,6 @@ import logo from '@/assets/logo/knu_logo.png';
 
 export default function LoginPage() {
   const [idNumber, setIdNumber] = useState('');
-  const [systemId, setSystemId] = useState(''); // UI용(전송 안 함)
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const login = useAuthStore((s) => s.login);
@@ -44,9 +43,9 @@ export default function LoginPage() {
       </div>
 
       {/* 큰 컨테이너 */}
-      <div className='absolute top-[80px] right-[80px] bottom-[50px] left-[80px] rounded-xl bg-white shadow-[0_8px_12px_rgba(0,0,0,0.16)]'>
+      <div className='absolute top-[80px] right-[30px] bottom-[50px] left-[30px] rounded-xl bg-white shadow-[0_8px_12px_rgba(0,0,0,0.16)]'>
         {/* 컨테이너 내부 레이아웃 */}
-        <div className='gap-30px flex w-full'>
+        <div className='gap-30px flex w-full flex-row px-[40px] py-[50px]'>
           {/* 왼쪽: 로그인 카드 */}
           <div className='flex items-start'>
             <div className='h-[614px] w-[400px] border border-gray-200 bg-white shadow-[0_8px_12px_rgba(0,0,0,0.16)]'>
@@ -57,20 +56,32 @@ export default function LoginPage() {
               </div>
 
               {/* 입력 영역 */}
-              <div className='flex flex-col gap-3 p-5'>
-                <InputCell
-                  label='통합정보시스템ID'
-                  value={systemId}
-                  onChange={(e) => setSystemId(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
-                />
-                <InputCell
-                  label='비밀번호'
-                  type='password'
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
-                />
+              <div className='flex w-full flex-col gap-[20px] px-[70px] py-[30px]'>
+                <div className='flex flex-col gap-[10px]'>
+                  <label className='text-[16px] font-medium text-gray-700'>
+                    학번
+                  </label>
+                  <InputCell
+                    label='통합정보시스템ID'
+                    value={idNumber}
+                    onChange={(e) => setIdNumber(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
+                    height={48}
+                  />
+                </div>
+                <div className='flex flex-col gap-[10px]'>
+                  <label className='text-[16px] font-medium text-gray-700'>
+                    비밀번호
+                  </label>
+                  <InputCell
+                    label='비밀번호'
+                    type='password'
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
+                    height={48}
+                  />
+                </div>
 
                 {error && <p className='mt-1 text-sm text-red-500'>{error}</p>}
 
