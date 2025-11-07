@@ -1,7 +1,6 @@
 import { Routes, Route } from 'react-router';
 import './styles/font.css';
 
-
 import SyPage from './pages/sy/Sy.jsx';
 import AdminHomePage from './pages/admin/Home.jsx';
 import ComponentTest from './pages/test/ComponentTest.jsx';
