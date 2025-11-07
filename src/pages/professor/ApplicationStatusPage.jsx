@@ -28,14 +28,14 @@ const subjectTableColumns = [
     id: 'no',
     accessorKey: 'no',
     header: 'No',
-    size: 60,
+    size: 50,
     cell: (info) => info.getValue(),
   },
   {
     id: 'subjectName',
     accessorKey: 'subjectName',
     header: '과목명',
-    size: 220,
+    size: 124,
     cell: (info) => info.getValue(),
   },
   {
@@ -49,7 +49,7 @@ const subjectTableColumns = [
     id: 'division',
     accessorKey: 'division',
     header: '분반',
-    size: 80,
+    size: 50,
     cell: (info) => info.getValue(),
   },
   {
@@ -62,27 +62,22 @@ const subjectTableColumns = [
   {
     id: 'realTime',
     accessorKey: 'realTime',
-    header: (
-      <div className='flex w-full flex-col items-center justify-center'>
-        <span>강의시간</span>
-        <span className='text-text-sub ml-1 text-[11px]'>(실제시간)</span>
-      </div>
-    ),
-    size: 260, // 실사용 시간 상세가 길 수 있어서 넉넉히
+    header: '강의시간(실제시간)',
+    size: 260,
     cell: (info) => info.getValue(),
   },
   {
     id: 'classroom',
     accessorKey: 'classroom',
     header: '강의실',
-    size: 140,
+    size: 100,
     cell: (info) => info.getValue(),
   },
   {
     id: 'students',
     accessorKey: 'students',
     header: '수강인원',
-    size: 100,
+    size: 60,
     cell: (info) => info.getValue(),
   },
 ];
@@ -121,11 +116,33 @@ const dummySubjectTableRows = [
     classroom: 'IT4-508',
     students: 55,
   },
+  {
+    id: '4',
+    no: 4,
+    subjectName: '운영체제',
+    subjectCode: 'ITEC0401',
+    division: '001',
+    classTime: '금 8A,8B,9A,9B',
+    realTime: ['금 10:00 ~ 12:45'],
+    classroom: 'IT4-508',
+    students: 55,
+  },
+  {
+    id: '5',
+    no: 5,
+    subjectName: '운영체제',
+    subjectCode: 'ITEC0401',
+    division: '001',
+    classTime: '금 8A,8B,9A,9B',
+    realTime: ['금 10:00 ~ 12:45'],
+    classroom: 'IT4-508',
+    students: 55,
+  },
 ];
 
 const timetableStart = '08:00';
 const timetableEnd = '20:00';
-const timetableDays = ['월', '화', '수', '목', '금'];
+const timetableDays = ['월', '화', '수', '목', '금', '토'];
 
 const dummyTimeTableEntries = {
   '월-0A': '자료구조\nITEC0401003',
@@ -245,23 +262,28 @@ function ApplicationStatusPage() {
       <PageHeader title='시간표 조회' />
       <HorizontalTable items={filterItems} />
 
-      <SectionHeader title='과목 조회 목록' subtitle={subtitle} />
-      <VerticalTable
-        columns={subjectTableColumns}
-        data={dummySubjectTableRows}
-        headerHeight={36}
-        maxHeight={480}
-        selectable={false}
-      />
+      <div className='isolate'>
+        <SectionHeader title='과목 조회 목록' subtitle={subtitle} />
+        <VerticalTable
+          columns={subjectTableColumns}
+          data={dummySubjectTableRows}
+          headerHeight={40}
+          maxHeight={240}
+          selectable={false}
+        />
+      </div>
 
-      <SectionHeader title='강의 시간표' />
-      <TimeTable
-        startTime={timetableStart}
-        endTime={timetableEnd}
-        dayRange={timetableDays}
-        entries={dummyTimeTableEntries}
-        maxHeight='520px'
-      />
+      {/* 시간표 카드 */}
+      <div className='isolate mt-[28px]'>
+        <SectionHeader title='강의 시간표' />
+        <TimeTable
+          startTime={timetableStart}
+          endTime={timetableEnd}
+          dayRange={timetableDays}
+          entries={dummyTimeTableEntries}
+          maxHeight='390px'
+        />
+      </div>
     </Section>
   );
 }
