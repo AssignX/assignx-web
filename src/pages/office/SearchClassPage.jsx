@@ -8,18 +8,20 @@ import { SearchIcon } from '@/assets/icons';
 import VerticalTable from '@/components/table/VerticalTable';
 import apiClient from '@/api/apiClient';
 import PageHeader from '@/components/headers/PageHeader';
+import { useAuthStore } from '@/store/useAuthStore';
 
 /**
  * SearchClassPage (강의실 조회 페이지)
- * - 기존 구조 유지, 더미 대신 API 연결
+ * - 로그인한 유저의 departmentId 기반으로 강의실 목록 조회
  */
 export default function SearchClassPage() {
   /* ------------------ 🧩 State ------------------ */
-  const [rooms, setRooms] = useState([]); // API로 불러온 전체 강의실
+  const [rooms, setRooms] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState('');
-  const [filteredRooms, setFilteredRooms] = useState([]); // 검색 결과 표시용
+  const [filteredRooms, setFilteredRooms] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { name, departmentName, departmentId } = useAuthStore();
 
   /* ------------------ ⚙️ Columns ------------------ */
   const columns = useMemo(
@@ -30,43 +32,27 @@ export default function SearchClassPage() {
         size: 50,
         cell: ({ row }) => row.index + 1,
       },
-      { accessorKey: 'collage', header: '단과대학', size: 110 },
-      { accessorKey: 'department', header: '학과', size: 110 },
-      { accessorKey: 'buildingName', header: '건물명', size: 500 },
-      { accessorKey: 'buildingNumber', header: '건물번호', size: 77 },
-      { accessorKey: 'roomNumber', header: '호실번호', size: 77 },
-      { accessorKey: 'roomCapacity', header: '수용인원', size: 77 },
+      { accessorKey: 'buildingName', header: '건물명', size: 300 },
+      { accessorKey: 'buildingNumber', header: '건물번호', size: 100 },
+      { accessorKey: 'roomNumber', header: '호실번호', size: 100 },
+      { accessorKey: 'roomCapacity', header: '수용인원', size: 100 },
     ],
     []
   );
 
   /* ------------------ 📡 API 호출 ------------------ */
+  //onsole.log('[DEBUG] user.departmentId:', departmentId);
   useEffect(() => {
     const fetchRooms = async () => {
+      if (!departmentId) return; // 로그인 전에는 실행하지 않음
       setLoading(true);
       try {
-        // 1️⃣ 건물 목록 조회
-        const { data: buildings } = await apiClient.get('/api/building');
-
-        // 2️⃣ 각 건물 상세 조회 (병렬)
-        const detailResponses = await Promise.all(
-          buildings.map((b) => apiClient.get(`/api/building/${b.buildingId}`))
-        );
-
-        // 3️⃣ 데이터 병합
-        const merged = detailResponses.flatMap((res) =>
-          res.data.rooms.map((room) => ({
-            collage: 'IT대학', // 우선 더미
-            department: '컴퓨터학부', // 우선 더미
-            buildingName: res.data.buildingName,
-            buildingNumber: res.data.buildingNumber,
-            roomNumber: room.roomNumber,
-            roomCapacity: room.roomCapacity,
-          }))
-        );
-
-        setRooms(merged);
-        setFilteredRooms(merged);
+        const { data } = await apiClient.get('/api/building/department', {
+          params: { departmentId },
+        });
+        //console.log('[DEBUG] fetched rooms:', data);
+        setRooms(data);
+        setFilteredRooms(data);
       } catch (err) {
         console.error('강의실 불러오기 실패:', err);
         setError(err);
@@ -76,7 +62,7 @@ export default function SearchClassPage() {
     };
 
     fetchRooms();
-  }, []);
+  }, [departmentId]);
 
   /* ------------------ 🔍 검색 기능 ------------------ */
   const handleSearch = () => {
@@ -89,13 +75,10 @@ export default function SearchClassPage() {
     const lower = keyword.toLowerCase();
     const result = rooms.filter(
       (r) =>
-        r.collage.toLowerCase().includes(lower) ||
-        r.department.toLowerCase().includes(lower) ||
         r.buildingName.toLowerCase().includes(lower) ||
         String(r.buildingNumber).includes(keyword) ||
         r.roomNumber.includes(keyword)
     );
-
     setFilteredRooms(result);
   };
 
@@ -111,9 +94,7 @@ export default function SearchClassPage() {
             <InputCell
               value={searchKeyword}
               onChange={(e) => setSearchKeyword(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSearch();
-              }}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               height={32}
             />
           </div>
@@ -133,8 +114,8 @@ export default function SearchClassPage() {
   /* ------------------ 🧱 Render ------------------ */
   return (
     <Layout
-      username='사무실 님'
-      headerTitle='사무실 메뉴'
+      username={`${name ?? '사용자'} 님`}
+      headerTitle={`${departmentName ?? ''} 메뉴`}
       menus={[
         { title: '과목', subItems: [{ label: '과목 목록', path: '/classes' }] },
         {
@@ -158,13 +139,10 @@ export default function SearchClassPage() {
       ]}
     >
       <PageHeader title='강의실 목록' />
-
       <div className='h-[764px] w-full bg-white pt-[20px]'>
         <HorizontalTable items={searchFormItems} />
-
         {loading && <p className='mt-3 text-gray-500'>불러오는 중...</p>}
         {error && <p className='mt-3 text-red-500'>데이터 불러오기 실패</p>}
-
         {!loading && !error && (
           <div className='mt-[10px] w-full bg-white'>
             <VerticalTable

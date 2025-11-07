@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router';
 import './styles/font.css';
 
+
 import SyPage from './pages/sy/Sy.jsx';
 import AdminHomePage from './pages/admin/Home.jsx';
 import ComponentTest from './pages/test/ComponentTest.jsx';
@@ -18,6 +19,7 @@ import IconTestPage from './pages/test/IconTestPage.jsx';
 import TableTestPage from './pages/test/TableTestPage.jsx';
 import TimetableTest from './pages/test/TimetableTest.jsx';
 import SearchClassPage from './pages/office/SearchClassPage.jsx';
+import LoginPage from './pages/login/LoginPage.jsx';
 
 export default function App() {
   return (
@@ -34,6 +36,7 @@ export default function App() {
       <Route path='bartest' element={<BarTestPage />} />
       <Route path='timetable' element={<TimetableTest />} />
       <Route path='office/classrooms' element={<SearchClassPage />} />
+      <Route path='login' element={<LoginPage />} />
     </Routes>
   );
 }
