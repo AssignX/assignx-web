@@ -11,18 +11,16 @@ import SearchCell from '@/components/table/cells/SearchCell';
 import Button from '@/components/buttons/Button';
 import { SearchIcon } from '@/assets/icons';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const yearOptions = [
   { value: '2025', label: '2025' },
   { value: '2024', label: '2024' },
 ];
-
 const semesterOptions = [
   { value: '1', label: '1학기' },
   { value: '2', label: '2학기' },
 ];
-
 const subjectTableColumns = [
   {
     id: 'no',
@@ -81,7 +79,11 @@ const subjectTableColumns = [
     cell: (info) => info.getValue(),
   },
 ];
+const timetableStart = '08:00';
+const timetableEnd = '20:00';
+const timetableDays = ['월', '화', '수', '목', '금', '토'];
 
+// dummy data
 const dummySubjectTableRows = [
   {
     id: '1',
@@ -139,11 +141,6 @@ const dummySubjectTableRows = [
     students: 55,
   },
 ];
-
-const timetableStart = '08:00';
-const timetableEnd = '20:00';
-const timetableDays = ['월', '화', '수', '목', '금', '토'];
-
 const dummyTimeTableEntries = {
   '월-0A': '자료구조\nITEC0401003',
   '월-0B': '자료구조\nITEC0401003',
@@ -161,8 +158,6 @@ const dummyTimeTableEntries = {
 };
 
 function ApplicationStatusPage() {
-  const subtitle = 'N건';
-
   const [filters, setFilters] = useState({
     year: '2025',
     semester: '1',
@@ -172,18 +167,15 @@ function ApplicationStatusPage() {
 
   const updateFilters = (key, value) =>
     setFilters((prev) => ({ ...prev, [key]: value }));
-
   const handleBuildingSearch = (searchValue) => {
     updateFilters('buildingNum', searchValue);
     // TODO: 여기서 모달 오픈 로직 연결
     console.log('[모달 시뮬]', { init: searchValue || '(없음)' });
   };
-
   const handleSearch = () => {
     // TODO: 실제 조회 API 호출
     console.log('[조회 조건]', filters);
   };
-
   const filterItems = [
     {
       id: 'year',
@@ -256,6 +248,20 @@ function ApplicationStatusPage() {
       ),
     },
   ];
+  const [subjectTableRows, setSubjectTableRows] = useState([]);
+  const [timeTableEntries, setTimeTableEntries] = useState({});
+
+  useEffect(() => {
+    // fetch 함수
+    setSubjectTableRows(dummySubjectTableRows);
+  }, []);
+
+  useEffect(() => {
+    // fetch 함수
+    setTimeTableEntries(dummyTimeTableEntries);
+  }, []);
+
+  const subtitle = `${subjectTableRows?.length ?? 0}건`;
 
   return (
     <Section>
@@ -266,7 +272,7 @@ function ApplicationStatusPage() {
         <SectionHeader title='과목 조회 목록' subtitle={subtitle} />
         <VerticalTable
           columns={subjectTableColumns}
-          data={dummySubjectTableRows}
+          data={subjectTableRows}
           headerHeight={40}
           maxHeight={240}
           selectable={false}
@@ -280,7 +286,7 @@ function ApplicationStatusPage() {
           startTime={timetableStart}
           endTime={timetableEnd}
           dayRange={timetableDays}
-          entries={dummyTimeTableEntries}
+          entries={timeTableEntries}
           maxHeight='390px'
         />
       </div>
