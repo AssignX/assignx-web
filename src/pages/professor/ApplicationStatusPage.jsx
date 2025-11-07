@@ -23,6 +23,106 @@ const semesterOptions = [
   { value: '2', label: '2학기' },
 ];
 
+const subjectTableColumns = [
+  {
+    id: 'no',
+    accessorKey: 'no',
+    header: 'No',
+    size: 60,
+    cell: (info) => info.getValue(),
+  },
+  {
+    id: 'subjectName',
+    accessorKey: 'subjectName',
+    header: '과목명',
+    size: 220,
+    cell: (info) => info.getValue(),
+  },
+  {
+    id: 'subjectCode',
+    accessorKey: 'subjectCode',
+    header: '과목코드',
+    size: 120,
+    cell: (info) => info.getValue(),
+  },
+  {
+    id: 'division',
+    accessorKey: 'division',
+    header: '분반',
+    size: 80,
+    cell: (info) => info.getValue(),
+  },
+  {
+    id: 'classTime',
+    accessorKey: 'classTime',
+    header: '강의시간',
+    size: 180,
+    cell: (info) => info.getValue(),
+  },
+  {
+    id: 'realTime',
+    accessorKey: 'realTime',
+    header: (
+      <div className='flex w-full flex-col items-center justify-center'>
+        <span>강의시간</span>
+        <span className='text-text-sub ml-1 text-[11px]'>(실제시간)</span>
+      </div>
+    ),
+    size: 260, // 실사용 시간 상세가 길 수 있어서 넉넉히
+    cell: (info) => info.getValue(),
+  },
+  {
+    id: 'classroom',
+    accessorKey: 'classroom',
+    header: '강의실',
+    size: 140,
+    cell: (info) => info.getValue(),
+  },
+  {
+    id: 'students',
+    accessorKey: 'students',
+    header: '수강인원',
+    size: 100,
+    cell: (info) => info.getValue(),
+  },
+];
+
+const dummySubjectTableRows = [
+  {
+    id: '1',
+    no: 1,
+    subjectName: '자료구조',
+    subjectCode: 'CLTR0043',
+    division: '001',
+    classTime: '화 8B,9A,9B, 목 8B,9A,9B',
+    realTime: ['화 16:30 ~ 18:00, 목 16:30 ~ 18:00'],
+    classroom: 'IT5-302',
+    students: 42,
+  },
+  {
+    id: '2',
+    no: 2,
+    subjectName: '알고리즘',
+    subjectCode: 'CSE301',
+    division: '002',
+    classTime: '화 8B,9A,9B, 목 8B,9A,9B',
+    realTime: ['화 16:30 ~ 18:00, 목 16:30 ~ 18:00'],
+    classroom: 'IT5-205',
+    students: 37,
+  },
+  {
+    id: '3',
+    no: 3,
+    subjectName: '운영체제',
+    subjectCode: 'CSE321',
+    division: '001',
+    classTime: '금 8A,8B,9A,9B',
+    realTime: ['금 10:00 ~ 12:45'],
+    classroom: 'IT4-508',
+    students: 55,
+  },
+];
+
 function ApplicationStatusPage() {
   const subtitle = 'N건';
 
@@ -105,8 +205,8 @@ function ApplicationStatusPage() {
     },
     {
       id: 'search-button',
-      label: '', // 라벨 없음이면 빈 문자열
-      labelWidth: '130px', // 테이블 레이아웃 맞춤
+      label: '',
+      labelWidth: '130px',
       contentWidth: '355px',
       content: (
         <Button
@@ -126,7 +226,13 @@ function ApplicationStatusPage() {
       <HorizontalTable items={filterItems} />
 
       <SectionHeader title='과목 조회 목록' subtitle={subtitle} />
-      {/* 테이블 */}
+      <VerticalTable
+        columns={subjectTableColumns}
+        data={dummySubjectTableRows}
+        headerHeight={36}
+        maxHeight={480}
+        selectable={false}
+      />
 
       <SectionHeader title='강의 시간표' />
       {/* 타임테이블 */}
