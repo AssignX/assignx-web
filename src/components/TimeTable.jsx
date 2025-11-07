@@ -87,7 +87,7 @@ function Timetable({ startTime, endTime, dayRange, entries = {}, maxHeight }) {
         </thead>
 
         {/* 바디 */}
-        <tbody>
+        <tbody className='bg-white'>
           {slots.map((slot) => (
             <tr key={slot.key}>
               {/* 왼쪽 시간 라벨 */}
