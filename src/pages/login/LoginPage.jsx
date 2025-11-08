@@ -20,7 +20,21 @@ export default function LoginPage() {
         password,
       });
       login(data);
-      navigate('/office/classrooms');
+
+      switch (data.role) {
+        case 'ADMIN':
+          navigate('/admin'); // 관리자 페이지 route 설정 필요
+          break;
+        case 'PROFESSOR':
+          navigate('/professor'); // 교수 페이지 route 설정 필요
+          break;
+        case 'EMPLOYEE':
+          navigate('/office/classrooms');
+          break;
+        default:
+          navigate('/');
+          break;
+      }
     } catch {
       setError('아이디 또는 비밀번호가 올바르지 않습니다.');
     }
