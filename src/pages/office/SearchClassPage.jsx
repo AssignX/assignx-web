@@ -148,7 +148,11 @@ export default function SearchClassPage() {
           title: '강의실',
           isOpen: true,
           subItems: [
-            { label: '강의실 목록', path: '/classrooms', isSelected: true },
+            {
+              label: '강의실 목록',
+              path: '/office/classrooms',
+              isSelected: true,
+            },
           ],
         },
         {
