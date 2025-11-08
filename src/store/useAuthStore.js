@@ -7,6 +7,7 @@ export const useAuthStore = create((set) => ({
   idNumber: null,
   departmentId: null,
   departmentName: null,
+  role: null,
   accessToken: null,
   refreshToken: null,
 
@@ -17,6 +18,7 @@ export const useAuthStore = create((set) => ({
       idNumber: data.idNumber,
       departmentId: data.departmentId,
       departmentName: data.departmentName,
+      role: data.role,
       accessToken: data.accessToken,
       refreshToken: data.refreshToken,
     }),
@@ -28,6 +30,7 @@ export const useAuthStore = create((set) => ({
       idNumber: null,
       departmentId: null,
       departmentName: null,
+      role: null,
       accessToken: null,
       refreshToken: null,
     }),
