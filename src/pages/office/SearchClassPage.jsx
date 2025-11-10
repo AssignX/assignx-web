@@ -139,10 +139,13 @@ export default function SearchClassPage() {
       headerTitle={`${departmentName ?? ''} 메뉴`}
       onLogout={handleLogout}
       menus={[
-        { title: '과목', subItems: [{ label: '과목 목록', path: '/classes' }] },
+        {
+          title: '과목',
+          subItems: [{ label: '과목 목록', path: '/office/subjects' }],
+        },
         {
           title: '교수',
-          subItems: [{ label: '교수 목록', path: '/professors' }],
+          subItems: [{ label: '교수 목록', path: '/office/professors' }],
         },
         {
           title: '강의실',
