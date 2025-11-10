@@ -4,9 +4,77 @@ import SectionHeader from '@/components/headers/SectionHeader';
 import HorizontalTable from '@/components/table/HorizontalTable';
 import VerticalTable from '@/components/table/VerticalTable';
 
+import InputCell from '@/components/table/cells/InputCell';
 import { SearchIcon } from '@/assets/icons';
 
+import { useEffect, useCallback, useState } from 'react';
+
 function FirstApplicationPage() {
+  const [openYear, setOpenYear] = useState(2025);
+  const [openSemester, setOpenSemester] = useState('1학기');
+  const [department, setDepartment] = useState('컴퓨터공학과');
+  const [professorId, setProfessorId] = useState('학번');
+  const [professorName, setProfessorName] = useState('홍길동');
+
+  const fetchUserData = useCallback(() => {
+    setOpenYear(2025);
+    setOpenSemester('1학기');
+    setDepartment('컴퓨터공학과');
+    setProfessorId('학번');
+    setProfessorName('홍길동');
+  }, []);
+
+  useEffect(() => {
+    fetchUserData();
+  }, [fetchUserData]);
+
+  const filterItems = [
+    {
+      id: 'openYear',
+      label: '개설연도',
+      required: true,
+      labelWidth: '80px',
+      contentWidth: '80px',
+      content: (
+        <InputCell value={String(openYear)} height={32} disabled={true} />
+      ),
+    },
+    {
+      id: 'openSemester',
+      label: '개설학기',
+      required: true,
+      labelWidth: '80px',
+      contentWidth: '80px',
+      content: (
+        <InputCell value={String(openSemester)} height={32} disabled={true} />
+      ),
+    },
+    {
+      id: 'department',
+      label: '소속학과',
+      required: true,
+      labelWidth: '80px',
+      contentWidth: '220px', // fill
+      content: <InputCell value={department} height={32} disabled={true} />,
+    },
+    {
+      id: 'professorId',
+      label: '학번',
+      required: true,
+      labelWidth: '60px',
+      contentWidth: '120px',
+      content: <InputCell value={professorId} height={32} disabled={true} />,
+    },
+    {
+      id: 'professorName',
+      label: '이름',
+      required: true,
+      labelWidth: '60px',
+      contentWidth: '80px',
+      content: <InputCell value={professorName} height={32} disabled={true} />,
+    },
+  ];
+
   return (
     <Section>
       <PageHeader
@@ -21,7 +89,7 @@ function FirstApplicationPage() {
           },
         ]}
       />
-      {/* <HorizontalTable items={filterItems} /> */}
+      <HorizontalTable items={filterItems} />
 
       {/* 시간표 카드 */}
       <div className='isolate'>
