@@ -36,7 +36,9 @@ export default function Layout({ username, headerTitle, menus, children }) {
       {/* 메인 콘텐츠 영역 */}
       <div className='flex flex-1 gap-5 px-5 py-5'>
         <SideBar headerTitle={headerTitle} menus={menus} />
-        <main className='flex-1 p-5 pt-[40px] pb-[40px]'>{children}</main>
+        <main className='border-border-contents flex-1 border p-5 pt-[40px] pb-[40px]'>
+          {children}
+        </main>
       </div>
 
       {/* 공용 Modal 컴포넌트 활용 */}

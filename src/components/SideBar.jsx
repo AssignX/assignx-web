@@ -29,7 +29,7 @@ export default function SideBar({ menus = [], headerTitle = '메뉴' }) {
 
   return (
     /* 상단 */
-    <aside className='w-[240px] bg-[var(--color-white)]'>
+    <aside className='w-[240px]'>
       <div className='bg-[var(--color-dark-gray)] py-[30px] text-center text-xl font-bold text-white'>
         {headerTitle}
       </div>
