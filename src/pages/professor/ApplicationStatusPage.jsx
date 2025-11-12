@@ -14,6 +14,7 @@ import { SearchIcon } from '@/assets/icons';
 import { useEffect, useState } from 'react';
 
 const yearOptions = [
+  // TODO: API 연동 필요
   { value: '2025', label: '2025' },
   { value: '2024', label: '2024' },
 ];
@@ -276,20 +277,20 @@ function ApplicationStatusPage() {
           columns={subjectTableColumns}
           data={subjectTableRows}
           headerHeight={40}
-          maxHeight={240}
+          maxHeight={200}
           selectable={false}
         />
       </div>
 
       {/* 시간표 카드 */}
-      <div className='isolate mt-[28px]'>
+      <div className='isolate'>
         <SectionHeader title='강의 시간표' />
         <TimeTable
           startTime={timetableStart}
           endTime={timetableEnd}
           dayRange={timetableDays}
           entries={timeTableEntries}
-          maxHeight='390px'
+          maxHeight='360px'
         />
       </div>
     </Section>

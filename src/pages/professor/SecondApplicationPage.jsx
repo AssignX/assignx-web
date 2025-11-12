@@ -11,6 +11,140 @@ import SearchCell from '@/components/table/cells/SearchCell';
 
 import { useEffect, useState, useCallback } from 'react';
 
+const unconfirmedTableColumns = [
+  {
+    header: 'No',
+    accessorKey: 'number',
+    size: 50,
+    cell: (info) => info.getValue(),
+  },
+  {
+    header: '과목명',
+    accessorKey: 'subjectName',
+    size: 120,
+    cell: (info) => info.getValue(),
+  },
+  {
+    header: '과목코드',
+    accessorKey: 'subjectCode',
+    size: 100,
+    cell: (info) => info.getValue(),
+  },
+  {
+    header: '분반',
+    accessorKey: 'classSection',
+    size: 50,
+    cell: (info) => info.getValue(),
+  },
+  {
+    header: '강의시간',
+    accessorKey: 'classTime',
+    size: 200,
+    cell: (info) => info.getValue(),
+  },
+  {
+    header: '수강인원',
+    accessorKey: 'studentCount',
+    size: 64,
+    cell: (info) => info.getValue(),
+  },
+  {
+    header: '신청시간',
+    accessorKey: 'applicationTime',
+    size: 300,
+    cell: (info) => {
+      const rowData = info.row.original;
+      const options = rowData.applicationOptions ?? [];
+      return (
+        <DropdownCell
+          initialValue={rowData.applicationTime ?? ''}
+          options={options}
+          rowId={rowData.number.toString()}
+          columnKey='applicationTime'
+          updateData={(rowId, columnKey, newValue) => {
+            console.log('[신청시간 변경]', {
+              rowId,
+              columnKey,
+              newValue,
+              rowData,
+            });
+          }}
+        />
+      );
+    },
+  },
+  {
+    header: '강의실',
+    accessorKey: 'classRoom',
+    size: 150,
+    cell: (info) => (
+      <SearchCell
+        initialValue={info.getValue() ?? ''}
+        onSearch={(val) => {
+          // 강의실 검색 모달 연결
+          console.log('[강의실 검색]', { value: val, row: info.row.original });
+        }}
+      />
+    ),
+  },
+];
+const confirmedTableColumns = [
+  {
+    header: 'No',
+    accessorKey: 'number',
+    size: 50,
+    cell: (info) => info.getValue(),
+  },
+  {
+    header: '과목명',
+    accessorKey: 'subjectName',
+    size: 120,
+    cell: (info) => info.getValue(),
+  },
+  {
+    header: '과목코드',
+    accessorKey: 'subjectCode',
+    size: 100,
+    cell: (info) => info.getValue(),
+  },
+  {
+    header: '분반',
+    accessorKey: 'classSection',
+    size: 50,
+    cell: (info) => info.getValue(),
+  },
+  {
+    header: '강의시간',
+    accessorKey: 'classTime',
+    size: 200,
+    cell: (info) => info.getValue(),
+  },
+  {
+    header: '확정 시간',
+    accessorKey: 'confirmedTime',
+    size: 300,
+    cell: (info) => info.getValue(),
+  },
+  {
+    header: '강의실',
+    accessorKey: 'classRoom',
+    size: 150,
+    cell: (info) => info.getValue(),
+  },
+  {
+    header: '수강인원',
+    accessorKey: 'studentCount',
+    size: 64,
+    cell: (info) => info.getValue(),
+  },
+  {
+    header: '확정여부',
+    accessorKey: 'confirmationStatus',
+    size: 100,
+    cell: (info) => info.getValue(),
+  },
+];
+
 const dummyUnappliedTableRows = [
   {
     number: 1,
@@ -41,7 +175,6 @@ const dummyUnappliedTableRows = [
     ],
   },
 ];
-
 const dummyUnconfirmedTableRows = [
   {
     number: 1,
@@ -165,144 +298,6 @@ function SecondApplicationPage() {
       labelWidth: '60px',
       contentWidth: '80px',
       content: <InputCell value={professorName} height={32} disabled={true} />,
-    },
-  ];
-
-  const unconfirmedTableColumns = [
-    {
-      header: 'No',
-      accessorKey: 'number',
-      size: 50,
-      cell: (info) => info.getValue(),
-    },
-    {
-      header: '과목명',
-      accessorKey: 'subjectName',
-      size: 120,
-      cell: (info) => info.getValue(),
-    },
-    {
-      header: '과목코드',
-      accessorKey: 'subjectCode',
-      size: 100,
-      cell: (info) => info.getValue(),
-    },
-    {
-      header: '분반',
-      accessorKey: 'classSection',
-      size: 50,
-      cell: (info) => info.getValue(),
-    },
-    {
-      header: '강의시간',
-      accessorKey: 'classTime',
-      size: 200,
-      cell: (info) => info.getValue(),
-    },
-    {
-      header: '수강인원',
-      accessorKey: 'studentCount',
-      size: 64,
-      cell: (info) => info.getValue(),
-    },
-    {
-      header: '신청시간',
-      accessorKey: 'applicationTime',
-      size: 300,
-      cell: (info) => {
-        const rowData = info.row.original;
-        const options = rowData.applicationOptions ?? [];
-        return (
-          <DropdownCell
-            initialValue={rowData.applicationTime ?? ''}
-            options={options}
-            rowId={rowData.number.toString()}
-            columnKey='applicationTime'
-            updateData={(rowId, columnKey, newValue) => {
-              console.log('[신청시간 변경]', {
-                rowId,
-                columnKey,
-                newValue,
-                rowData,
-              });
-            }}
-          />
-        );
-      },
-    },
-    {
-      header: '강의실',
-      accessorKey: 'classRoom',
-      size: 150,
-      cell: (info) => (
-        <SearchCell
-          initialValue={info.getValue() ?? ''}
-          onSearch={(val) => {
-            // 강의실 검색 모달 연결
-            console.log('[강의실 검색]', {
-              value: val,
-              row: info.row.original,
-            });
-          }}
-        />
-      ),
-    },
-  ];
-
-  const confirmedTableColumns = [
-    {
-      header: 'No',
-      accessorKey: 'number',
-      size: 50,
-      cell: (info) => info.getValue(),
-    },
-    {
-      header: '과목명',
-      accessorKey: 'subjectName',
-      size: 120,
-      cell: (info) => info.getValue(),
-    },
-    {
-      header: '과목코드',
-      accessorKey: 'subjectCode',
-      size: 100,
-      cell: (info) => info.getValue(),
-    },
-    {
-      header: '분반',
-      accessorKey: 'classSection',
-      size: 50,
-      cell: (info) => info.getValue(),
-    },
-    {
-      header: '강의시간',
-      accessorKey: 'classTime',
-      size: 200,
-      cell: (info) => info.getValue(),
-    },
-    {
-      header: '확정 시간',
-      accessorKey: 'confirmedTime',
-      size: 300,
-      cell: (info) => info.getValue(),
-    },
-    {
-      header: '강의실',
-      accessorKey: 'classRoom',
-      size: 150,
-      cell: (info) => info.getValue(),
-    },
-    {
-      header: '수강인원',
-      accessorKey: 'studentCount',
-      size: 64,
-      cell: (info) => info.getValue(),
-    },
-    {
-      header: '확정여부',
-      accessorKey: 'confirmationStatus',
-      size: 100,
-      cell: (info) => info.getValue(),
     },
   ];
 

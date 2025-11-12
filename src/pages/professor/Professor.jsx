@@ -8,7 +8,7 @@ function Professor() {
   const professorMenus = [
     {
       title: '강의 조회',
-      subItems: [{ label: '시간표 조회', path: 'status', isSelected: true }],
+      subItems: [{ label: '시간표 조회', path: 'subject', isSelected: true }],
     },
     {
       title: '시험 신청',

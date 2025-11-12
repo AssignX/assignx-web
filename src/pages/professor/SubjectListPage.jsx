@@ -168,7 +168,7 @@ function SubjectListPage() {
           endTime={timetableEnd}
           dayRange={timetableDays}
           entries={timeTableEntries}
-          maxHeight='calc(100vh - 280px)'
+          maxHeight='600px'
         />
       </div>
     </Section>
