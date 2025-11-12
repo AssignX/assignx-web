@@ -11,7 +11,7 @@ import { SearchIcon } from '@/assets/icons';
 import { useEffect, useCallback, useState } from 'react';
 import DropdownCell from '../../components/table/cells/DropdownCell';
 
-const unconfirmedTableRows = [
+const dummyUnconfirmedTableRows = [
   {
     number: 1,
     subjectName: '자료구조',
@@ -42,7 +42,7 @@ const unconfirmedTableRows = [
   },
 ];
 
-const confirmedTableRows = [
+const dummyConfirmedTableRows = [
   {
     number: 1,
     subjectName: '알고리즘',
@@ -73,6 +73,8 @@ function FirstApplicationPage() {
   const [department, setDepartment] = useState('컴퓨터공학과');
   const [professorId, setProfessorId] = useState('학번');
   const [professorName, setProfessorName] = useState('홍길동');
+  const [unconfirmedTableRows, setUnconfirmedTableRows] = useState({});
+  const [confirmedTableRows, setConfirmedTableRows] = useState({});
 
   const fetchUserData = useCallback(() => {
     setOpenYear(2025);
@@ -272,6 +274,12 @@ function FirstApplicationPage() {
       cell: (info) => info.getValue(),
     },
   ];
+
+  useEffect(() => {
+    // fetch 함수
+    setUnconfirmedTableRows(dummyUnconfirmedTableRows);
+    setConfirmedTableRows(dummyConfirmedTableRows);
+  }, []);
 
   return (
     <Section>
