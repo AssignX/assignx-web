@@ -144,11 +144,13 @@ function SubjectListPage() {
 
   return (
     <Section>
-      <PageHeader
-        title='신청 현황 조회'
-        helperText='※해당 시간표는 시스템 선정 기준 유력 후보 1순위만 표기하고 있습니다.'
-      />
-      <HorizontalTable items={filterItems} />
+      <div className='isolate'>
+        <PageHeader
+          title='신청 현황 조회'
+          helperText='※해당 시간표는 시스템 선정 기준 유력 후보 1순위만 표기하고 있습니다.'
+        />
+        <HorizontalTable items={filterItems} />
+      </div>
 
       {/* 시간표 카드 */}
       <div className='isolate'>

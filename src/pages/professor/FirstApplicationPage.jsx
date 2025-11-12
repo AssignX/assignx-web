@@ -283,19 +283,21 @@ function FirstApplicationPage() {
 
   return (
     <Section>
-      <PageHeader
-        title='1차 시험 신청'
-        helperText='※해당 시간표는 시스템 선정 기준 유력 후보 1순위만 표기하고 있습니다.'
-        buttonsData={[
-          {
-            text: '검색',
-            color: 'lightgray',
-            Icon: SearchIcon,
-            onClick: () => {},
-          },
-        ]}
-      />
-      <HorizontalTable items={filterItems} />
+      <div className='isolate'>
+        <PageHeader
+          title='1차 시험 신청'
+          helperText='※해당 시간표는 시스템 선정 기준 유력 후보 1순위만 표기하고 있습니다.'
+          buttonsData={[
+            {
+              text: '검색',
+              color: 'lightgray',
+              Icon: SearchIcon,
+              onClick: () => {},
+            },
+          ]}
+        />
+        <HorizontalTable items={filterItems} />
+      </div>
 
       {/* 시간표 카드 */}
       <div className='isolate'>

@@ -18,7 +18,7 @@ const dummyUnappliedTableRows = [
     subjectCode: 'CS101',
     classSection: '1',
     classTime: '월 10:00-12:00',
-    classRoom: 'A101',
+    classRoom: '',
     studentCount: 45,
     applicationTime: '2024-06-01 09:00~12:00',
     applicationOptions: [
@@ -32,7 +32,7 @@ const dummyUnappliedTableRows = [
     subjectCode: 'CS102',
     classSection: '2',
     classTime: '화 14:00-16:00',
-    classRoom: 'B202',
+    classRoom: '',
     studentCount: 40,
     applicationTime: '2024-06-01 10:00',
     applicationOptions: [
@@ -49,7 +49,7 @@ const dummyUnconfirmedTableRows = [
     subjectCode: 'CS101',
     classSection: '1',
     classTime: '월 10:00-12:00',
-    classRoom: 'A101',
+    classRoom: '',
     studentCount: 45,
     applicationTime: '2024-06-01 09:00~12:00',
     applicationOptions: [
@@ -63,7 +63,7 @@ const dummyUnconfirmedTableRows = [
     subjectCode: 'CS102',
     classSection: '2',
     classTime: '화 14:00-16:00',
-    classRoom: 'B202',
+    classRoom: '',
     studentCount: 40,
     applicationTime: '2024-06-01 10:00',
     applicationOptions: [
@@ -81,7 +81,7 @@ const dummyConfirmedTableRows = [
     classSection: '1',
     classTime: '수 10:00-12:00',
     confirmedTime: '2024-06-02 09:00~12:00',
-    classRoom: 'C303',
+    classRoom: 'IT5-302',
     studentCount: 50,
     confirmationStatus: '확정',
   },
@@ -92,7 +92,7 @@ const dummyConfirmedTableRows = [
     classSection: '2',
     classTime: '목 14:00-16:00',
     confirmedTime: '2024-06-02 10:00~12:00',
-    classRoom: 'D404',
+    classRoom: 'IT5-205',
     studentCount: 35,
     confirmationStatus: '확정',
   },
@@ -314,19 +314,21 @@ function SecondApplicationPage() {
 
   return (
     <Section>
-      <PageHeader
-        title='2차 시험 신청'
-        helperText='※ 2차 시험 신청은 ~~ 이내에만 가능하며, 이외 문의사항은 학과 사무실로 연락 바랍니다.'
-        buttonsData={[
-          {
-            text: '검색',
-            color: 'lightgray',
-            Icon: SearchIcon,
-            onClick: () => {},
-          },
-        ]}
-      />
-      <HorizontalTable items={filterItems} />
+      <div className='isolate'>
+        <PageHeader
+          title='2차 시험 신청'
+          helperText='※ 2차 시험 신청은 ~~ 이내에만 가능하며, 이외 문의사항은 학과 사무실로 연락 바랍니다.'
+          buttonsData={[
+            {
+              text: '검색',
+              color: 'lightgray',
+              Icon: SearchIcon,
+              onClick: () => {},
+            },
+          ]}
+        />
+        <HorizontalTable items={filterItems} />
+      </div>
 
       <div className='isolate'>
         <SectionHeader

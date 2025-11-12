@@ -265,8 +265,10 @@ function ApplicationStatusPage() {
 
   return (
     <Section>
-      <PageHeader title='시간표 조회' />
-      <HorizontalTable items={filterItems} />
+      <div className='isolate'>
+        <PageHeader title='시간표 조회' />
+        <HorizontalTable items={filterItems} />
+      </div>
 
       <div className='isolate'>
         <SectionHeader title='과목 조회 목록' subtitle={subtitle} />
