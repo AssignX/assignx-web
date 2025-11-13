@@ -19,32 +19,19 @@ export default function CourseTimeTable({ selectedRoom }) {
           },
         });
 
-        console.log('검색 파라미터:', {
-          year: selectedRoom.year,
-          semester: selectedRoom.semester,
-          roomNumber: selectedRoom.roomNumber,
-        });
-
-        console.log('서버 응답:', res.data);
-
         const courses = res.data || [];
 
         const newEntries = {};
         courses.forEach((course) => {
           const { courseName, courseCode, courseTime } = course;
 
-          // 예: "화 8B,9A,9B,목 8B,9A,9B"
           const parts = courseTime.split(',');
-
-          // parts 예:
-          // ["화 8B", "9A", "9B", "목 8B", "9A", "9B"]
 
           let currentDay = null;
 
           parts.forEach((p) => {
-            p = p.trim(); // "화 8B" 또는 "9A"
+            p = p.trim();
 
-            // 요일이 포함된 경우
             const dayMatch = p.match(/^([월화수목금토일])\s*(\w+)$/);
             if (dayMatch) {
               currentDay = dayMatch[1];
@@ -55,7 +42,6 @@ export default function CourseTimeTable({ selectedRoom }) {
               return;
             }
 
-            // 요일이 생략된 경우(이전 요일과 연속)
             if (currentDay !== null) {
               const slot = p; // 9A 등
               const key = `${currentDay}-${slot}`;
