@@ -1,5 +1,5 @@
 // src/pages/SearchProfessorPage.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '@/pages/office/Layout';
 import HorizontalTable from '@/components/table/HorizontalTable';
 import InputCell from '@/components/table/cells/InputCell';
@@ -8,12 +8,39 @@ import { SearchIcon } from '@/assets/icons';
 import VerticalTable from '@/components/table/VerticalTable';
 import apiClient from '@/api/apiClient';
 import PageHeader from '@/components/headers/PageHeader';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useNavigate } from 'react-router-dom';
 
 export default function SearchProfessorPage() {
   const [professors, setProfessors] = useState([]);
-  const [searchKeyword, setSearchKeyword] = useState('');
+  const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const {
+    name: userNameFromStore,
+    departmentName,
+    departmentId,
+  } = useAuthStore();
+  const navigate = useNavigate();
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const logout = useAuthStore((state) => state.logout);
+
+  useEffect(() => {
+    if (!accessToken) {
+      navigate('/login');
+    }
+  }, [accessToken, navigate]);
+
+  const handleLogout = async () => {
+    try {
+      await apiClient.post('/api/auth/logout');
+    } catch (err) {
+      console.warn('서버 로그아웃 실패 (클라이언트만 처리)');
+    } finally {
+      logout();
+      navigate('/login');
+    }
+  };
 
   const columns = [
     {
@@ -26,16 +53,40 @@ export default function SearchProfessorPage() {
     { accessorKey: 'departmentName', header: '소속 학과', size: 400 },
   ];
 
+  useEffect(() => {
+    const fetchProfessors = async () => {
+      if (!departmentId) return;
+
+      setLoading(true);
+      try {
+        const { data } = await apiClient.get('/api/member/search/professor', {
+          params: { departmentId },
+        });
+        setProfessors(data);
+      } catch (err) {
+        console.error('교수 목록 불러오기 실패:', err);
+        setError('조회 중 오류 발생');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfessors();
+  }, [departmentId]);
+
   const handleSearch = async () => {
-    const keyword = searchKeyword.trim();
-    if (!keyword) return;
+    const trimmed = name.trim();
+    if (!trimmed && !departmentId) return;
 
     setLoading(true);
     setError(null);
 
     try {
       const { data } = await apiClient.get('/api/member/search/professor', {
-        params: { name: keyword },
+        params: {
+          name: trimmed || undefined,
+          departmentId: departmentId || undefined,
+        },
       });
       setProfessors(data);
     } catch (err) {
@@ -55,8 +106,8 @@ export default function SearchProfessorPage() {
         <div className='flex items-center gap-1'>
           <div className='w-[200px]'>
             <InputCell
-              value={searchKeyword}
-              onChange={(e) => setSearchKeyword(e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') handleSearch();
               }}
@@ -78,20 +129,25 @@ export default function SearchProfessorPage() {
 
   return (
     <Layout
-      username='사무실 님'
-      headerTitle='사무실 메뉴'
+      username={`${userNameFromStore ?? '사용자'} 님`}
+      headerTitle={`${departmentName ?? ''} 메뉴`}
+      onLogout={handleLogout}
       menus={[
         { title: '과목', subItems: [{ label: '과목 목록', path: '/classes' }] },
         {
           title: '교수',
           isOpen: true,
           subItems: [
-            { label: '교수 목록', path: '/professors', isSelected: true },
+            {
+              label: '교수 목록',
+              path: '/office/professors',
+              isSelected: true,
+            },
           ],
         },
         {
           title: '강의실',
-          subItems: [{ label: '강의실 목록', path: '/classrooms' }],
+          subItems: [{ label: '강의실 목록', path: '/office/classrooms' }],
         },
         {
           title: '일정',
@@ -104,7 +160,7 @@ export default function SearchProfessorPage() {
     >
       <PageHeader title='교수 목록' />
 
-      <div className='h-[764px] w-full bg-white pt-[20px]'>
+      <div className='h-[764px] w-full'>
         <HorizontalTable items={searchFormItems} />
 
         {loading && <p className='mt-3 text-gray-500'>불러오는 중...</p>}
