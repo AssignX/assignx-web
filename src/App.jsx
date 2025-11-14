@@ -32,6 +32,12 @@ export default function App() {
       <Route path='tabletest' element={<TableTestPage />} />
       <Route path='bartest' element={<BarTestPage />} />
       <Route path='timetable' element={<TimetableTest />} />
+
+      {/* Admin Pages */}
+      <Route path='admin' element={<AdminHomePage />}>
+        <Route path='department' element={<AdminHomePage />} />
+        <Route path='building' element={<AdminHomePage />} />
+      </Route>
     </Routes>
   );
 }
