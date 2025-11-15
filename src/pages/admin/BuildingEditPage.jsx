@@ -21,15 +21,18 @@ const ClassroomColumns = [
 ];
 
 const classroomDummyData = [
-  { number: 1, classRoomNumber: '123', capacity: 30 },
-  { number: 2, classRoomNumber: '124', capacity: 50 },
+  { id: 1, number: 1, classRoomNumber: '123', capacity: 30 },
+  { id: 2, number: 2, classRoomNumber: '124', capacity: 50 },
 ];
 
 /* 남은 할 일
-1. 각 헤더 버튼 함수 구현
+1. 삭제 모달
 2. URL endpoint에 따라 추가/수정 모드 구분
 3. dummyData 대신 API 연동하여 데이터 불러오기
 4. 간격 조정
+
+++ buildingData를 받아와서, classRoomData로 변경할 때 (fetch 함수에서)
+roomId와 같은 id를 추가해야 함
 */
 function BuildingEditPage() {
   const [buildingNumber, setBuildingNumber] = useState('');
@@ -38,6 +41,8 @@ function BuildingEditPage() {
   const [classroomData, setClassroomData] = useState([]);
 
   const [classroomNewRows, setClassroomNewRows] = useState([]);
+
+  const [classroomSelectedRows, setClassroomSelectedRows] = useState([]);
 
   const departmentInfo = [
     {
@@ -88,6 +93,21 @@ function BuildingEditPage() {
     );
   };
 
+  const handleDeleteClassroomRows = () => {
+    if (classroomSelectedRows.length === 0) {
+      alert('삭제할 강의실을 선택해주세요.');
+      return;
+    }
+    // modal
+
+    // delete API 호출
+    setClassroomData((prev) =>
+      prev.filter((row) => !classroomSelectedRows.includes(row.id))
+    );
+
+    setClassroomSelectedRows([]);
+  };
+
   return (
     <Section>
       <div>
@@ -102,7 +122,7 @@ function BuildingEditPage() {
 
       <div>
         <SectionHeader
-          title='직원 목록'
+          title='강의실 목록'
           controlGroup='buttonGroup'
           buttonsData={[
             {
@@ -110,7 +130,11 @@ function BuildingEditPage() {
               color: 'lightgray',
               onClick: handleAddClassroomRow,
             },
-            { text: '삭제', color: 'lightgray', onClick: () => {} },
+            {
+              text: '삭제',
+              color: 'lightgray',
+              onClick: handleDeleteClassroomRows,
+            },
           ]}
           // 추가일 경우 buttonsDat 그대로 하고 수정일 경우 수정 버튼 추가 필요
         />
@@ -119,6 +143,7 @@ function BuildingEditPage() {
           data={classroomData}
           headerHeight={40}
           selectable={true}
+          updateSelection={setClassroomSelectedRows}
           newRows={classroomNewRows}
           onNewRowChange={handleClassroomNewRowChange}
           renderNewRowActions={() => <PlusCell />}
