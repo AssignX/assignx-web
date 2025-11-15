@@ -19,6 +19,7 @@ export default function InputCell({
   disabled,
   className,
   height = 26,
+  type = 'text',
 }) {
   const defaultClassName = `w-full border border-table-border p-2.5 text-[13px] ${
     disabled ? 'bg-inputCell-disabled' : ''
@@ -28,7 +29,7 @@ export default function InputCell({
 
   return (
     <input
-      type='text'
+      type={type}
       value={value}
       onChange={onChange}
       onKeyDown={onKeyDown}
@@ -48,6 +49,7 @@ InputCell.propTypes = {
   disabled: PropTypes.bool,
   className: PropTypes.string,
   height: PropTypes.number,
+  type: PropTypes.string,
 };
 
-InputCell.defaultProps = { disabled: false };
+InputCell.defaultProps = { disabled: false, type: 'text' };
