@@ -5,6 +5,7 @@ import HorizontalTable from '@/components/table/HorizontalTable';
 import VerticalTable from '@/components/table/VerticalTable';
 
 import InputCell from '@/components/table/cells/InputCell';
+import PlusCell from '@/components/table/cells/PlusCell';
 import { SaveIcon } from '@/assets/icons';
 import { useEffect, useState } from 'react';
 
@@ -33,7 +34,10 @@ const classroomDummyData = [
 function BuildingEditPage() {
   const [buildingNumber, setBuildingNumber] = useState('');
   const [buildingName, setBuildingName] = useState('');
+
   const [classroomData, setClassroomData] = useState([]);
+
+  const [classroomNewRows, setClassroomNewRows] = useState([]);
 
   const departmentInfo = [
     {
@@ -69,6 +73,21 @@ function BuildingEditPage() {
     setClassroomData(classroomDummyData);
   }, []);
 
+  const handleAddClassroomRow = () => {
+    const newRow = {
+      id: `new-${Date.now()}`,
+      classRoomNumber: '',
+      capacity: '',
+      isNew: true,
+    };
+    setClassroomNewRows((prev) => [...prev, newRow]);
+  };
+  const handleClassroomNewRowChange = (rowId, key, value) => {
+    setClassroomNewRows((prev) =>
+      prev.map((row) => (row.id === rowId ? { ...row, [key]: value } : row))
+    );
+  };
+
   return (
     <Section>
       <div>
@@ -86,7 +105,11 @@ function BuildingEditPage() {
           title='직원 목록'
           controlGroup='buttonGroup'
           buttonsData={[
-            { text: '추가', color: 'lightgray', onClick: () => {} },
+            {
+              text: '추가',
+              color: 'lightgray',
+              onClick: handleAddClassroomRow,
+            },
             { text: '삭제', color: 'lightgray', onClick: () => {} },
           ]}
           // 추가일 경우 buttonsDat 그대로 하고 수정일 경우 수정 버튼 추가 필요
@@ -95,8 +118,10 @@ function BuildingEditPage() {
           columns={ClassroomColumns}
           data={classroomData}
           headerHeight={40}
-          maxHeight={160}
           selectable={true}
+          newRows={classroomNewRows}
+          onNewRowChange={handleClassroomNewRowChange}
+          renderNewRowActions={() => <PlusCell />}
         />
       </div>
     </Section>
