@@ -12,6 +12,7 @@ import EmployeeModal from './EmployeeModal';
 import ClassRoomModal from './ClassRoomModal';
 
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 const employeeColumns = [
   {
@@ -75,6 +76,9 @@ const classroomDummyData = [
 4. 간격 조정
 */
 function DepartmentEditPage() {
+  const { id } = useParams();
+  const isEditMode = Boolean(id);
+
   const [isEmployeeModalOpen, setIsEmployeeModalOpen] = useState(false);
   const [isClassRoomModalOpen, setIsClassRoomModalOpen] = useState(false);
 
@@ -135,21 +139,21 @@ function DepartmentEditPage() {
       )
     );
   };
+
   const handleDeleteEmployeeRows = () => {
-    console.log(employeeSelectedRows);
     if (employeeSelectedRows.length === 0) {
       alert('삭제할 직원을 선택해주세요.');
       return;
     }
-
-    // 삭제 모달
-
-    // DELETE 요청 보내기
     setEmployeeData((prev) =>
       prev.filter((row) => !employeeSelectedRows.includes(row.id))
     );
-
     setEmployeeSelectedRows([]);
+  };
+
+  const handleEditEmployeeRows = () => {
+    // 수정은 추후 구현 예정
+    console.log('수정', employeeSelectedRows);
   };
 
   const handleClassroomNewRowChange = (rowId, columnKey, value) => {
@@ -159,14 +163,12 @@ function DepartmentEditPage() {
       )
     );
   };
+
   const handleDeleteClassroomRows = () => {
     if (classroomSelectedRows.length === 0) {
       alert('삭제할 강의실을 선택해주세요.');
       return;
     }
-    // 삭제 모달
-
-    // DELETE 요청 보내기
     setClassroomData((prev) =>
       prev.filter((row) => !classroomSelectedRows.includes(row.id))
     );
@@ -175,7 +177,6 @@ function DepartmentEditPage() {
 
   const handleSelectEmployeeFromModal = (employees) => {
     setEmployeeData((prev) => {
-      // 기존 목록에 없는 직원만 필터링해서 추가
       const newOnes = employees.filter(
         (emp) => !prev.some((row) => row.id === emp.id)
       );
@@ -191,6 +192,25 @@ function DepartmentEditPage() {
       return [...prev, ...newOnes];
     });
   };
+
+  const employeeSectionButtons = isEditMode
+    ? [
+        {
+          text: '추가',
+          color: 'lightgray',
+          onClick: () => setIsEmployeeModalOpen(true),
+        },
+        { text: '수정', color: 'lightgray', onClick: handleEditEmployeeRows },
+        { text: '삭제', color: 'lightgray', onClick: handleDeleteEmployeeRows },
+      ]
+    : [
+        {
+          text: '추가',
+          color: 'lightgray',
+          onClick: () => setIsEmployeeModalOpen(true),
+        },
+        { text: '삭제', color: 'lightgray', onClick: handleDeleteEmployeeRows },
+      ];
 
   return (
     <Section>
@@ -208,19 +228,7 @@ function DepartmentEditPage() {
         <SectionHeader
           title='직원 목록'
           controlGroup='buttonGroup'
-          buttonsData={[
-            {
-              text: '추가',
-              color: 'lightgray',
-              onClick: () => setIsEmployeeModalOpen(true),
-            },
-            {
-              text: '삭제',
-              color: 'lightgray',
-              onClick: handleDeleteEmployeeRows,
-            },
-          ]}
-          // 추가일 경우 buttonsDat 그대로 하고 수정일 경우 수정 버튼 추가 필요
+          buttonsData={employeeSectionButtons}
         />
         <VerticalTable
           columns={employeeColumns}
