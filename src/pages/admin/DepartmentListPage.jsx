@@ -3,6 +3,7 @@ import PageHeader from '@/components/headers/PageHeader';
 import VerticalTable from '@/components/table/VerticalTable';
 
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const departmentColumns = [
   {
@@ -31,7 +32,9 @@ const dummyData = [
 ];
 
 function DepartmentListPage() {
+  const navigate = useNavigate();
   const [departmentData, setDepartmentData] = useState([]);
+  const [selectedRowIds, setSelectedRowIds] = useState([]);
 
   useEffect(() => {
     // Fetch department data from API
@@ -44,9 +47,29 @@ function DepartmentListPage() {
         <PageHeader
           title='학과 목록'
           buttonsData={[
-            { text: '추가', color: 'lightgray', onClick: () => {} },
-            { text: '버튼', color: 'lightgray', onClick: () => {} },
-            { text: '삭제', color: 'lightgray', onClick: () => {} },
+            {
+              text: '추가',
+              color: 'lightgray',
+              onClick: () => navigate('/admin/department/edit'),
+            },
+            {
+              text: '수정',
+              color: 'lightgray',
+              onClick: () => {
+                if (selectedRowIds.length > 0) {
+                  navigate(`/admin/department/edit/${selectedRowIds[0]}`); // +1을 해야 하나?
+                } else {
+                  alert('수정할 학과를 선택해주세요.');
+                }
+              },
+            },
+            {
+              text: '삭제',
+              color: 'lightgray',
+              onClick: () => {
+                // /api/department/{departmentId} DELETE 요청
+              },
+            },
           ]}
         />
         <VerticalTable
@@ -55,6 +78,8 @@ function DepartmentListPage() {
           headerHeight={40}
           maxHeight={1200}
           selectable={true}
+          singleSelect={true}
+          updateSelection={setSelectedRowIds}
         />
       </div>
     </Section>

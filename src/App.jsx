@@ -45,12 +45,14 @@ export default function App() {
           {/* /admin/department 진입 시 기본으로 목록 보여줌 */}
           <Route index element={<DepartmentListPage />} />
           <Route path='edit' element={<DepartmentEditPage />} />
+          <Route path='edit/:id' element={<DepartmentEditPage />} />
         </Route>
 
         <Route path='building'>
           {/* /admin/building 진입 시 기본으로 목록 */}
           <Route index element={<BuildingListPage />} />
           <Route path='edit' element={<BuildingEditPage />} />
+          <Route path='edit/:id' element={<BuildingEditPage />} />
         </Route>
       </Route>
 
