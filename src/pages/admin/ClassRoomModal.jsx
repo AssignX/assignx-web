@@ -18,32 +18,44 @@ const buildingColumns = [
     size: 50,
     cell: ({ row }) => row.index + 1,
   },
-  { header: '건물번호', accessorKey: 'buildingId', size: 100 },
-  { header: '건물명', accessorKey: 'name', size: 100 },
+  { header: '건물번호', accessorKey: 'buildingNumber', size: 100 },
+  { header: '건물명', accessorKey: 'buildingName', size: 100 },
 ];
 
 const dummyBuildingData = [
-  { number: 1, buildingId: '01', name: 'IT대학5호관(IT융복합관)' },
-  { number: 2, buildingId: '02', name: 'IT대학5호관(IT융복합관)' },
-  { number: 3, buildingId: '03', name: 'IT대학5호관(IT융복합관)' },
-  { number: 4, buildingId: '04', name: 'IT대학5호관(IT융복합관)' },
-  { number: 5, buildingId: '05', name: 'IT대학5호관(IT융복합관)' },
-  { number: 6, buildingId: '06', name: 'IT대학5호관(IT융복합관)' },
+  {
+    id: '1', // buildingId값임
+    buildingId: 1,
+    buildingNumber: 451,
+    buildingName: 'IT대학5호관(IT융복합관)',
+  },
+  { id: '2', buildingId: 2, buildingNumber: 452, buildingName: 'IT대학4호관' },
+  { id: '3', buildingId: 3, buildingNumber: 453, buildingName: 'IT대학3호관' },
 ];
 
-const dummyClassRoomData = [
-  { number: 1, classRoom: '348' },
-  { number: 2, classRoom: '352' },
-  { number: 3, classRoom: '355' },
-  { number: 4, classRoom: '360' },
-  { number: 5, classRoom: '365' },
-  { number: 6, classRoom: '370' },
-];
+const dummyClassRoomData = {
+  1: [
+    { id: '1', classRoom: '348' },
+    { id: '2', classRoom: '352' },
+    { id: '3', classRoom: '355' },
+  ],
+  2: [
+    { id: '1', classRoom: '101' },
+    { id: '2', classRoom: '102' },
+  ],
+  3: [
+    { id: '1', classRoom: '201' },
+    { id: '2', classRoom: '202' },
+  ],
+};
 
-function ClassRoomModal({ setIsOpen }) {
+function ClassRoomModal({ setIsOpen, onSelect }) {
   const [buildingName, setBuildingName] = useState('');
   const [buildingData, setBuildingData] = useState([]);
   const [classRoomData, setClassRoomData] = useState([]);
+
+  const [selectedBuildingIds, setSelectedBuildingIds] = useState([]);
+  const [selectedClassRoomIds, setSelectedClassRoomIds] = useState([]);
 
   const handleBuildingSearch = () => {
     console.log(buildingName);
@@ -53,7 +65,7 @@ function ClassRoomModal({ setIsOpen }) {
   useEffect(() => {
     // 이걸 제거하고, handleBuildingSearch에서 API 호출하도록 변경 필요
     setBuildingData(dummyBuildingData);
-    setClassRoomData(dummyClassRoomData);
+    setClassRoomData([]);
   }, []);
 
   const buildingSearchItems = [
@@ -83,9 +95,60 @@ function ClassRoomModal({ setIsOpen }) {
     },
   ];
 
+  const handleBuildingSelectionChange = (selectedIds) => {
+    setSelectedBuildingIds(selectedIds);
+
+    const firstId = selectedIds[0];
+    const selectedBuilding = buildingData.find((b) => b.id === firstId);
+
+    if (!selectedBuilding) {
+      setClassRoomData([]);
+      setSelectedClassRoomIds([]);
+      return;
+    }
+
+    const rooms = dummyClassRoomData[selectedBuilding.buildingId] || [];
+    setClassRoomData(rooms);
+    setSelectedClassRoomIds([]); // 건물 바뀌면 강의실 선택 초기화
+  };
+
   const handleConfirm = () => {
+    if (selectedBuildingIds.length === 0) {
+      alert('건물을 선택해주세요.');
+      return;
+    }
+    if (selectedClassRoomIds.length === 0) {
+      alert('강의실을 선택해주세요.');
+      return;
+    }
+
+    const selectedBuilding = buildingData.find(
+      (b) => b.id === selectedBuildingIds[0]
+    );
+    const selectedClassRoom = classRoomData.find(
+      (c) => c.id === selectedClassRoomIds[0]
+    );
+
+    if (!selectedBuilding || !selectedClassRoom) {
+      alert('선택한 건물 또는 강의실 정보를 찾을 수 없습니다.');
+      return;
+    }
+
+    const mappedRoom = {
+      id: `${selectedBuilding.buildingId}-${selectedClassRoom.classRoom}`, // 나중에 수정
+      buildingNo: selectedBuilding.buildingNumber,
+      buildingName: selectedBuilding.buildingName,
+      roomNo: selectedClassRoom.classRoom,
+      capacity: '50', // 수용인원은 나중에 변경해야해...................
+    };
+
+    if (onSelect) {
+      onSelect([mappedRoom]); // 배열로 넘김
+    }
+
     setIsOpen(false);
   };
+
   const handleCancel = () => {
     setIsOpen(false);
   };
@@ -109,6 +172,9 @@ function ClassRoomModal({ setIsOpen }) {
               data={buildingData}
               headerHeight={40}
               maxHeight={300}
+              selectable={true}
+              singleSelect={true}
+              updateSelection={handleBuildingSelectionChange}
             />
 
             <div>
@@ -124,6 +190,7 @@ function ClassRoomModal({ setIsOpen }) {
               maxHeight={300}
               selectable={true}
               singleSelect={true}
+              updateSelection={setSelectedClassRoomIds}
             />
           </div>
         </div>
@@ -141,6 +208,9 @@ function ClassRoomModal({ setIsOpen }) {
   );
 }
 
-ClassRoomModal.propTypes = { setIsOpen: PropTypes.func.isRequired };
+ClassRoomModal.propTypes = {
+  setIsOpen: PropTypes.func.isRequired,
+  onSelect: PropTypes.func,
+};
 
 export default ClassRoomModal;

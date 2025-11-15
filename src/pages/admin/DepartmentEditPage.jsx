@@ -9,6 +9,7 @@ import PlusCell from '@/components/table/cells/PlusCell';
 import { SaveIcon } from '@/assets/icons';
 
 import EmployeeModal from './EmployeeModal';
+import ClassRoomModal from './ClassRoomModal';
 
 import { useEffect, useState } from 'react';
 
@@ -75,6 +76,8 @@ const classroomDummyData = [
 */
 function DepartmentEditPage() {
   const [isEmployeeModalOpen, setIsEmployeeModalOpen] = useState(false);
+  const [isClassRoomModalOpen, setIsClassRoomModalOpen] = useState(false);
+
   const [college, setCollege] = useState('');
   const [department, setDepartment] = useState('');
 
@@ -149,17 +152,6 @@ function DepartmentEditPage() {
     setEmployeeSelectedRows([]);
   };
 
-  const handleAddClassroomRow = () => {
-    const newRow = {
-      id: `room-new-${Date.now()}`,
-      buildingNo: '',
-      buildingName: '',
-      roomNo: '',
-      capacity: '',
-      isNew: true,
-    };
-    setClassroomNewRows((prev) => [...prev, newRow]);
-  };
   const handleClassroomNewRowChange = (rowId, columnKey, value) => {
     setClassroomNewRows((prev) =>
       prev.map((row) =>
@@ -186,6 +178,15 @@ function DepartmentEditPage() {
       // 기존 목록에 없는 직원만 필터링해서 추가
       const newOnes = employees.filter(
         (emp) => !prev.some((row) => row.id === emp.id)
+      );
+      return [...prev, ...newOnes];
+    });
+  };
+
+  const handleSelectClassRoomFromModal = (rooms) => {
+    setClassroomData((prev) => {
+      const newOnes = rooms.filter(
+        (room) => !prev.some((r) => r.id === room.id)
       );
       return [...prev, ...newOnes];
     });
@@ -242,7 +243,7 @@ function DepartmentEditPage() {
             {
               text: '추가',
               color: 'lightgray',
-              onClick: handleAddClassroomRow,
+              onClick: () => setIsClassRoomModalOpen(true),
             },
             {
               text: '삭제',
@@ -268,6 +269,12 @@ function DepartmentEditPage() {
         <EmployeeModal
           setIsOpen={setIsEmployeeModalOpen}
           onSelect={handleSelectEmployeeFromModal}
+        />
+      )}
+      {isClassRoomModalOpen && (
+        <ClassRoomModal
+          setIsOpen={setIsClassRoomModalOpen}
+          onSelect={handleSelectClassRoomFromModal}
         />
       )}
     </Section>
