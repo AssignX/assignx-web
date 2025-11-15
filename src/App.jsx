@@ -17,7 +17,7 @@ import ModalTableTestPage from './pages/test/ModalTableTestPage.jsx';
 import IconTestPage from './pages/test/IconTestPage.jsx';
 import TableTestPage from './pages/test/TableTestPage.jsx';
 import TimetableTest from './pages/test/TimetableTest.jsx';
-import DepartmentManagePage from './pages/admin/DepartmentManagePage.jsx';
+import DepartmentListPage from './pages/admin/DepartmentListPage.jsx';
 
 export default function App() {
   return (
@@ -35,7 +35,7 @@ export default function App() {
 
       {/* Admin Pages */}
       <Route path='admin' element={<AdminPage />}>
-        <Route path='department' element={<DepartmentManagePage />} />
+        <Route path='department' element={<DepartmentListPage />} />
         <Route path='building' element={<AdminPage />} />
       </Route>
     </Routes>

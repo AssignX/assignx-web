@@ -30,7 +30,7 @@ const dummyData = [
   { number: 2, college: '공과대학', major: '전자공학과' },
 ];
 
-function DepartmentManagePage() {
+function DepartmentListPage() {
   const [departmentData, setDepartmentData] = useState([]);
 
   useEffect(() => {
@@ -61,4 +61,4 @@ function DepartmentManagePage() {
   );
 }
 
-export default DepartmentManagePage;
+export default DepartmentListPage;
