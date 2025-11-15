@@ -42,11 +42,14 @@ export default function App() {
       {/* Admin Pages */}
       <Route path='admin' element={<AdminPage />}>
         <Route path='department'>
-          <Route path='list' element={<DepartmentListPage />} />
+          {/* /admin/department 진입 시 기본으로 목록 보여줌 */}
+          <Route index element={<DepartmentListPage />} />
           <Route path='manage' element={<DepartmentManagePage />} />
         </Route>
+
         <Route path='building'>
-          <Route path='list' element={<BuildingListPage />} />
+          {/* /admin/building 진입 시 기본으로 목록 */}
+          <Route index element={<BuildingListPage />} />
           <Route path='manage' element={<BuildingManagePage />} />
         </Route>
       </Route>
