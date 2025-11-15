@@ -30,7 +30,7 @@ const classroomDummyData = [
 3. dummyData 대신 API 연동하여 데이터 불러오기
 4. 간격 조정
 */
-function BuildingManagePage() {
+function BuildingEditPage() {
   const [buildingNumber, setBuildingNumber] = useState('');
   const [buildingName, setBuildingName] = useState('');
   const [classroomData, setClassroomData] = useState([]);
@@ -103,4 +103,4 @@ function BuildingManagePage() {
   );
 }
 
-export default BuildingManagePage;
+export default BuildingEditPage;

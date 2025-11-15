@@ -18,12 +18,12 @@ import IconTestPage from './pages/test/IconTestPage.jsx';
 import TableTestPage from './pages/test/TableTestPage.jsx';
 import TimetableTest from './pages/test/TimetableTest.jsx';
 import DepartmentListPage from './pages/admin/DepartmentListPage.jsx';
-import DepartmentManagePage from './pages/admin/DepartmentManagePage.jsx';
+import DepartmentEditPage from './pages/admin/DepartmentEditPage.jsx';
 import EmployeeModal from './pages/admin/EmployeeModal.jsx';
 import ClassRoomModal from './pages/admin/ClassRoomModal.jsx';
 
 import BuildingListPage from './pages/admin/BuildingListPage.jsx';
-import BuildingManagePage from './pages/admin/BuildingManagePage.jsx';
+import BuildingEditPage from './pages/admin/BuildingEditPage.jsx';
 
 export default function App() {
   return (
@@ -44,13 +44,13 @@ export default function App() {
         <Route path='department'>
           {/* /admin/department 진입 시 기본으로 목록 보여줌 */}
           <Route index element={<DepartmentListPage />} />
-          <Route path='manage' element={<DepartmentManagePage />} />
+          <Route path='edit' element={<DepartmentEditPage />} />
         </Route>
 
         <Route path='building'>
           {/* /admin/building 진입 시 기본으로 목록 */}
           <Route index element={<BuildingListPage />} />
-          <Route path='manage' element={<BuildingManagePage />} />
+          <Route path='edit' element={<BuildingEditPage />} />
         </Route>
       </Route>
 

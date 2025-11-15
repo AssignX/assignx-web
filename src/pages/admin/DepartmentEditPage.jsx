@@ -69,7 +69,7 @@ const classroomDummyData = [
 3. dummyData 대신 API 연동하여 데이터 불러오기
 4. 간격 조정
 */
-function DepartmentManagePage() {
+function DepartmentEditPage() {
   const [college, setCollege] = useState('');
   const [department, setDepartment] = useState('');
   const [employeeData, setEmployeeData] = useState([]);
@@ -165,4 +165,4 @@ function DepartmentManagePage() {
   );
 }
 
-export default DepartmentManagePage;
+export default DepartmentEditPage;
