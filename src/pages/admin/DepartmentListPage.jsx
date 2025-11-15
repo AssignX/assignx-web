@@ -2,6 +2,8 @@ import Section from '@/components/common/Section';
 import PageHeader from '@/components/headers/PageHeader';
 import VerticalTable from '@/components/table/VerticalTable';
 
+import DeleteConfirmModal from './DeleteConfirmModal';
+
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,25 +12,19 @@ const departmentColumns = [
     header: 'No',
     accessorKey: 'number',
     size: 50,
-    cell: (info) => info.getValue(),
+    cell: ({ row }) => row.index + 1,
   },
-  {
-    header: '단과 대학',
-    accessorKey: 'college',
-    size: 200,
-    cell: (info) => info.getValue(),
-  },
+  { header: '단과 대학', accessorKey: 'college', size: 200 },
   {
     header: '학과',
     accessorKey: 'major',
     size: 700, // fill 수정 필요
-    cell: (info) => info.getValue(),
   },
 ];
 
 const dummyData = [
-  { number: 1, college: '공과대학', major: '컴퓨터공학과' },
-  { number: 2, college: '공과대학', major: '전자공학과' },
+  { id: '1', number: 1, college: '공과대학', major: '컴퓨터공학과' },
+  { id: '2', number: 2, college: '공과대학', major: '전자공학과' },
 ];
 
 function DepartmentListPage() {
@@ -36,10 +32,21 @@ function DepartmentListPage() {
   const [departmentData, setDepartmentData] = useState([]);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
 
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   useEffect(() => {
     // Fetch department data from API
     setDepartmentData(dummyData);
   }, []);
+
+  const handleConfirmDelete = () => {
+    const targetId = selectedRowIds[0];
+
+    // TODO: /api/department/{departmentId} DELETE 요청
+
+    setDepartmentData((prev) => prev.filter((row) => row.id !== targetId));
+    setSelectedRowIds([]);
+  };
 
   return (
     <Section>
@@ -67,7 +74,11 @@ function DepartmentListPage() {
               text: '삭제',
               color: 'lightgray',
               onClick: () => {
-                // /api/department/{departmentId} DELETE 요청
+                if (selectedRowIds.length === 0) {
+                  alert('삭제할 학과를 선택해주세요.');
+                  return;
+                }
+                setIsDeleteModalOpen(true);
               },
             },
           ]}
@@ -76,12 +87,19 @@ function DepartmentListPage() {
           columns={departmentColumns}
           data={departmentData}
           headerHeight={40}
-          maxHeight={1200}
           selectable={true}
           singleSelect={true}
           updateSelection={setSelectedRowIds}
         />
       </div>
+
+      {isDeleteModalOpen && (
+        <DeleteConfirmModal
+          setIsOpen={setIsDeleteModalOpen}
+          onConfirm={handleConfirmDelete}
+          message='선택한 학과를 삭제하시겠습니까?'
+        />
+      )}
     </Section>
   );
 }
