@@ -23,14 +23,15 @@ const employeeColumns = [
 ];
 
 const dummyEmployeeData = [
-  { number: 1, employeeId: 'EMP001', name: '홍길동', department: '컴퓨터공학' },
-  { number: 2, employeeId: 'EMP002', name: '김철수', department: '전자공학과' },
-  { number: 3, employeeId: 'EMP003', name: '이영희', department: '기계공학' },
+  { id: '4', employeeId: 'EMP001', name: '홍길동', department: '컴퓨터공학' },
+  { id: '5', employeeId: 'EMP002', name: '김철수', department: '전자공학과' },
+  { id: '6', employeeId: 'EMP003', name: '이영희', department: '기계공학' },
 ];
 
-function EmployeeModal({ setIsOpen }) {
+function EmployeeModal({ setIsOpen, onSelect }) {
   const [employeeName, setEmployeeName] = useState('');
   const [employeeData, setEmployeeData] = useState([]);
+  const [selectedRowIds, setSelectedRowIds] = useState([]);
 
   const handleEmployeeSearch = (searchValue) => {
     setEmployeeName(searchValue);
@@ -70,8 +71,21 @@ function EmployeeModal({ setIsOpen }) {
   ];
 
   const handleConfirm = () => {
+    if (selectedRowIds.length === 0) {
+      alert('직원을 선택해주세요.');
+      return;
+    }
+    const selectedEmployees = employeeData.filter((row) =>
+      selectedRowIds.includes(row.id)
+    );
+
+    if (onSelect) {
+      onSelect(selectedEmployees);
+    }
+
     setIsOpen(false);
   };
+
   const handleCancel = () => {
     setIsOpen(false);
   };
@@ -94,6 +108,7 @@ function EmployeeModal({ setIsOpen }) {
             headerHeight={40}
             maxHeight={300}
             selectable={true}
+            updateSelection={setSelectedRowIds}
           />
         </div>
       }
@@ -110,6 +125,9 @@ function EmployeeModal({ setIsOpen }) {
   );
 }
 
-EmployeeModal.propTypes = { setIsOpen: PropTypes.func.isRequired };
+EmployeeModal.propTypes = {
+  setIsOpen: PropTypes.func.isRequired,
+  onSelect: PropTypes.func,
+};
 
 export default EmployeeModal;

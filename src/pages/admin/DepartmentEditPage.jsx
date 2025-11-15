@@ -7,6 +7,9 @@ import VerticalTable from '@/components/table/VerticalTable';
 import InputCell from '@/components/table/cells/InputCell';
 import PlusCell from '@/components/table/cells/PlusCell';
 import { SaveIcon } from '@/assets/icons';
+
+import EmployeeModal from './EmployeeModal';
+
 import { useEffect, useState } from 'react';
 
 const employeeColumns = [
@@ -35,33 +38,14 @@ const ClassroomColumns = [
 ];
 
 const employeeDummyData = [
-  {
-    id: '1',
-    number: 1,
-    employeeId: 'EMP001',
-    name: '홍길동',
-    department: '컴퓨터공학',
-  },
-  {
-    id: '2',
-    number: 2,
-    employeeId: 'EMP002',
-    name: '김철수',
-    department: '전자공학과',
-  },
-  {
-    id: '3',
-    number: 3,
-    employeeId: 'EMP003',
-    name: '이영희',
-    department: '기계공학',
-  },
+  { id: '1', employeeId: 'EMP001', name: '홍길동', department: '컴퓨터공학' },
+  { id: '2', employeeId: 'EMP002', name: '김철수', department: '전자공학과' },
+  { id: '3', employeeId: 'EMP003', name: '이영희', department: '기계공학' },
 ];
 
 const classroomDummyData = [
   {
     id: '1',
-    number: 1,
     buildingNo: '451',
     buildingName: 'IT대학5호관(IT융복합관)',
     roomNo: '348',
@@ -69,7 +53,6 @@ const classroomDummyData = [
   },
   {
     id: '2',
-    number: 2,
     buildingNo: '451',
     buildingName: 'IT대학5호관(IT융복합관)',
     roomNo: '352',
@@ -77,7 +60,6 @@ const classroomDummyData = [
   },
   {
     id: '3',
-    number: 3,
     buildingNo: '451',
     buildingName: 'IT대학5호관(IT융복합관)',
     roomNo: '355',
@@ -92,6 +74,7 @@ const classroomDummyData = [
 4. 간격 조정
 */
 function DepartmentEditPage() {
+  const [isEmployeeModalOpen, setIsEmployeeModalOpen] = useState(false);
   const [college, setCollege] = useState('');
   const [department, setDepartment] = useState('');
 
@@ -142,16 +125,6 @@ function DepartmentEditPage() {
     setClassroomData(classroomDummyData);
   }, []);
 
-  const handleAddEmployeeRow = () => {
-    const newRow = {
-      id: `emp-new-${Date.now()}`,
-      employeeId: '',
-      name: '',
-      department: '',
-      isNew: true,
-    };
-    setEmployeeNewRows((prev) => [...prev, newRow]);
-  };
   const handleEmployeeNewRowChange = (rowId, columnKey, value) => {
     setEmployeeNewRows((prev) =>
       prev.map((row) =>
@@ -208,6 +181,16 @@ function DepartmentEditPage() {
     setClassroomSelectedRows([]);
   };
 
+  const handleSelectEmployeeFromModal = (employees) => {
+    setEmployeeData((prev) => {
+      // 기존 목록에 없는 직원만 필터링해서 추가
+      const newOnes = employees.filter(
+        (emp) => !prev.some((row) => row.id === emp.id)
+      );
+      return [...prev, ...newOnes];
+    });
+  };
+
   return (
     <Section>
       <div>
@@ -225,7 +208,11 @@ function DepartmentEditPage() {
           title='직원 목록'
           controlGroup='buttonGroup'
           buttonsData={[
-            { text: '추가', color: 'lightgray', onClick: handleAddEmployeeRow },
+            {
+              text: '추가',
+              color: 'lightgray',
+              onClick: () => setIsEmployeeModalOpen(true),
+            },
             {
               text: '삭제',
               color: 'lightgray',
@@ -276,6 +263,13 @@ function DepartmentEditPage() {
           renderNewRowActions={() => <PlusCell />}
         />
       </div>
+
+      {isEmployeeModalOpen && (
+        <EmployeeModal
+          setIsOpen={setIsEmployeeModalOpen}
+          onSelect={handleSelectEmployeeFromModal}
+        />
+      )}
     </Section>
   );
 }
