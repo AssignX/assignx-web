@@ -5,6 +5,7 @@ import HorizontalTable from '@/components/table/HorizontalTable';
 import VerticalTable from '@/components/table/VerticalTable';
 
 import InputCell from '@/components/table/cells/InputCell';
+import PlusCell from '@/components/table/cells/PlusCell';
 import { SaveIcon } from '@/assets/icons';
 import { useEffect, useState } from 'react';
 
@@ -72,8 +73,14 @@ const classroomDummyData = [
 function DepartmentEditPage() {
   const [college, setCollege] = useState('');
   const [department, setDepartment] = useState('');
+
   const [employeeData, setEmployeeData] = useState([]);
   const [classroomData, setClassroomData] = useState([]);
+
+  // const [employeeSelectedRows, setEmployeeSelectedRows] = useState([]);
+  // const [classroomSelectedRows, setClassroomSelectedRows] = useState([]);
+  const [employeeNewRows, setEmployeeNewRows] = useState([]);
+  const [classroomNewRows, setClassroomNewRows] = useState([]);
 
   const departmentInfo = [
     {
@@ -113,6 +120,44 @@ function DepartmentEditPage() {
     setClassroomData(classroomDummyData);
   }, []);
 
+  const handleAddEmployeeRow = () => {
+    const newRow = {
+      id: `emp-new-${Date.now()}`,
+      employeeId: '',
+      name: '',
+      department: '',
+      isNew: true,
+    };
+    setEmployeeNewRows((prev) => [...prev, newRow]);
+  };
+
+  const handleEmployeeNewRowChange = (rowId, columnKey, value) => {
+    setEmployeeNewRows((prev) =>
+      prev.map((row) =>
+        row.id === rowId ? { ...row, [columnKey]: value } : row
+      )
+    );
+  };
+
+  const handleAddClassroomRow = () => {
+    const newRow = {
+      id: `room-new-${Date.now()}`,
+      buildingNo: '',
+      buildingName: '',
+      roomNo: '',
+      capacity: '',
+      isNew: true,
+    };
+    setClassroomNewRows((prev) => [...prev, newRow]);
+  };
+  const handleClassroomNewRowChange = (rowId, columnKey, value) => {
+    setClassroomNewRows((prev) =>
+      prev.map((row) =>
+        row.id === rowId ? { ...row, [columnKey]: value } : row
+      )
+    );
+  };
+
   return (
     <Section>
       <div>
@@ -130,8 +175,14 @@ function DepartmentEditPage() {
           title='직원 목록'
           controlGroup='buttonGroup'
           buttonsData={[
-            { text: '추가', color: 'lightgray', onClick: () => {} },
-            { text: '삭제', color: 'lightgray', onClick: () => {} },
+            { text: '추가', color: 'lightgray', onClick: handleAddEmployeeRow },
+            {
+              text: '삭제',
+              color: 'lightgray',
+              onClick: () => {
+                console.log(employeeNewRows);
+              },
+            },
           ]}
           // 추가일 경우 buttonsDat 그대로 하고 수정일 경우 수정 버튼 추가 필요
         />
@@ -139,8 +190,11 @@ function DepartmentEditPage() {
           columns={employeeColumns}
           data={employeeData}
           headerHeight={40}
-          maxHeight={160}
+          maxHeight={160} // newRow에 의해 기존 Row가 짤리는 문제
           selectable={true}
+          newRows={employeeNewRows}
+          onNewRowChange={handleEmployeeNewRowChange}
+          renderNewRowActions={() => <PlusCell />}
         />
       </div>
 
@@ -149,7 +203,11 @@ function DepartmentEditPage() {
           title='강의실 목록'
           controlGroup='buttonGroup'
           buttonsData={[
-            { text: '추가', color: 'lightgray', onClick: () => {} },
+            {
+              text: '추가',
+              color: 'lightgray',
+              onClick: handleAddClassroomRow,
+            },
             { text: '삭제', color: 'lightgray', onClick: () => {} },
           ]}
         />
@@ -159,6 +217,9 @@ function DepartmentEditPage() {
           headerHeight={40}
           maxHeight={600}
           selectable={true}
+          newRows={classroomNewRows}
+          onNewRowChange={handleClassroomNewRowChange}
+          renderNewRowActions={() => <PlusCell />}
         />
       </div>
     </Section>
