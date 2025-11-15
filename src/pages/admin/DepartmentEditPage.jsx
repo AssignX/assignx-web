@@ -35,13 +35,32 @@ const ClassroomColumns = [
 ];
 
 const employeeDummyData = [
-  { number: 1, employeeId: 'EMP001', name: '홍길동', department: '컴퓨터공학' },
-  { number: 2, employeeId: 'EMP002', name: '김철수', department: '전자공학과' },
-  { number: 3, employeeId: 'EMP003', name: '이영희', department: '기계공학' },
+  {
+    id: '1',
+    number: 1,
+    employeeId: 'EMP001',
+    name: '홍길동',
+    department: '컴퓨터공학',
+  },
+  {
+    id: '2',
+    number: 2,
+    employeeId: 'EMP002',
+    name: '김철수',
+    department: '전자공학과',
+  },
+  {
+    id: '3',
+    number: 3,
+    employeeId: 'EMP003',
+    name: '이영희',
+    department: '기계공학',
+  },
 ];
 
 const classroomDummyData = [
   {
+    id: '1',
     number: 1,
     buildingNo: '451',
     buildingName: 'IT대학5호관(IT융복합관)',
@@ -49,6 +68,7 @@ const classroomDummyData = [
     capacity: 60,
   },
   {
+    id: '2',
     number: 2,
     buildingNo: '451',
     buildingName: 'IT대학5호관(IT융복합관)',
@@ -56,6 +76,7 @@ const classroomDummyData = [
     capacity: 45,
   },
   {
+    id: '3',
     number: 3,
     buildingNo: '451',
     buildingName: 'IT대학5호관(IT융복합관)',
@@ -65,7 +86,7 @@ const classroomDummyData = [
 ];
 
 /* 남은 할 일
-1. 각 헤더 버튼 함수 구현
+1. 삭제 모달
 2. URL endpoint에 따라 추가/수정 모드 구분
 3. dummyData 대신 API 연동하여 데이터 불러오기
 4. 간격 조정
@@ -77,8 +98,9 @@ function DepartmentEditPage() {
   const [employeeData, setEmployeeData] = useState([]);
   const [classroomData, setClassroomData] = useState([]);
 
-  // const [employeeSelectedRows, setEmployeeSelectedRows] = useState([]);
-  // const [classroomSelectedRows, setClassroomSelectedRows] = useState([]);
+  const [employeeSelectedRows, setEmployeeSelectedRows] = useState([]);
+  const [classroomSelectedRows, setClassroomSelectedRows] = useState([]);
+
   const [employeeNewRows, setEmployeeNewRows] = useState([]);
   const [classroomNewRows, setClassroomNewRows] = useState([]);
 
@@ -130,13 +152,28 @@ function DepartmentEditPage() {
     };
     setEmployeeNewRows((prev) => [...prev, newRow]);
   };
-
   const handleEmployeeNewRowChange = (rowId, columnKey, value) => {
     setEmployeeNewRows((prev) =>
       prev.map((row) =>
         row.id === rowId ? { ...row, [columnKey]: value } : row
       )
     );
+  };
+  const handleDeleteEmployeeRows = () => {
+    console.log(employeeSelectedRows);
+    if (employeeSelectedRows.length === 0) {
+      alert('삭제할 직원을 선택해주세요.');
+      return;
+    }
+
+    // 삭제 모달
+
+    // DELETE 요청 보내기
+    setEmployeeData((prev) =>
+      prev.filter((row) => !employeeSelectedRows.includes(row.id))
+    );
+
+    setEmployeeSelectedRows([]);
   };
 
   const handleAddClassroomRow = () => {
@@ -156,6 +193,19 @@ function DepartmentEditPage() {
         row.id === rowId ? { ...row, [columnKey]: value } : row
       )
     );
+  };
+  const handleDeleteClassroomRows = () => {
+    if (classroomSelectedRows.length === 0) {
+      alert('삭제할 강의실을 선택해주세요.');
+      return;
+    }
+    // 삭제 모달
+
+    // DELETE 요청 보내기
+    setClassroomData((prev) =>
+      prev.filter((row) => !classroomSelectedRows.includes(row.id))
+    );
+    setClassroomSelectedRows([]);
   };
 
   return (
@@ -179,9 +229,7 @@ function DepartmentEditPage() {
             {
               text: '삭제',
               color: 'lightgray',
-              onClick: () => {
-                console.log(employeeNewRows);
-              },
+              onClick: handleDeleteEmployeeRows,
             },
           ]}
           // 추가일 경우 buttonsDat 그대로 하고 수정일 경우 수정 버튼 추가 필요
@@ -193,6 +241,7 @@ function DepartmentEditPage() {
           maxHeight={160} // newRow에 의해 기존 Row가 짤리는 문제
           selectable={true}
           newRows={employeeNewRows}
+          updateSelection={setEmployeeSelectedRows}
           onNewRowChange={handleEmployeeNewRowChange}
           renderNewRowActions={() => <PlusCell />}
         />
@@ -208,7 +257,11 @@ function DepartmentEditPage() {
               color: 'lightgray',
               onClick: handleAddClassroomRow,
             },
-            { text: '삭제', color: 'lightgray', onClick: () => {} },
+            {
+              text: '삭제',
+              color: 'lightgray',
+              onClick: handleDeleteClassroomRows,
+            },
           ]}
         />
         <VerticalTable
@@ -218,6 +271,7 @@ function DepartmentEditPage() {
           maxHeight={600}
           selectable={true}
           newRows={classroomNewRows}
+          updateSelection={setClassroomSelectedRows}
           onNewRowChange={handleClassroomNewRowChange}
           renderNewRowActions={() => <PlusCell />}
         />
