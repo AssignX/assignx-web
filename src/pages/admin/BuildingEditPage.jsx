@@ -30,9 +30,9 @@ const classroomDummyData = [
 ];
 
 /* 남은 할 일
-1. URL endpoint에 따라 추가/수정 모드 구분
-2. dummyData 대신 API 연동하여 데이터 불러오기
-3. 간격 조정
+1. dummyData 대신 API 연동하여 데이터 불러오기
+2. 간격 조정
+3. Row 수정 기능 구현 필요 (VerticalTable의 button)
 
 ++ buildingData를 받아와서, classRoomData로 변경할 때 (fetch 함수에서)
 roomId와 같은 id를 추가해야 함

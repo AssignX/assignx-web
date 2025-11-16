@@ -71,9 +71,9 @@ const classroomDummyData = [
 ];
 
 /* 남은 할 일
-1. URL endpoint에 따라 추가/수정 모드 구분
-2. dummyData 대신 API 연동하여 데이터 불러오기
-3. 간격 조정
+1. dummyData 대신 API 연동하여 데이터 불러오기
+2. 간격 조정
+3. Row 수정 기능 구현 필요 (VerticalTable의 button)
 */
 function DepartmentEditPage() {
   const navigate = useNavigate();
