@@ -10,9 +10,10 @@ import { SaveIcon } from '@/assets/icons';
 
 import EmployeeModal from './EmployeeModal';
 import ClassRoomModal from './ClassRoomModal';
+import SaveConfirmModal from './SaveConfirmModal';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const employeeColumns = [
   {
@@ -70,17 +71,18 @@ const classroomDummyData = [
 ];
 
 /* 남은 할 일
-1. 삭제 모달
-2. URL endpoint에 따라 추가/수정 모드 구분
-3. dummyData 대신 API 연동하여 데이터 불러오기
-4. 간격 조정
+1. URL endpoint에 따라 추가/수정 모드 구분
+2. dummyData 대신 API 연동하여 데이터 불러오기
+3. 간격 조정
 */
 function DepartmentEditPage() {
+  const navigate = useNavigate();
   const { id } = useParams();
   const isEditMode = Boolean(id);
 
   const [isEmployeeModalOpen, setIsEmployeeModalOpen] = useState(false);
   const [isClassRoomModalOpen, setIsClassRoomModalOpen] = useState(false);
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
 
   const [college, setCollege] = useState('');
   const [department, setDepartment] = useState('');
@@ -175,7 +177,7 @@ function DepartmentEditPage() {
     setClassroomSelectedRows([]);
   };
 
-  const handleSelectEmployeeFromModal = (employees) => {
+  const handleSelectEmployee = (employees) => {
     setEmployeeData((prev) => {
       const newOnes = employees.filter(
         (emp) => !prev.some((row) => row.id === emp.id)
@@ -184,13 +186,21 @@ function DepartmentEditPage() {
     });
   };
 
-  const handleSelectClassRoomFromModal = (rooms) => {
+  const handleSelectClassRoom = (rooms) => {
     setClassroomData((prev) => {
       const newOnes = rooms.filter(
         (room) => !prev.some((r) => r.id === room.id)
       );
       return [...prev, ...newOnes];
     });
+  };
+
+  const handleOpenSaveModal = () => {
+    setIsSaveModalOpen(true);
+  };
+  const handleConfirmSave = () => {
+    // TODO: 실제 저장 API 호출
+    navigate(-1); // 저장 후 이전 페이지로 이동
   };
 
   const employeeSectionButtons = isEditMode
@@ -218,7 +228,12 @@ function DepartmentEditPage() {
         <PageHeader
           title='학과 목록'
           buttonsData={[
-            { text: '저장', color: 'gold', Icon: SaveIcon, onClick: () => {} },
+            {
+              text: '저장',
+              color: 'gold',
+              Icon: SaveIcon,
+              onClick: handleOpenSaveModal,
+            },
           ]}
         />
         <HorizontalTable items={departmentInfo} />
@@ -276,13 +291,19 @@ function DepartmentEditPage() {
       {isEmployeeModalOpen && (
         <EmployeeModal
           setIsOpen={setIsEmployeeModalOpen}
-          onSelect={handleSelectEmployeeFromModal}
+          onSelect={handleSelectEmployee}
         />
       )}
       {isClassRoomModalOpen && (
         <ClassRoomModal
           setIsOpen={setIsClassRoomModalOpen}
-          onSelect={handleSelectClassRoomFromModal}
+          onSelect={handleSelectClassRoom}
+        />
+      )}
+      {isSaveModalOpen && (
+        <SaveConfirmModal
+          setIsOpen={setIsSaveModalOpen}
+          onConfirm={handleConfirmSave}
         />
       )}
     </Section>
