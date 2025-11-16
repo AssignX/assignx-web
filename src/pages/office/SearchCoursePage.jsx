@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import Layout from '@/pages/office/Layout';
 import CourseSearchTable from './CourseSearchTable';
 import VerticalTable from '@/components/table/VerticalTable';
@@ -7,10 +7,13 @@ import PageHeader from '@/components/headers/PageHeader';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
 import ToggleSwitch from '@/components/ToggleSwitch';
+import Button from '@/components/buttons/Button';
+import ProfessorMappingModal from './ProfessorMappingModal';
+import { TriangleAlertIcon } from '@/assets/icons/index.js';
 
 export default function SearchCoursePage() {
-  const [allCourses, setAllCourses] = useState([]); // 전체 데이터
-  const [courses, setCourses] = useState([]); // 필터 적용된 데이터
+  const [allCourses, setAllCourses] = useState([]);
+  const [courses, setCourses] = useState([]);
   const [filters, setFilters] = useState({
     year: '2025',
     semester: '2',
@@ -18,10 +21,40 @@ export default function SearchCoursePage() {
     keyword: '',
   });
   const [toggleUnassigned, setToggleUnassigned] = useState(false);
+
   const { name, departmentName } = useAuthStore();
   const navigate = useNavigate();
   const accessToken = useAuthStore((state) => state.accessToken);
   const logout = useAuthStore((state) => state.logout);
+
+  const [isMappingModalOpen, setIsMappingModalOpen] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+
+  const [modalMetaInfo, setModalMetaInfo] = useState(null);
+
+  const handleMappingClick = () => {
+    if (!selectedCourse) {
+      alert('과목을 선택하세요.');
+      return;
+    }
+
+    if (selectedCourse.isProfessorMapped) {
+      alert('이미 담당 교수가 배정된 과목입니다.');
+      return;
+    }
+
+    setModalMetaInfo({
+      year: selectedCourse.year,
+      courseCode: selectedCourse.courseCode,
+      courseId: selectedCourse.courseId,
+      courseName: selectedCourse.courseName,
+      professorName: selectedCourse.professorName,
+      major: selectedCourse.major,
+      courseTime: selectedCourse.courseTime,
+    });
+
+    setIsMappingModalOpen(true);
+  };
 
   useEffect(() => {
     if (!accessToken) navigate('/login');
@@ -40,6 +73,16 @@ export default function SearchCoursePage() {
     fetchAllCourses();
   }, []);
 
+  const refreshCourses = async () => {
+    try {
+      const { data } = await apiClient.get('/api/course/search');
+      setAllCourses(data || []);
+      applyFilter(data || []);
+    } catch (err) {
+      console.error('과목 목록 새로고침 실패:', err);
+    }
+  };
+
   const handleLogout = async () => {
     try {
       await apiClient.post('/api/auth/logout');
@@ -51,40 +94,49 @@ export default function SearchCoursePage() {
     }
   };
 
-  const handleSearch = () => {
-    const { year, semester, detailType, keyword } = filters;
+  const applyFilter = useCallback(
+    (source) => {
+      const { year, semester, detailType, keyword } = filters;
 
-    let filtered = allCourses.filter((c) => {
-      // 연도, 학기 기본 필터
-      if (year && c.year !== year) return false;
-      if (semester && c.semester !== semester) return false;
+      let filtered = source.filter((c) => {
+        if (year && c.year !== year) return false;
+        if (semester && c.semester !== semester) return false;
 
-      // 상세검색
-      if (keyword) {
-        const k = keyword.trim().toLowerCase();
-        if (detailType === '교과목명')
-          return c.courseName?.toLowerCase().includes(k);
-        if (detailType === '담당교수')
-          return c.professorName?.toLowerCase().includes(k);
-        if (detailType === '강좌번호')
-          return c.courseCode?.toLowerCase().includes(k);
-        // detailType 선택 안 한 경우 → 전체 텍스트 검색
-        return (
-          c.courseName?.toLowerCase().includes(k) ||
-          c.professorName?.toLowerCase().includes(k) ||
-          c.courseCode?.toLowerCase().includes(k)
-        );
+        if (keyword) {
+          const k = keyword.trim().toLowerCase();
+          if (detailType === '교과목명')
+            return c.courseName?.toLowerCase().includes(k);
+          if (detailType === '담당교수')
+            return c.professorName?.toLowerCase().includes(k);
+          if (detailType === '강좌번호')
+            return c.courseCode?.toLowerCase().includes(k);
+
+          return (
+            c.courseName?.toLowerCase().includes(k) ||
+            c.professorName?.toLowerCase().includes(k) ||
+            c.courseCode?.toLowerCase().includes(k)
+          );
+        }
+
+        return true;
+      });
+
+      if (toggleUnassigned) {
+        filtered = filtered.filter((c) => !c.isProfessorMapped);
       }
-      return true;
-    });
 
-    if (toggleUnassigned) {
-      filtered = filtered.filter(
-        (c) => !c.professorName || c.professorName.trim() === ''
-      );
-    }
+      setCourses(filtered);
+    },
+    [filters, toggleUnassigned]
+  );
 
-    setCourses(filtered);
+  useEffect(() => {
+    applyFilter(allCourses);
+  }, [filters, toggleUnassigned, allCourses, applyFilter]);
+
+  const handleSearch = (newFilters) => {
+    console.log('현재 검색 필터:', filters);
+    setFilters(newFilters);
   };
 
   const columns = useMemo(
@@ -92,7 +144,7 @@ export default function SearchCoursePage() {
       {
         accessorKey: 'no',
         header: 'No',
-        size: 45,
+        size: 40,
         cell: ({ row }) => row.index + 1,
       },
       { accessorKey: 'year', header: '개설연도', size: 75 },
@@ -100,10 +152,28 @@ export default function SearchCoursePage() {
       { accessorKey: 'major', header: '개설학과', size: 100 },
       { accessorKey: 'courseCode', header: '강좌번호', size: 130 },
       { accessorKey: 'courseName', header: '교과목명', size: 130 },
-      { accessorKey: 'professorName', header: '담당교수', size: 110 },
-      { accessorKey: 'courseTime', header: '강의시간', size: 175 },
+      {
+        accessorKey: 'professorName',
+        header: '담당교수',
+        size: 130,
+        cell: ({ row }) => {
+          const { professorName, isProfessorMapped } = row.original;
+
+          if (!isProfessorMapped) {
+            return (
+              <div className='text-red flex items-center gap-1'>
+                <TriangleAlertIcon size={16} />
+                {professorName || ''}
+              </div>
+            );
+          }
+          return professorName || '';
+        },
+      },
+
+      { accessorKey: 'courseTime', header: '강의시간', size: 180 },
       { accessorKey: 'buildingName', header: '강의실', size: 175 },
-      { accessorKey: 'enrolledCount', header: '정원', size: 50 },
+      { accessorKey: 'enrolledCount', header: '인원', size: 50 },
     ],
     []
   );
@@ -143,8 +213,7 @@ export default function SearchCoursePage() {
           <PageHeader title='과목 목록' />
           <CourseSearchTable
             filters={filters}
-            setFilters={setFilters}
-            onSearch={handleSearch}
+            onSearch={(newFilters) => handleSearch(newFilters)}
           />
         </div>
 
@@ -155,7 +224,13 @@ export default function SearchCoursePage() {
               checked={toggleUnassigned}
               onChange={setToggleUnassigned}
             />
+            <Button
+              text='배정'
+              color='lightgray'
+              onClick={handleMappingClick}
+            />
           </div>
+
           <VerticalTable
             columns={columns}
             data={courses}
@@ -163,9 +238,27 @@ export default function SearchCoursePage() {
             singleSelect={true}
             headerHeight={32}
             maxHeight={670}
+            updateSelection={(rows) => {
+              const idx = rows[0];
+              setSelectedCourse(
+                idx !== undefined && idx !== null ? courses[idx] : null
+              );
+            }}
           />
         </div>
       </div>
+
+      {modalMetaInfo && (
+        <ProfessorMappingModal
+          isOpen={isMappingModalOpen}
+          onClose={() => setIsMappingModalOpen(false)}
+          onSelect={() => {
+            refreshCourses();
+            setIsMappingModalOpen(false);
+          }}
+          metaInfo={modalMetaInfo}
+        />
+      )}
     </Layout>
   );
 }
