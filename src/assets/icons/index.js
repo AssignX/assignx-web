@@ -10,3 +10,4 @@ export { default as ChevronRightIcon } from './chevron-right.svg?react';
 export { default as HouseIcon } from './house.svg?react';
 export { default as CalendarDaysIcon } from './calendar-days.svg?react';
 export { default as CloseIcon } from './closebutton.svg?react';
+export { default as TriangleAlertIcon } from './triangle-alert.svg?react';
