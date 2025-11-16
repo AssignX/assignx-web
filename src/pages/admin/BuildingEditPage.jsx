@@ -7,7 +7,11 @@ import VerticalTable from '@/components/table/VerticalTable';
 import InputCell from '@/components/table/cells/InputCell';
 import PlusCell from '@/components/table/cells/PlusCell';
 import { SaveIcon } from '@/assets/icons';
+
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import SaveConfirmModal from './SaveConfirmModal';
 
 const ClassroomColumns = [
   {
@@ -26,15 +30,15 @@ const classroomDummyData = [
 ];
 
 /* 남은 할 일
-1. 삭제 모달
-2. URL endpoint에 따라 추가/수정 모드 구분
-3. dummyData 대신 API 연동하여 데이터 불러오기
-4. 간격 조정
+1. URL endpoint에 따라 추가/수정 모드 구분
+2. dummyData 대신 API 연동하여 데이터 불러오기
+3. 간격 조정
 
 ++ buildingData를 받아와서, classRoomData로 변경할 때 (fetch 함수에서)
 roomId와 같은 id를 추가해야 함
 */
 function BuildingEditPage() {
+  const navigate = useNavigate();
   const [buildingNumber, setBuildingNumber] = useState('');
   const [buildingName, setBuildingName] = useState('');
 
@@ -43,6 +47,8 @@ function BuildingEditPage() {
   const [classroomNewRows, setClassroomNewRows] = useState([]);
 
   const [classroomSelectedRows, setClassroomSelectedRows] = useState([]);
+
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
 
   const departmentInfo = [
     {
@@ -108,13 +114,34 @@ function BuildingEditPage() {
     setClassroomSelectedRows([]);
   };
 
+  const handleOpenSaveModal = () => {
+    setIsSaveModalOpen(true);
+  };
+
+  const handleConfirmSave = () => {
+    // TODO: 실제 저장 API 호출
+    const payload = {
+      buildingNumber,
+      buildingName,
+      classrooms: [...classroomData, ...classroomNewRows],
+    };
+    console.log('저장 payload:', payload);
+
+    navigate(-1); // 저장 후 이전 페이지로 이동
+  };
+
   return (
     <Section>
       <div>
         <PageHeader
           title='건물 정보'
           buttonsData={[
-            { text: '저장', color: 'gold', Icon: SaveIcon, onClick: () => {} },
+            {
+              text: '저장',
+              color: 'gold',
+              Icon: SaveIcon,
+              onClick: handleOpenSaveModal,
+            },
           ]}
         />
         <HorizontalTable items={departmentInfo} />
@@ -149,6 +176,13 @@ function BuildingEditPage() {
           renderNewRowActions={() => <PlusCell />}
         />
       </div>
+
+      {isSaveModalOpen && (
+        <SaveConfirmModal
+          setIsOpen={setIsSaveModalOpen}
+          onConfirm={handleConfirmSave}
+        />
+      )}
     </Section>
   );
 }
