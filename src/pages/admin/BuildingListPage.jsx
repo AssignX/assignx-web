@@ -2,6 +2,8 @@ import Section from '@/components/common/Section';
 import PageHeader from '@/components/headers/PageHeader';
 import VerticalTable from '@/components/table/VerticalTable';
 
+import DeleteConfirmModal from './DeleteConfirmModal';
+
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,12 +19,14 @@ const buildingColumns = [
 
 const dummyData = [
   {
+    id: 1,
     buildingId: 1,
     number: 1,
     buildingNumber: '001',
     buildingName: 'IT대학5호관(IT융복합)',
   },
   {
+    id: 2,
     buildingId: 2,
     number: 2,
     buildingNumber: '002',
@@ -35,10 +39,22 @@ function BuildingListPage() {
   const [buildingData, setBuildingData] = useState([]);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
 
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   useEffect(() => {
     // Fetch building data from API
     setBuildingData(dummyData);
   }, []);
+
+  const handleConfirmDelete = () => {
+    const targetId = selectedRowIds[0];
+    // TODO: /api/building/{buildingId} DELETE 요청
+
+    setBuildingData((prev) =>
+      prev.filter((row) => String(row.id) !== String(targetId))
+    );
+    setSelectedRowIds([]);
+  };
 
   return (
     <Section>
@@ -66,7 +82,11 @@ function BuildingListPage() {
               text: '삭제',
               color: 'lightgray',
               onClick: () => {
-                // /api/building/{buildingId} DELETE 요청
+                if (selectedRowIds.length === 0) {
+                  alert('삭제할 건물을 선택해주세요.');
+                  return;
+                }
+                setIsDeleteModalOpen(true);
               },
             },
           ]}
@@ -81,6 +101,13 @@ function BuildingListPage() {
           updateSelection={setSelectedRowIds}
         />
       </div>
+      {isDeleteModalOpen && (
+        <DeleteConfirmModal
+          setIsOpen={setIsDeleteModalOpen}
+          onConfirm={handleConfirmDelete}
+          message='선택한 건물을 삭제하시겠습니까?'
+        />
+      )}
     </Section>
   );
 }
