@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import DropdownCell from '@/components/table/cells/DropdownCell';
 import InputCell from '@/components/table/cells/InputCell';
 import YearPickerCell from '@/components/table/cells/YearPickerCell';
@@ -6,25 +7,15 @@ import HorizontalTable from '@/components/table/HorizontalTable';
 import { SearchIcon } from '@/assets/icons';
 import PropTypes from 'prop-types';
 
-const semesterOptions = [
-  { value: '1', label: '1학기' },
-  { value: '2', label: '2학기' },
-];
+export default function CourseSearchTable({ filters, onSearch }) {
+  const [localFilters, setLocalFilters] = useState(filters);
 
-const detailOptions = [
-  { value: '', label: '선택' },
-  { value: '담당교수', label: '담당교수' },
-  { value: '강좌번호', label: '강좌번호' },
-  { value: '교과목명', label: '교과목명' },
-];
+  useEffect(() => {
+    setLocalFilters(filters);
+  }, [filters]);
 
-export default function CourseSearchTable({ filters, setFilters, onSearch }) {
-  const handleChange = (key, value) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const updateFilters = (rowId, columnKey, value) => {
-    handleChange(columnKey, value);
+  const updateLocal = (key, value) => {
+    setLocalFilters((prev) => ({ ...prev, [key]: value }));
   };
 
   const filterItems = [
@@ -37,8 +28,8 @@ export default function CourseSearchTable({ filters, setFilters, onSearch }) {
         <YearPickerCell
           rowId='filters'
           columnKey='year'
-          initialValue={Number(filters.year)}
-          updateData={updateFilters}
+          initialValue={Number(localFilters.year)}
+          updateData={(row, col, val) => updateLocal(col, String(val))}
         />
       ),
     },
@@ -49,11 +40,14 @@ export default function CourseSearchTable({ filters, setFilters, onSearch }) {
       contentWidth: '115px',
       content: (
         <DropdownCell
-          initialValue={filters.semester}
-          options={semesterOptions}
+          initialValue={localFilters.semester}
+          options={[
+            { value: '1', label: '1학기' },
+            { value: '2', label: '2학기' },
+          ]}
           rowId='filters'
           columnKey='semester'
-          updateData={updateFilters}
+          updateData={(row, col, val) => updateLocal(col, val)}
           height={32}
         />
       ),
@@ -66,20 +60,24 @@ export default function CourseSearchTable({ filters, setFilters, onSearch }) {
       content: (
         <div className='flex items-center gap-1'>
           <DropdownCell
-            initialValue={filters.detailType}
-            options={detailOptions}
+            initialValue={localFilters.detailType}
+            options={[
+              { value: '', label: '선택' },
+              { value: '담당교수', label: '담당교수' },
+              { value: '강좌번호', label: '강좌번호' },
+              { value: '교과목명', label: '교과목명' },
+            ]}
             rowId='filters'
             columnKey='detailType'
-            updateData={updateFilters}
+            updateData={(row, col, val) => updateLocal(col, val)}
             height={32}
           />
+
           <InputCell
-            initialValue={filters.keyword}
-            rowId='filters'
-            columnKey='keyword'
-            updateData={updateFilters}
-            placeholder='검색어 입력'
+            value={localFilters.keyword}
+            onChange={(e) => updateLocal('keyword', e.target.value)}
             height={32}
+            placeholder='검색어'
           />
         </div>
       ),
@@ -93,7 +91,7 @@ export default function CourseSearchTable({ filters, setFilters, onSearch }) {
           color='lightgray'
           textSize='text-sm'
           Icon={SearchIcon}
-          onClick={onSearch}
+          onClick={() => onSearch(localFilters)}
         />
       ),
     },
