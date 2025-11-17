@@ -20,6 +20,9 @@ import TimetableTest from './pages/test/TimetableTest.jsx';
 import SearchClassPage from './pages/office/SearchClassPage.jsx';
 import LoginPage from './pages/login/LoginPage.jsx';
 import SearchProfessorPage from './pages/office/SearchProfessorPage.jsx';
+import PendingSchedulePage from './pages/office/PendingSchedulePage.jsx';
+import ConfirmedSchedulePage from './pages/office/ConfirmedSchedulePage.jsx';
+import SchedulePage from './pages/office/SchedulePage.jsx';
 
 export default function App() {
   return (
@@ -38,6 +41,7 @@ export default function App() {
       <Route path='office/classrooms' element={<SearchClassPage />} />
       <Route path='login' element={<LoginPage />} />
       <Route path='office/professors' element={<SearchProfessorPage />} />
+      <Route path='office/exam' element={<SchedulePage />} />
     </Routes>
   );
 }

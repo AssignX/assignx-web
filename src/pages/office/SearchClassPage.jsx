@@ -161,8 +161,8 @@ export default function SearchClassPage() {
         {
           title: '일정',
           subItems: [
-            { label: '확정 목록', path: '/confirmed' },
-            { label: '미확정 목록', path: '/unconfirmed' },
+            { label: '확정 목록', path: '/office/confirmed' },
+            { label: '미확정 목록', path: '/office/pending' },
           ],
         },
       ]}
