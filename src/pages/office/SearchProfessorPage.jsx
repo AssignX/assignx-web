@@ -150,11 +150,9 @@ export default function SearchProfessorPage() {
           subItems: [{ label: '강의실 목록', path: '/office/classrooms' }],
         },
         {
-          title: '일정',
-          subItems: [
-            { label: '확정 목록', path: '/office/confirmed' },
-            { label: '미확정 목록', path: '/office/pending' },
-          ],
+          title: '시험',
+          isOpen: true,
+          subItems: [{ label: '시험 일정', path: '/office/exam' }],
         },
       ]}
     >
