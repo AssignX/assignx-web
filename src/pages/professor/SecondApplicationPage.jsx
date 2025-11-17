@@ -16,38 +16,13 @@ const unconfirmedTableColumns = [
     header: 'No',
     accessorKey: 'number',
     size: 50,
-    cell: (info) => info.getValue(),
+    cell: ({ row }) => row.index + 1,
   },
-  {
-    header: '과목명',
-    accessorKey: 'subjectName',
-    size: 120,
-    cell: (info) => info.getValue(),
-  },
-  {
-    header: '과목코드',
-    accessorKey: 'subjectCode',
-    size: 100,
-    cell: (info) => info.getValue(),
-  },
-  {
-    header: '분반',
-    accessorKey: 'classSection',
-    size: 50,
-    cell: (info) => info.getValue(),
-  },
-  {
-    header: '강의시간',
-    accessorKey: 'classTime',
-    size: 200,
-    cell: (info) => info.getValue(),
-  },
-  {
-    header: '수강인원',
-    accessorKey: 'studentCount',
-    size: 64,
-    cell: (info) => info.getValue(),
-  },
+  { header: '과목명', accessorKey: 'subjectName', size: 120 },
+  { header: '과목코드', accessorKey: 'subjectCode', size: 100 },
+  { header: '분반', accessorKey: 'classSection', size: 50 },
+  { header: '강의시간', accessorKey: 'classTime', size: 200 },
+  { header: '수강인원', accessorKey: 'studentCount', size: 64 },
   {
     header: '신청시간',
     accessorKey: 'applicationTime',
@@ -56,6 +31,7 @@ const unconfirmedTableColumns = [
       const rowData = info.row.original;
       const options = rowData.applicationOptions ?? [];
       return (
+        // DropdownCell에서 일반 Cell로 변경 + DayPicker 기능 추가
         <DropdownCell
           initialValue={rowData.applicationTime ?? ''}
           options={options}
@@ -93,56 +69,16 @@ const confirmedTableColumns = [
     header: 'No',
     accessorKey: 'number',
     size: 50,
-    cell: (info) => info.getValue(),
+    cell: ({ row }) => row.index + 1,
   },
-  {
-    header: '과목명',
-    accessorKey: 'subjectName',
-    size: 120,
-    cell: (info) => info.getValue(),
-  },
-  {
-    header: '과목코드',
-    accessorKey: 'subjectCode',
-    size: 100,
-    cell: (info) => info.getValue(),
-  },
-  {
-    header: '분반',
-    accessorKey: 'classSection',
-    size: 50,
-    cell: (info) => info.getValue(),
-  },
-  {
-    header: '강의시간',
-    accessorKey: 'classTime',
-    size: 200,
-    cell: (info) => info.getValue(),
-  },
-  {
-    header: '확정 시간',
-    accessorKey: 'confirmedTime',
-    size: 300,
-    cell: (info) => info.getValue(),
-  },
-  {
-    header: '강의실',
-    accessorKey: 'classRoom',
-    size: 150,
-    cell: (info) => info.getValue(),
-  },
-  {
-    header: '수강인원',
-    accessorKey: 'studentCount',
-    size: 64,
-    cell: (info) => info.getValue(),
-  },
-  {
-    header: '확정여부',
-    accessorKey: 'confirmationStatus',
-    size: 100,
-    cell: (info) => info.getValue(),
-  },
+  { header: '과목명', accessorKey: 'subjectName', size: 120 },
+  { header: '과목코드', accessorKey: 'subjectCode', size: 100 },
+  { header: '분반', accessorKey: 'classSection', size: 50 },
+  { header: '강의시간', accessorKey: 'classTime', size: 200 },
+  { header: '확정 시간', accessorKey: 'confirmedTime', size: 300 },
+  { header: '강의실', accessorKey: 'classRoom', size: 150 },
+  { header: '수강인원', accessorKey: 'studentCount', size: 64 },
+  { header: '확정여부', accessorKey: 'confirmationStatus', size: 100 },
 ];
 
 const dummyUnappliedTableRows = [
@@ -315,7 +251,7 @@ function SecondApplicationPage() {
           helperText='※ 2차 시험 신청은 ~~ 이내에만 가능하며, 이외 문의사항은 학과 사무실로 연락 바랍니다.'
           buttonsData={[
             {
-              text: '검색',
+              text: '조회',
               color: 'lightgray',
               Icon: SearchIcon,
               onClick: () => {},

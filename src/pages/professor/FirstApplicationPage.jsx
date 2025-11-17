@@ -16,26 +16,11 @@ const unconfirmedTableColumns = [
     header: 'No',
     accessorKey: 'number',
     size: 50,
-    cell: (info) => info.getValue(),
+    cell: ({ row }) => row.index + 1,
   },
-  {
-    header: '과목명',
-    accessorKey: 'subjectName',
-    size: 120,
-    cell: (info) => info.getValue(),
-  },
-  {
-    header: '과목코드',
-    accessorKey: 'subjectCode',
-    size: 100,
-    cell: (info) => info.getValue(),
-  },
-  {
-    header: '분반',
-    accessorKey: 'classSection',
-    size: 50,
-    cell: (info) => info.getValue(),
-  },
+  { header: '과목명', accessorKey: 'subjectName', size: 120 },
+  { header: '과목코드', accessorKey: 'subjectCode', size: 100 },
+  { header: '분반', accessorKey: 'classSection', size: 50 },
   {
     header: '강의시간',
     accessorKey: 'classTime',
@@ -95,56 +80,16 @@ const confirmedTableColumns = [
     header: 'No',
     accessorKey: 'number',
     size: 50,
-    cell: (info) => info.getValue(),
+    cell: ({ row }) => row.index + 1,
   },
-  {
-    header: '과목명',
-    accessorKey: 'subjectName',
-    size: 120,
-    cell: (info) => info.getValue(),
-  },
-  {
-    header: '과목코드',
-    accessorKey: 'subjectCode',
-    size: 100,
-    cell: (info) => info.getValue(),
-  },
-  {
-    header: '분반',
-    accessorKey: 'classSection',
-    size: 50,
-    cell: (info) => info.getValue(),
-  },
-  {
-    header: '강의시간',
-    accessorKey: 'classTime',
-    size: 200,
-    cell: (info) => info.getValue(),
-  },
-  {
-    header: '확정 시간',
-    accessorKey: 'confirmedTime',
-    size: 300,
-    cell: (info) => info.getValue(),
-  },
-  {
-    header: '강의실',
-    accessorKey: 'classRoom',
-    size: 150,
-    cell: (info) => info.getValue(),
-  },
-  {
-    header: '수강인원',
-    accessorKey: 'studentCount',
-    size: 64,
-    cell: (info) => info.getValue(),
-  },
-  {
-    header: '확정여부',
-    accessorKey: 'confirmationStatus',
-    size: 100,
-    cell: (info) => info.getValue(),
-  },
+  { header: '과목명', accessorKey: 'subjectName', size: 120 },
+  { header: '과목코드', accessorKey: 'subjectCode', size: 100 },
+  { header: '분반', accessorKey: 'classSection', size: 50 },
+  { header: '강의시간', accessorKey: 'classTime', size: 200 },
+  { header: '확정 시간', accessorKey: 'confirmedTime', size: 300 },
+  { header: '강의실', accessorKey: 'classRoom', size: 150 },
+  { header: '수강인원', accessorKey: 'studentCount', size: 64 },
+  { header: '확정여부', accessorKey: 'confirmationStatus', size: 100 },
 ];
 
 const dummyUnconfirmedTableRows = [
@@ -284,7 +229,7 @@ function FirstApplicationPage() {
           helperText='※해당 시간표는 시스템 선정 기준 유력 후보 1순위만 표기하고 있습니다.'
           buttonsData={[
             {
-              text: '검색',
+              text: '조회',
               color: 'lightgray',
               Icon: SearchIcon,
               onClick: () => {},

@@ -5,9 +5,10 @@ import VerticalTable from '@/components/table/VerticalTable';
 import TimeTable from '@/components/TimeTable';
 import ClassRoomSearchTable from '@/components/table/ClassRoomSearchTable';
 
+import apiClient from '@/api/apiClient';
 import { useEffect, useState } from 'react';
 
-const subjectTableColumns = [
+const courseTableColumns = [
   {
     id: 'no',
     accessorKey: 'no',
@@ -16,168 +17,143 @@ const subjectTableColumns = [
     cell: (info) => info.getValue(),
   },
   {
-    id: 'subjectName',
-    accessorKey: 'subjectName',
+    id: 'courseName',
+    accessorKey: 'courseName',
     header: '과목명',
-    size: 124,
+    size: 180,
     cell: (info) => info.getValue(),
   },
   {
-    id: 'subjectCode',
-    accessorKey: 'subjectCode',
+    id: 'courseCode',
+    accessorKey: 'courseCode',
     header: '과목코드',
     size: 120,
     cell: (info) => info.getValue(),
   },
   {
-    id: 'division',
-    accessorKey: 'division',
-    header: '분반',
-    size: 50,
-    cell: (info) => info.getValue(),
-  },
-  {
-    id: 'classTime',
-    accessorKey: 'classTime',
+    id: 'courseTime',
+    accessorKey: 'courseTime',
     header: '강의시간',
-    size: 180,
-    cell: (info) => info.getValue(),
-  },
-  {
-    id: 'realTime',
-    accessorKey: 'realTime',
-    header: '강의시간(실제시간)',
-    size: 260,
+    size: 220,
     cell: (info) => info.getValue(),
   },
   {
     id: 'classroom',
     accessorKey: 'classroom',
     header: '강의실',
-    size: 100,
+    size: 120,
     cell: (info) => info.getValue(),
   },
   {
-    id: 'students',
-    accessorKey: 'students',
+    id: 'enrolledCount',
+    accessorKey: 'enrolledCount',
     header: '수강인원',
-    size: 60,
+    size: 80,
     cell: (info) => info.getValue(),
   },
 ];
+
 const timetableStart = '08:00';
 const timetableEnd = '20:00';
 const timetableDays = ['월', '화', '수', '목', '금', '토'];
 
 // dummy data
-const dummySubjectTableRows = [
-  {
-    id: '1',
-    no: 1,
-    subjectName: '자료구조',
-    subjectCode: 'ITEC0401',
-    division: '001',
-    classTime: '화 8B,9A,9B, 목 8B,9A,9B',
-    realTime: ['화 16:30 ~ 18:00, 목 16:30 ~ 18:00'],
-    classroom: 'IT5-302',
-    students: 42,
-  },
-  {
-    id: '2',
-    no: 2,
-    subjectName: '알고리즘',
-    subjectCode: 'ITEC0401',
-    division: '002',
-    classTime: '화 8B,9A,9B, 목 8B,9A,9B',
-    realTime: ['화 16:30 ~ 18:00, 목 16:30 ~ 18:00'],
-    classroom: 'IT5-205',
-    students: 37,
-  },
-  {
-    id: '3',
-    no: 3,
-    subjectName: '운영체제',
-    subjectCode: 'ITEC0401',
-    division: '001',
-    classTime: '금 8A,8B,9A,9B',
-    realTime: ['금 10:00 ~ 12:45'],
-    classroom: 'IT4-508',
-    students: 55,
-  },
-  {
-    id: '4',
-    no: 4,
-    subjectName: '운영체제',
-    subjectCode: 'ITEC0401',
-    division: '001',
-    classTime: '금 8A,8B,9A,9B',
-    realTime: ['금 10:00 ~ 12:45'],
-    classroom: 'IT4-508',
-    students: 55,
-  },
-  {
-    id: '5',
-    no: 5,
-    subjectName: '운영체제',
-    subjectCode: 'ITEC0401',
-    division: '001',
-    classTime: '금 8A,8B,9A,9B',
-    realTime: ['금 10:00 ~ 12:45'],
-    classroom: 'IT4-508',
-    students: 55,
-  },
-];
-const dummyTimeTableEntries = {
-  '월-0A': '자료구조\nITEC0401003',
-  '월-0B': '자료구조\nITEC0401003',
-  '월-1A': '자료구조\nITEC0401003',
-  '목-0A': '자료구조\nITEC0401003',
-  '목-0B': '자료구조\nITEC0401003',
-  '목-1A': '자료구조\nITEC0401003',
-  '화-2B': '알고리즘\nITEC0401003',
-  '화-3A': '알고리즘\nITEC0401003',
-  '화-3B': '알고리즘\nITEC0401003',
-  '금-0A': '운영체제\nITEC0401003',
-  '금-0B': '운영체제\nITEC0401003',
-  '금-1A': '운영체제\nITEC0401003',
-  '금-1B': '운영체제\nITEC0401003',
+const DUMMY_PROFESSOR = {
+  departmentId: 1,
+  professorName: '홍길동',
+  professorId: 1,
 };
 
 function ApplicationStatusPage() {
-  const [subjectTableRows, setSubjectTableRows] = useState([]);
+  const [courseTableRows, setCourseTableRows] = useState([]);
   const [timeTableEntries, setTimeTableEntries] = useState({});
-
   const [searchFilters, setSearchFilters] = useState(null);
 
   const handleSearchCondition = (filters) => {
     setSearchFilters(filters);
-    console.log(searchFilters);
   };
 
   useEffect(() => {
-    // fetch 함수
-    setSubjectTableRows(dummySubjectTableRows);
-  }, []);
+    if (!searchFilters) return;
 
-  useEffect(() => {
-    // fetch 함수
-    setTimeTableEntries(dummyTimeTableEntries);
-  }, []);
+    const fetchCourse = async () => {
+      // setIsLoading(true);
+      try {
+        const res = await apiClient.get('/api/course/search', {
+          params: {
+            year: searchFilters.year,
+            semester: searchFilters.semester,
+            roomId: searchFilters.buildingId || undefined, // buildingId → roomId로 매핑
+            departmentId: DUMMY_PROFESSOR.departmentId,
+            professorName: DUMMY_PROFESSOR.professorName,
+            professorId: DUMMY_PROFESSOR.professorId,
+            // professor 정보는 수정 필요
+          },
+        });
 
-  const subtitle = `${subjectTableRows?.length ?? 0}건`;
+        const data = Array.isArray(res.data) ? res.data : [];
+
+        // 1) 테이블 rows 변환
+        const rows = data.map((item, index) => ({
+          id: item.courseId,
+          no: index + 1,
+          courseName: item.courseName,
+          courseCode: item.courseCode,
+          courseTime: item.courseTime,
+          classroom:
+            [item.buildingName, item.roomNumber].filter(Boolean).join(' ') ||
+            '-', // "IT대학5호관 415" 같은 형태
+          enrolledCount: item.enrolledCount,
+        }));
+        setCourseTableRows(rows);
+
+        // 2) 시간표 entries 변환
+        //    courseTime 포맷이 "월 8B,9A,9B, 목 8B,9A,9B" 같은 형태라고 가정
+        const entries = data.reduce((acc, course) => {
+          if (!course.courseTime) return acc;
+
+          const slots = course.courseTime.split(',').map((s) => s.trim());
+
+          slots.forEach((slot) => {
+            if (!slot) return;
+            const [day, period] = slot.split(' ');
+            if (!day || !period) return;
+
+            acc[`${day}-${period}`] =
+              `${course.courseName}\n${course.courseCode}`;
+          });
+
+          return acc;
+        }, {});
+        setTimeTableEntries(entries);
+      } catch (err) {
+        console.error('과목 조회 실패:', err);
+        setCourseTableRows([]);
+        setTimeTableEntries({});
+      } finally {
+        // setIsLoading(false);
+      }
+    };
+
+    fetchCourse();
+
+    console.log('실행 완료');
+  }, [searchFilters]);
+
+  const subtitle = `${courseTableRows.length}건`;
 
   return (
     <Section>
-      <div className='isolate'>
+      <div>
         <PageHeader title='시간표 조회' />
         <ClassRoomSearchTable onSearch={handleSearchCondition} />
       </div>
 
-      <div className='isolate'>
+      <div>
         <SectionHeader title='과목 조회 목록' subtitle={subtitle} />
         <VerticalTable
-          columns={subjectTableColumns}
-          data={subjectTableRows}
+          columns={courseTableColumns}
+          data={courseTableRows}
           headerHeight={40}
           maxHeight={200}
           selectable={false}
@@ -185,7 +161,7 @@ function ApplicationStatusPage() {
       </div>
 
       {/* 시간표 카드 */}
-      <div className='isolate'>
+      <div>
         <SectionHeader title='강의 시간표' />
         <TimeTable
           startTime={timetableStart}
