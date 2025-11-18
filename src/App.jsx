@@ -19,7 +19,7 @@ import TableTestPage from './pages/test/TableTestPage.jsx';
 import TimetableTest from './pages/test/TimetableTest.jsx';
 import SearchClassPage from './pages/office/SearchClassPage.jsx';
 import LoginPage from './pages/login/LoginPage.jsx';
-import SearchProfessorPage from './pages/office/SearchProfessorPage.jsx';\
+import SearchProfessorPage from './pages/office/SearchProfessorPage.jsx';
 import SchedulePage from './pages/office/SchedulePage.jsx';
 
 export default function App() {
