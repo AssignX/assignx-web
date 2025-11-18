@@ -24,32 +24,40 @@ import ClassRoomModal from './pages/admin/ClassRoomModal.jsx';
 
 import BuildingListPage from './pages/admin/BuildingListPage.jsx';
 import BuildingEditPage from './pages/admin/BuildingEditPage.jsx';
+import SearchClassPage from './pages/office/SearchClassPage.jsx';
+import LoginPage from './pages/login/LoginPage.jsx';
 
 export default function App() {
   return (
     <Routes>
       <Route index element={<SyPage />} />
-      <Route path='components' element={<ComponentTest />} />
-      <Route path='buttontest' element={<ButtonTestPage />} />
-      <Route path='bartest' element={<BarTestPage />} />
-      <Route path='modaltest' element={<ModalTestPage />} />
-      <Route path='modaltabletest' element={<ModalTableTestPage />} />
-      <Route path='icontest' element={<IconTestPage />} />
-      <Route path='tabletest' element={<TableTestPage />} />
-      <Route path='bartest' element={<BarTestPage />} />
-      <Route path='timetable' element={<TimetableTest />} />
+      <Route path='test'>
+        <Route path='components' element={<ComponentTest />} />
+        <Route path='buttontest' element={<ButtonTestPage />} />
+        <Route path='bartest' element={<BarTestPage />} />
+        <Route path='modaltest' element={<ModalTestPage />} />
+        <Route path='modaltabletest' element={<ModalTableTestPage />} />
+        <Route path='icontest' element={<IconTestPage />} />
+        <Route path='tabletest' element={<TableTestPage />} />
+        <Route path='bartest' element={<BarTestPage />} />
+        <Route path='timetable' element={<TimetableTest />} />
+      </Route>
+
+      <Route path='office'>
+        <Route path='classrooms' element={<SearchClassPage />} />
+      </Route>
+      <Route path='login' element={<LoginPage />} />
 
       {/* Admin Pages */}
       <Route path='admin' element={<AdminPage />}>
+        {/* Department */}
         <Route path='department'>
-          {/* /admin/department 진입 시 기본으로 목록 보여줌 */}
           <Route index element={<DepartmentListPage />} />
           <Route path='edit' element={<DepartmentEditPage />} />
           <Route path='edit/:id' element={<DepartmentEditPage />} />
         </Route>
-
+        {/* Building */}
         <Route path='building'>
-          {/* /admin/building 진입 시 기본으로 목록 */}
           <Route index element={<BuildingListPage />} />
           <Route path='edit' element={<BuildingEditPage />} />
           <Route path='edit/:id' element={<BuildingEditPage />} />
