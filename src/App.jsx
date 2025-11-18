@@ -17,6 +17,8 @@ import ModalTableTestPage from './pages/test/ModalTableTestPage.jsx';
 import IconTestPage from './pages/test/IconTestPage.jsx';
 import TableTestPage from './pages/test/TableTestPage.jsx';
 import TimetableTest from './pages/test/TimetableTest.jsx';
+import SearchClassPage from './pages/office/SearchClassPage.jsx';
+import LoginPage from './pages/login/LoginPage.jsx';
 
 export default function App() {
   return (
@@ -34,6 +36,10 @@ export default function App() {
         <Route path='bartest' element={<BarTestPage />} />
         <Route path='timetable' element={<TimetableTest />} />
       </Route>
+      <Route path='office'>
+        <Route path='classrooms' element={<SearchClassPage />} />
+      </Route>
+      <Route path='login' element={<LoginPage />} />
     </Routes>
   );
 }
