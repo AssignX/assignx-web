@@ -34,7 +34,9 @@ export default function App() {
       <Route path='tabletest' element={<TableTestPage />} />
       <Route path='bartest' element={<BarTestPage />} />
       <Route path='timetable' element={<TimetableTest />} />
-      <Route path='office/classrooms' element={<SearchClassPage />} />
+      <Route path='office'>
+        <Route path='classrooms' element={<SearchClassPage />} />
+      </Route>
       <Route path='login' element={<LoginPage />} />
     </Routes>
   );
