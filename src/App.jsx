@@ -25,15 +25,17 @@ export default function App() {
     <Routes>
       <Route index element={<SyPage />} />
       <Route path='admin' element={<AdminHomePage />} />
-      <Route path='components' element={<ComponentTest />} />
-      <Route path='buttontest' element={<ButtonTestPage />} />
-      <Route path='bartest' element={<BarTestPage />} />
-      <Route path='modaltest' element={<ModalTestPage />} />
-      <Route path='modaltabletest' element={<ModalTableTestPage />} />
-      <Route path='icontest' element={<IconTestPage />} />
-      <Route path='tabletest' element={<TableTestPage />} />
-      <Route path='bartest' element={<BarTestPage />} />
-      <Route path='timetable' element={<TimetableTest />} />
+      <Route path='test'>
+        <Route path='components' element={<ComponentTest />} />
+        <Route path='buttontest' element={<ButtonTestPage />} />
+        <Route path='bartest' element={<BarTestPage />} />
+        <Route path='modaltest' element={<ModalTestPage />} />
+        <Route path='modaltabletest' element={<ModalTableTestPage />} />
+        <Route path='icontest' element={<IconTestPage />} />
+        <Route path='tabletest' element={<TableTestPage />} />
+        <Route path='bartest' element={<BarTestPage />} />
+        <Route path='timetable' element={<TimetableTest />} />
+      </Route>
       <Route path='office'>
         <Route path='classrooms' element={<SearchClassPage />} />
       </Route>
