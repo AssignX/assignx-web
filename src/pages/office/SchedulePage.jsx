@@ -26,20 +26,23 @@ export default function SchedulePage() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const buttons = [
-    ...(!selected
-      ? [
-          {
-            text: '승인',
-            color: 'lightgray',
-            onClick: () => console.log('승인'),
-          },
-        ]
-      : []),
-
-    { text: '수정', color: 'lightgray', onClick: () => console.log('수정') },
-    { text: '삭제', color: 'lightgray', onClick: () => console.log('삭제') },
-  ];
+  const buttons = selected
+    ? [
+        // selected = true → 확정 페이지 → 수정 버튼만
+        {
+          text: '수정',
+          color: 'lightgray',
+          onClick: () => console.log('수정'),
+        },
+      ]
+    : [
+        // selected = false → 미확정 페이지 → 승인 버튼만
+        {
+          text: '승인',
+          color: 'lightgray',
+          onClick: () => console.log('승인'),
+        },
+      ];
 
   // 기본 필터 (초기 진입 시 한 번 조회용)
   const defaultFilters = {
@@ -228,24 +231,24 @@ export default function SchedulePage() {
         buttonsData={buttons}
       />
 
-      <div className='max-h-[600px] overflow-y-auto'>
+      <div className='h-[764px] overflow-y-auto'>
         <ScheduleSearchTable onSearch={handleSearch} />
-      </div>
 
-      <div className='mt-4 bg-white'>
-        {loading && <p className='mt-3 px-2 text-gray-500'>불러오는 중...</p>}
-        {!loading && (
-          <>
-            <VerticalTable
-              columns={columns}
-              selectable={true}
-              singleSelect={true}
-              data={rows}
-              maxHeight={600}
-            />
-            {rows.length === 0}
-          </>
-        )}
+        <div className='mt-[10px] bg-white'>
+          {loading && <p className='mt-3 px-2 text-gray-500'>불러오는 중...</p>}
+          {!loading && (
+            <>
+              <VerticalTable
+                columns={columns}
+                selectable={true}
+                singleSelect={true}
+                data={rows}
+                maxHeight={600}
+              />
+              {rows.length === 0}
+            </>
+          )}
+        </div>
       </div>
     </Layout>
   );
