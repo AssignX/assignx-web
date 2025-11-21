@@ -133,7 +133,10 @@ export default function SearchProfessorPage() {
       headerTitle={`${departmentName ?? ''} 메뉴`}
       onLogout={handleLogout}
       menus={[
-        { title: '과목', subItems: [{ label: '과목 목록', path: '/classes' }] },
+        {
+          title: '과목',
+          subItems: [{ label: '과목 목록', path: '/office/subjects' }],
+        },
         {
           title: '교수',
           isOpen: true,

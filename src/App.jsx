@@ -21,6 +21,7 @@ import SearchClassPage from './pages/office/SearchClassPage.jsx';
 import LoginPage from './pages/login/LoginPage.jsx';
 import SearchProfessorPage from './pages/office/SearchProfessorPage.jsx';
 import SchedulePage from './pages/office/SchedulePage.jsx';
+import ApproveExamPage from './pages/office/ApproveExamPage.jsx';
 
 export default function App() {
   return (
@@ -40,6 +41,7 @@ export default function App() {
       <Route path='login' element={<LoginPage />} />
       <Route path='office/professors' element={<SearchProfessorPage />} />
       <Route path='office/exam' element={<SchedulePage />} />
+      <Route path='office/exam/approve/:id' element={<ApproveExamPage />} />
     </Routes>
   );
 }

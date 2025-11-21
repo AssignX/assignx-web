@@ -12,6 +12,14 @@ import Button from '@/components/buttons/Button';
 export default function SchedulePage() {
   const navigate = useNavigate();
 
+  const handleEdit = () => {
+    if (!selectedExam) {
+      alert('수정할 시험을 선택하세요.');
+      return;
+    }
+    navigate(`/office/exam/approve/${selectedExam.examId}`);
+  };
+
   // 교수 조회 페이지와 동일한 방식으로 스토어 사용
   const {
     name: userNameFromStore,
@@ -202,14 +210,6 @@ export default function SchedulePage() {
       },
     },
   ];
-
-  const handleEdit = () => {
-    if (!selectedExam) {
-      alert('수정할 시험을 선택하세요.');
-      return;
-    }
-    navigate(`/office/exam/approve/${selectedExam.examId}`);
-  };
 
   return (
     <Layout
