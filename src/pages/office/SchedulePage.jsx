@@ -25,22 +25,21 @@ export default function SchedulePage() {
   const [selected, setSelected] = useState(true); // true=확정, false=미확정
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedExam, setSelectedExam] = useState(null);
 
   const buttons = selected
-    ? [
-        // selected = true → 확정 페이지 → 수정 버튼만
-        {
-          text: '수정',
-          color: 'lightgray',
-          onClick: () => console.log('수정'),
-        },
-      ]
+    ? [{ text: '수정', color: 'lightgray', onClick: handleEdit }]
     : [
-        // selected = false → 미확정 페이지 → 승인 버튼만
         {
           text: '승인',
           color: 'lightgray',
-          onClick: () => console.log('승인'),
+          onClick: () => {
+            if (!selectedExam) {
+              alert('승인할 시험을 선택하세요.');
+              return;
+            }
+            navigate(`/office/exam/approve/${selectedExam.examId}`);
+          },
         },
       ];
 
@@ -123,7 +122,12 @@ export default function SchedulePage() {
         );
       }
 
-      setRows(filtered);
+      setRows(
+        filtered.map((item) => ({
+          ...item,
+          id: item.examId, // 체크박스 선택 기능이 동작하려면 반드시 필요
+        }))
+      );
     } catch (err) {
       console.error('시험 조회 실패:', err);
       setRows([]);
@@ -199,6 +203,14 @@ export default function SchedulePage() {
     },
   ];
 
+  const handleEdit = () => {
+    if (!selectedExam) {
+      alert('수정할 시험을 선택하세요.');
+      return;
+    }
+    navigate(`/office/exam/approve/${selectedExam.examId}`);
+  };
+
   return (
     <Layout
       username={`${userNameFromStore ?? '사용자'} 님`}
@@ -244,7 +256,17 @@ export default function SchedulePage() {
                 singleSelect={true}
                 data={rows}
                 maxHeight={600}
+                updateSelection={(ids) => {
+                  if (ids.length === 0) {
+                    setSelectedExam(null);
+                    return;
+                  }
+                  const examId = Number(ids[0]);
+                  const exam = rows.find((item) => item.id === examId);
+                  setSelectedExam(exam);
+                }}
               />
+
               {rows.length === 0}
             </>
           )}
