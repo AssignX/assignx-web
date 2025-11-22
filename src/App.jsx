@@ -26,6 +26,7 @@ import BuildingListPage from './pages/admin/BuildingListPage.jsx';
 import BuildingEditPage from './pages/admin/BuildingEditPage.jsx';
 import SearchClassPage from './pages/office/SearchClassPage.jsx';
 import LoginPage from './pages/login/LoginPage.jsx';
+import SearchCoursePage from './pages/office/SearchCoursePage.jsx';
 
 export default function App() {
   return (
@@ -45,6 +46,7 @@ export default function App() {
 
       <Route path='office'>
         <Route path='classrooms' element={<SearchClassPage />} />
+        <Route path='courses' element={<SearchCoursePage />} />
       </Route>
       <Route path='login' element={<LoginPage />} />
 
