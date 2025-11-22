@@ -161,7 +161,7 @@ export default function SearchCoursePage() {
 
           if (!isProfessorMapped) {
             return (
-              <div className='text-red flex items-center gap-1'>
+              <div className='flex items-center justify-center gap-1'>
                 <TriangleAlertIcon size={16} />
                 {professorName || ''}
               </div>
