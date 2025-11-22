@@ -46,7 +46,7 @@ export default function App() {
 
       <Route path='office'>
         <Route path='classrooms' element={<SearchClassPage />} />
-        <Route path='office/courses' element={<SearchCoursePage />} />
+        <Route path='courses' element={<SearchCoursePage />} />
       </Route>
       <Route path='login' element={<LoginPage />} />
 
