@@ -134,18 +134,20 @@ export default function ApproveExamPage() {
       labelWidth: '72px',
       contentWidth: '308px',
       content: (
-        <DateTimePicker
-          initialDate={exam.startTime}
-          initialStart={dayjs(exam.startTime).format('HH:mm')}
-          initialEnd={dayjs(exam.endTime).format('HH:mm')}
-          onUpdate={({ range }) => {
-            setUpdated({
-              ...updated,
-              startTime: range.from,
-              endTime: range.to,
-            });
-          }}
-        />
+        <div className='flex h-[32px] items-center'>
+          <DateTimePicker
+            initialDate={exam.startTime}
+            initialStart={dayjs(exam.startTime).format('HH:mm')}
+            initialEnd={dayjs(exam.endTime).format('HH:mm')}
+            onUpdate={({ range }) => {
+              setUpdated({
+                ...updated,
+                startTime: range.from,
+                endTime: range.to,
+              });
+            }}
+          />
+        </div>
       ),
     },
     {
