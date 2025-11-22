@@ -1,4 +1,3 @@
-// src/components/common/ToggleSwitch.jsx
 import PropTypes from 'prop-types';
 
 export default function ToggleSwitch({ checked, onChange }) {
