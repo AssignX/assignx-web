@@ -29,7 +29,7 @@ export default function SearchCoursePage() {
 
   const [isMappingModalOpen, setIsMappingModalOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
-
+  const [resetSelection, setResetSelection] = useState(false);
   const [modalMetaInfo, setModalMetaInfo] = useState(null);
 
   const handleMappingClick = () => {
@@ -78,6 +78,9 @@ export default function SearchCoursePage() {
       const { data } = await apiClient.get('/api/course/search');
       setAllCourses(data || []);
       applyFilter(data || []);
+
+      setSelectedCourse(null);
+      setResetSelection((prev) => !prev);
     } catch (err) {
       console.error('과목 목록 새로고침 실패:', err);
     }
@@ -132,6 +135,8 @@ export default function SearchCoursePage() {
 
   useEffect(() => {
     applyFilter(allCourses);
+    setSelectedCourse(null);
+    setResetSelection((prev) => !prev);
   }, [filters, toggleUnassigned, allCourses, applyFilter]);
 
   const handleSearch = (newFilters) => {
@@ -217,7 +222,7 @@ export default function SearchCoursePage() {
           />
         </div>
 
-        <div className='flex h-[764px] w-full flex-col gap-y-2.5 bg-white'>
+        <div className='flex h-[764px] w-full flex-col gap-y-2.5'>
           <div className='flex w-full items-center justify-end gap-2'>
             <span className='text-[16px]'>담당교수 미배정 과목</span>
             <ToggleSwitch
@@ -231,20 +236,23 @@ export default function SearchCoursePage() {
             />
           </div>
 
-          <VerticalTable
-            columns={columns}
-            data={courses}
-            selectable={true}
-            singleSelect={true}
-            headerHeight={32}
-            maxHeight={670}
-            updateSelection={(rows) => {
-              const idx = rows[0];
-              setSelectedCourse(
-                idx !== undefined && idx !== null ? courses[idx] : null
-              );
-            }}
-          />
+          <div className='bg-white'>
+            <VerticalTable
+              columns={columns}
+              data={courses}
+              selectable={true}
+              singleSelect={true}
+              headerHeight={32}
+              maxHeight={670}
+              resetSelection={resetSelection}
+              updateSelection={(rows) => {
+                const idx = rows[0];
+                setSelectedCourse(
+                  idx !== undefined && idx !== null ? courses[idx] : null
+                );
+              }}
+            />
+          </div>
         </div>
       </div>
 
