@@ -21,7 +21,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.13",
     "@tanstack/react-table": "^8.21.3",
-    "axios": "^1.12.2",
+    "axios": "^1.13.1",
     "dayjs": "^1.11.18",
     "prop-types": "^15.8.1",
     "react": "^19.1.1",

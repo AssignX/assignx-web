@@ -139,10 +139,13 @@ export default function SearchClassPage() {
       headerTitle={`${departmentName ?? ''} 메뉴`}
       onLogout={handleLogout}
       menus={[
-        { title: '과목', subItems: [{ label: '과목 목록', path: '/classes' }] },
+        {
+          title: '과목',
+          subItems: [{ label: '과목 목록', path: '/office/subjects' }],
+        },
         {
           title: '교수',
-          subItems: [{ label: '교수 목록', path: '/professors' }],
+          subItems: [{ label: '교수 목록', path: '/office/professors' }],
         },
         {
           title: '강의실',
@@ -165,7 +168,7 @@ export default function SearchClassPage() {
       ]}
     >
       <PageHeader title='강의실 목록' />
-      <div className='h-[764px] w-full bg-white pt-[20px]'>
+      <div className='h-[764px] w-full'>
         <HorizontalTable items={searchFormItems} />
         {loading && <p className='mt-3 text-gray-500'>불러오는 중...</p>}
         {error && <p className='mt-3 text-red-500'>데이터 불러오기 실패</p>}
