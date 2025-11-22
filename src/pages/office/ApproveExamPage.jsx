@@ -102,7 +102,7 @@ export default function ApproveExamPage() {
       id: '1',
       label: '과목명',
       labelWidth: '84px',
-      contentWidth: '207px',
+      contentWidth: '150px',
       content: exam.courseName,
     },
     {
@@ -154,7 +154,7 @@ export default function ApproveExamPage() {
       id: '4',
       label: '장소',
       labelWidth: '100px',
-      contentWidth: '151px',
+      contentWidth: '200px',
       content: (
         <div
           className='cursor-pointer rounded p-1 hover:bg-yellow-50'

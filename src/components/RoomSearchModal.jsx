@@ -9,6 +9,7 @@ import Button from '@/components/buttons/Button';
 import { SearchIcon } from '@/assets/icons';
 import VerticalTable from '@/components/table/VerticalTable';
 import apiClient from '@/api/apiClient';
+import RoomSearchTable from '@/components/RoomSearchTable';
 
 export default function RoomSearchModal({
   isOpen,
@@ -19,6 +20,7 @@ export default function RoomSearchModal({
   const [keyword, setKeyword] = useState('');
   const [rooms, setRooms] = useState([]);
   const [filtered, setFiltered] = useState([]);
+  const [selectedRoom, setSelectedRoom] = useState(null);
 
   useEffect(() => {
     if (!isOpen || !buildingId) return;
@@ -64,31 +66,27 @@ export default function RoomSearchModal({
 
     setFiltered(result);
   };
-
   const content = (
-    <div className='flex flex-col gap-3 text-sm'>
-      <PageHeader title='강의실 검색' />
-
-      {/* 검색 입력 */}
-      <div className='flex items-center gap-2'>
-        <InputCell
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-          height={32}
-        />
-        <Button
-          text='조회'
-          Icon={SearchIcon}
-          color='lightgray'
-          onClick={handleSearch}
+    <div className='flex flex-col text-sm'>
+      <div className='flex flex-col pb-[10px]'>
+        <PageHeader title='강의실 검색' />
+        <RoomSearchTable
+          onSearch={(kw) => {
+            setKeyword(kw);
+            if (!kw.trim()) {
+              setFiltered(rooms);
+            } else {
+              const lower = kw.toLowerCase();
+              setFiltered(
+                rooms.filter((r) => r.roomNumber.toLowerCase().includes(lower))
+              );
+            }
+          }}
         />
       </div>
-
-      {/* 검색 결과 테이블 */}
       <VerticalTable
         columns={[
-          { accessorKey: 'roomNumber', header: '강의실', size: 100 },
+          { accessorKey: 'roomNumber', header: '강의실', size: 220 },
           { accessorKey: 'capacity', header: '수용인원', size: 100 },
         ]}
         data={filtered}
@@ -96,7 +94,7 @@ export default function RoomSearchModal({
         singleSelect
         updateSelection={(ids) => {
           const selected = filtered.find((r) => String(r.id) === ids[0]);
-          if (selected) onSelect(selected);
+          if (selected) setSelectedRoom(selected);
         }}
         maxHeight={400}
       />
@@ -107,9 +105,12 @@ export default function RoomSearchModal({
     <Modal
       title='강의실 선택'
       content={content}
-      confirmText='닫기'
+      confirmText='확인'
       cancelText='취소'
-      onConfirm={onClose}
+      onConfirm={() => {
+        if (selectedRoom) onSelect(selectedRoom);
+        onClose();
+      }}
       onCancel={onClose}
       onClose={onClose}
       width='700px'
