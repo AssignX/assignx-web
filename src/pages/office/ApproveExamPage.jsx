@@ -8,8 +8,10 @@ import apiClient from '@/api/apiClient';
 import dayjs from 'dayjs';
 import { useAuthStore } from '@/store/useAuthStore';
 import HorizontalTable from '@/components/table/HorizontalTable';
+import DropdownCell from '@/components/table/cells/DropdownCell';
 import DateTimePicker from '@/components/pickers/DateTimePicker';
 import ExamTimeTable from '@/pages/office/ExamTimeTable';
+import WeekPicker from '@/components/pickers/WeekPicker';
 import Button from '@/components/buttons/Button';
 //import Modal from '@/components/modal/Modal';
 import BuildingSearchModal from '@/components/BuildingSearchModal';
@@ -24,6 +26,7 @@ export default function ApproveExamPage() {
   const logout = useAuthStore((state) => state.logout);
 
   const [exam, setExam] = useState(null);
+  const [weekDate, setWeekDate] = useState(dayjs());
 
   const [showBuildingModal, setShowBuildingModal] = useState(false);
   const [showRoomModal, setShowRoomModal] = useState(false);
@@ -95,25 +98,41 @@ export default function ApproveExamPage() {
 
   // HorizontalTable 용 데이터
   const infoItems = [
-    { id: '1', label: '과목명', content: exam.courseName },
+    {
+      id: '1',
+      label: '과목명',
+      labelWidth: '84px',
+      contentWidth: '207px',
+      content: exam.courseName,
+    },
     {
       id: '2',
       label: '구분',
+      labelWidth: '72px',
+      contentWidth: '106px',
       content: (
-        <select
-          className='border p-2 text-sm'
-          value={updated.examType}
-          onChange={(e) => setUpdated({ ...updated, examType: e.target.value })}
-        >
-          <option value='MID'>중간</option>
-          <option value='FINAL'>기말</option>
-          <option value='ETC'>기타</option>
-        </select>
+        <DropdownCell
+          initialValue={updated.examType}
+          rowId='examType'
+          columnKey='examType'
+          height={32} // HorizontalTable 행 높이(41px)에 맞춘 값
+          updateData={(rowId, columnKey, newValue) => {
+            setUpdated((prev) => ({ ...prev, [columnKey]: newValue }));
+          }}
+          options={[
+            { value: 'MID', label: '중간' },
+            { value: 'FINAL', label: '기말' },
+            { value: 'ETC', label: '기타' },
+          ]}
+        />
       ),
     },
+
     {
       id: '3',
       label: '일정',
+      labelWidth: '72px',
+      contentWidth: '308px',
       content: (
         <DateTimePicker
           initialDate={exam.startTime}
@@ -132,6 +151,8 @@ export default function ApproveExamPage() {
     {
       id: '4',
       label: '장소',
+      labelWidth: '100px',
+      contentWidth: '151px',
       content: (
         <div
           className='cursor-pointer rounded p-1 hover:bg-yellow-50'
@@ -163,6 +184,13 @@ export default function ApproveExamPage() {
     }
   };
 
+  if (!exam) return <div>Loading...</div>;
+
+  const approveButtonText = exam.examAssigned === 'NOT_YET' ? '승인' : '수정';
+
+  const buttons = [
+    { text: approveButtonText, color: 'gold', onClick: handleApprove },
+  ];
   return (
     <Layout
       username={`${userNameFromStore ?? '사용자'} 님`}
@@ -190,34 +218,28 @@ export default function ApproveExamPage() {
         },
       ]}
     >
-      <div className='p-6'>
-        <PageHeader title='일정 수정' />
+      <PageHeader title='일정 수정' buttonsData={buttons} />
 
-        {/* 시험 기본 정보 영역 */}
-        <div className='mt-4'>
-          <HorizontalTable items={infoItems} />
-        </div>
+      {/* 시험 기본 정보 영역 */}
+      <div className='w-full'>
+        <HorizontalTable items={infoItems} />
+      </div>
 
-        {/* 강의실 시간표 (buildingName + roomNumber 기준 표시됨) */}
-        <div className='mt-6'>
-          <ExamTimeTable
-            selectedRoom={{
-              year: exam.year,
-              semester: exam.semester,
-              buildingName: exam.buildingName,
-              roomNumber: exam.roomNumber,
-            }}
-          />
-        </div>
+      <div className='mt-[10px] flex justify-end'>
+        <WeekPicker date={weekDate} setDate={setWeekDate} />
+      </div>
 
-        {/* 버튼 */}
-        <div className='mt-6 flex justify-end'>
-          <Button
-            text={exam.examAssigned === 'NOT_YET' ? '승인' : '수정'}
-            color='gold'
-            onClick={handleApprove}
-          />
-        </div>
+      {/* 강의실 시간표 (buildingName + roomNumber 기준 표시됨) */}
+      <div className='mt-[10px]'>
+        <ExamTimeTable
+          selectedRoom={{
+            year: exam.year,
+            semester: exam.semester,
+            buildingName: exam.buildingName,
+            roomNumber: exam.roomNumber,
+          }}
+          weekDate={weekDate}
+        />
       </div>
       {showBuildingModal && (
         <BuildingSearchModal
