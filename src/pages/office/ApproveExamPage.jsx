@@ -35,12 +35,18 @@ export default function ApproveExamPage() {
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showOverlapModal, setShowOverlapModal] = useState(false);
 
   const [updated, setUpdated] = useState({
     examType: '',
     startTime: null,
     endTime: null,
   });
+
+  const [roomSchedules, setRoomSchedules] = useState([]);
+  const isOverlapping = (startA, endA, startB, endB) => {
+    return startA < endB && endA > startB;
+  };
 
   // 로그인 체크
   useEffect(() => {
@@ -193,6 +199,24 @@ export default function ApproveExamPage() {
       return;
     }
 
+    const hasOverlap = roomSchedules.some((item) => {
+      if (item.examId === exam.examId) return false; // 자기 자신 제외
+
+      const existingStart = new Date(item.startTime);
+      const existingEnd = new Date(item.endTime);
+
+      return isOverlapping(
+        updated.startTime,
+        updated.endTime,
+        existingStart,
+        existingEnd
+      );
+    });
+
+    if (hasOverlap) {
+      setShowOverlapModal(true); // 중복 모달 따로 관리
+      return;
+    }
     const startLocal = formatToLocalISO(updated.startTime);
     const endLocal = formatToLocalISO(updated.endTime);
 
@@ -206,8 +230,13 @@ export default function ApproveExamPage() {
       });
       setShowSuccessModal(true);
     } catch (err) {
-      console.error('confirm error:', err);
-      setShowErrorModal(true);
+      if (err.response?.status === 400) {
+        // 서버 측에서 일정 겹침 반환
+        setShowOverlapModal(true);
+      } else {
+        // 기타 오류
+        setShowErrorModal(true);
+      }
     }
   };
 
@@ -271,6 +300,7 @@ export default function ApproveExamPage() {
               roomNumber: exam.roomNumber,
             }}
             weekDate={weekDate}
+            onFetchSchedule={(scheduleList) => setRoomSchedules(scheduleList)}
           />
         )}
       </div>
@@ -318,6 +348,21 @@ export default function ApproveExamPage() {
           height='200px'
         />
       )}
+      {showOverlapModal && (
+        <Modal
+          title='일정 중복'
+          content={
+            <div className='p-3'>
+              이미 해당 시간대에 시험이 존재합니다.
+              <br />
+              다른 시간대를 선택해 주세요.
+            </div>
+          }
+          confirmText='확인'
+          onConfirm={() => setShowOverlapModal(false)}
+        />
+      )}
+
       {showErrorModal && (
         <Modal
           title='오류 발생'
