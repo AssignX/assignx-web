@@ -9,7 +9,8 @@ import dayjs from 'dayjs';
 import { useAuthStore } from '@/store/useAuthStore';
 import HorizontalTable from '@/components/table/HorizontalTable';
 import DropdownCell from '@/components/table/cells/DropdownCell';
-import DateTimePicker from '@/components/pickers/DateTimePicker';
+//import DateTimePicker from '@/components/pickers/DateTimePicker';
+import DateTimePickerV2 from '@/components/pickers/DateTimePickerV2';
 import ExamTimeTable from '@/pages/office/ExamTimeTable';
 import WeekPicker from '@/components/pickers/WeekPicker';
 import Button from '@/components/buttons/Button';
@@ -136,7 +137,7 @@ export default function ApproveExamPage() {
       contentWidth: '308px',
       content: (
         <div className='flex h-[32px] items-center'>
-          <DateTimePicker
+          {/* <DateTimePicker
             initialDate={exam.startTime}
             initialStart={dayjs(exam.startTime).format('HH:mm')}
             initialEnd={dayjs(exam.endTime).format('HH:mm')}
@@ -144,6 +145,22 @@ export default function ApproveExamPage() {
               console.log('📌 DateTimePicker range:', range);
               console.log('📌 from:', range.from, 'type:', typeof range.from);
               console.log('📌 to:', range.to, 'type:', typeof range.to);
+              setUpdated({
+                ...updated,
+                startTime: range.from,
+                endTime: range.to,
+              });
+            }}
+          /> */}
+          <DateTimePickerV2
+            initialDate={exam.startTime}
+            initialStart={dayjs(exam.startTime).format('HH:mm')}
+            initialEnd={dayjs(exam.endTime).format('HH:mm')}
+            onUpdate={({ range }) => {
+              console.log('=== 🕒 DateTimePickerV2 업데이트됨 ===');
+              console.log('from:', range.from, typeof range.from);
+              console.log('to:', range.to, typeof range.to);
+
               setUpdated({
                 ...updated,
                 startTime: range.from,
@@ -213,12 +230,18 @@ export default function ApproveExamPage() {
       return;
     }
 
+    const startLocal = formatToLocalISO(updated.startTime);
+    const endLocal = formatToLocalISO(updated.endTime);
+
+    console.log('📌 최종 전송 start:', startLocal);
+    console.log('📌 최종 전송 end:', endLocal);
+
     try {
       const res = await apiClient.post('/api/exam/confirm', {
         examId: exam.examId,
         examType: updated.examType,
-        startTime: updated.startTime.toISOString(),
-        endTime: updated.endTime.toISOString(),
+        startTime: startLocal,
+        endTime: endLocal,
         examRoomId: roomIdToSend,
       });
       setShowSuccessModal(true);
