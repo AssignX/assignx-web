@@ -27,7 +27,7 @@ export default function ScheduleSearchTable({ onSearch }) {
     keyword: '',
   });
 
-  console.log('ScheduleSearchTable filters:', filters);
+  // console.log('ScheduleSearchTable filters:', filters);
 
   const updateFilters = (rowId, columnKey, value) => {
     setFilters((prev) => ({ ...prev, [columnKey]: value }));

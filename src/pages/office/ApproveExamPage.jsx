@@ -13,7 +13,7 @@ import DateTimePicker from '@/components/pickers/DateTimePicker';
 import ExamTimeTable from '@/pages/office/ExamTimeTable';
 import WeekPicker from '@/components/pickers/WeekPicker';
 import Button from '@/components/buttons/Button';
-//import Modal from '@/components/modal/Modal';
+import Modal from '@/components/modal/Modal';
 import BuildingSearchModal from '@/components/BuildingSearchModal';
 import RoomSearchModal from '@/components/RoomSearchModal';
 
@@ -24,6 +24,7 @@ export default function ApproveExamPage() {
 
   const accessToken = useAuthStore((state) => state.accessToken);
   const logout = useAuthStore((state) => state.logout);
+  const { departmentId } = useAuthStore();
 
   const [exam, setExam] = useState(null);
   const [weekDate, setWeekDate] = useState(dayjs());
@@ -31,6 +32,9 @@ export default function ApproveExamPage() {
   const [showBuildingModal, setShowBuildingModal] = useState(false);
   const [showRoomModal, setShowRoomModal] = useState(false);
   const [selectedBuilding, setSelectedBuilding] = useState(null);
+
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   const [updated, setUpdated] = useState({
     examType: '',
@@ -56,23 +60,20 @@ export default function ApproveExamPage() {
     const loadExam = async () => {
       try {
         const res = await apiClient.get('/api/exam/search', {
-          params: { year: '2025', semester: '2' },
+          params: { year: '2025', semester: '2', departmentId },
         });
 
-        const list = res.data;
-        const found = list.find((e) => e.examId === Number(id));
+        const found = res.data.find((e) => e.examId === Number(id));
 
-        console.log('📌 /api/exam/search 응답:', list);
-        console.log('📌 exam 객체 확인:', found);
-        if (found) {
-          console.log('🔎 startTime:', found.startTime);
-          console.log('🔎 endTime:', found.endTime);
-          console.log('🔎 buildingName:', found.buildingName);
-          console.log('🔎 roomNumber:', found.roomNumber);
-          console.log('🔎 roomId:', found.roomId);
-        } else {
-          console.warn('❗ examId에 해당하는 exam이 없음:', id);
+        if (!found) {
+          console.error('⚠️ 지정한 examId로 데이터를 찾을 수 없습니다:', id);
+          return;
         }
+
+        console.log(
+          '전체 시험 목록 중 examId 찾기:',
+          res.data.filter((e) => e.examId === Number(id))
+        );
 
         setExam(found);
       } catch (err) {
@@ -81,7 +82,7 @@ export default function ApproveExamPage() {
     };
 
     loadExam();
-  }, [id]);
+  }, [id, departmentId]);
 
   // exam 로드 후 updated값 설정
   useEffect(() => {
@@ -140,6 +141,9 @@ export default function ApproveExamPage() {
             initialStart={dayjs(exam.startTime).format('HH:mm')}
             initialEnd={dayjs(exam.endTime).format('HH:mm')}
             onUpdate={({ range }) => {
+              console.log('📌 DateTimePicker range:', range);
+              console.log('📌 from:', range.from, 'type:', typeof range.from);
+              console.log('📌 to:', range.to, 'type:', typeof range.to);
               setUpdated({
                 ...updated,
                 startTime: range.from,
@@ -168,21 +172,59 @@ export default function ApproveExamPage() {
     },
   ];
 
-  // 승인/수정 처리
+  // // 승인/수정 처리
+  // const handleApprove = async () => {
+  //   try {
+  //     const res = await apiClient.post('/api/exam/confirm', {
+  //       examId: exam.examId,
+  //       examType: updated.examType,
+  //       startTime: updated.startTime.toISOString(),
+  //       endTime: updated.endTime.toISOString(),
+  //       examRoomId: updated.examRoomId ?? exam.roomId,
+  //     });
+  //     //console.log('🎯 confirm 결과:', res.data);
+  //     setShowSuccessModal(true);
+  //   } catch (err) {
+  //     console.error(err);
+  //     setShowErrorModal(true);
+  //   }
+  // };
+  const formatToLocalISO = (dateObj) => {
+    const pad = (n) => String(n).padStart(2, '0');
+    return (
+      dateObj.getFullYear() +
+      '-' +
+      pad(dateObj.getMonth() + 1) +
+      '-' +
+      pad(dateObj.getDate()) +
+      'T' +
+      pad(dateObj.getHours()) +
+      ':' +
+      pad(dateObj.getMinutes()) +
+      ':00'
+    );
+  };
+
   const handleApprove = async () => {
+    const roomIdToSend = updated.examRoomId ?? exam.roomId;
+
+    if (!roomIdToSend) {
+      alert('시험 장소가 선택되지 않았습니다.');
+      return;
+    }
+
     try {
-      await apiClient.post('/api/exam/confirm', {
+      const res = await apiClient.post('/api/exam/confirm', {
         examId: exam.examId,
         examType: updated.examType,
         startTime: updated.startTime.toISOString(),
         endTime: updated.endTime.toISOString(),
-        examRoomId: exam.roomId, // backend confirm API는 roomId 필요 → 기존 유지
+        examRoomId: roomIdToSend,
       });
-
-      alert('시험 일정이 성공적으로 확정되었습니다.');
-      navigate('/office/exam');
-    } catch {
-      alert('시험 확정에 실패했습니다.');
+      setShowSuccessModal(true);
+    } catch (err) {
+      console.error('confirm error:', err);
+      setShowErrorModal(true);
     }
   };
 
@@ -233,15 +275,30 @@ export default function ApproveExamPage() {
 
       {/* 강의실 시간표 (buildingName + roomNumber 기준 표시됨) */}
       <div className='mt-[10px]'>
-        <ExamTimeTable
+        {/* <ExamTimeTable
           selectedRoom={{
             year: exam.year,
             semester: exam.semester,
             buildingName: exam.buildingName,
             roomNumber: exam.roomNumber,
+            id: exam.roomId,
           }}
           weekDate={weekDate}
-        />
+        /> */}
+        {exam && exam.roomId && (
+          <ExamTimeTable
+            key={exam.roomId}
+            selectedRoom={{
+              year: exam.year,
+              semester: exam.semester,
+              departmentId,
+              buildingName: exam.buildingName,
+              roomNumber: exam.roomNumber,
+              roomId: exam.roomId,
+            }}
+            weekDate={weekDate}
+          />
+        )}
       </div>
       {showBuildingModal && (
         <BuildingSearchModal
@@ -271,6 +328,37 @@ export default function ApproveExamPage() {
             setUpdated({ ...updated, examRoomId: room.id });
             setShowRoomModal(false);
           }}
+        />
+      )}
+      {showSuccessModal && (
+        <Modal
+          title='확정 완료'
+          content={
+            <div className='p-3'>시험 일정이 성공적으로 확정되었습니다.</div>
+          }
+          confirmText='확인'
+          onConfirm={() => {
+            setShowSuccessModal(false);
+            navigate('/office/exam');
+          }}
+          width='400px'
+          height='200px'
+        />
+      )}
+      {showErrorModal && (
+        <Modal
+          title='오류 발생'
+          content={
+            <div className='p-3'>
+              시험 일정 확정에 실패했습니다.
+              <br />
+              다시 시도해주세요.
+            </div>
+          }
+          confirmText='확인'
+          onConfirm={() => setShowErrorModal(false)}
+          width='400px'
+          height='200px'
         />
       )}
     </Layout>

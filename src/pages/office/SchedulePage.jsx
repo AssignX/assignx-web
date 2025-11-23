@@ -1,5 +1,6 @@
 // src/pages/SchedulePage.jsx
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Layout from '@/pages/office/Layout';
 import PageHeader from '@/components/headers/PageHeader';
 import ScheduleSearchTable from '@/components/table/ScheduleSearchTable';
@@ -11,6 +12,7 @@ import Button from '@/components/buttons/Button';
 
 export default function SchedulePage() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleEdit = () => {
     if (!selectedExam) {
@@ -98,6 +100,7 @@ export default function SchedulePage() {
       });
 
       const data = res.data;
+      console.log('🔍 GET /api/exam/search 결과:', data);
       const confirmedStates = ['COMPLETED_FIRST', 'COMPLETED_SECOND'];
 
       // 확정/미확정 필터
@@ -134,6 +137,7 @@ export default function SchedulePage() {
         filtered.map((item) => ({
           ...item,
           id: item.examId, // 체크박스 선택 기능이 동작하려면 반드시 필요
+          roomId: item.roomId,
         }))
       );
     } catch (err) {
@@ -147,8 +151,7 @@ export default function SchedulePage() {
   // 페이지 첫 진입 + 확정/미확정 토글 변경 시 기본 필터로 자동 조회
   useEffect(() => {
     handleSearch(defaultFilters);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selected, departmentId]); // 학과나 토글 상태가 바뀌면 다시 조회
+  }, [location, selected, departmentId]);
 
   const columns = [
     {
