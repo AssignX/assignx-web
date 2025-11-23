@@ -158,16 +158,16 @@ export default function ApproveExamPage() {
             initialStart={dayjs(exam.startTime).format('HH:mm')}
             initialEnd={dayjs(exam.endTime).format('HH:mm')}
             onUpdate={({ range }) => {
-              const baseDate = dayjs(exam.startTime).format('YYYY-MM-DD');
+              if (!range?.from || !range?.to) {
+                console.warn('⛔ DateTimePicker returned invalid data');
+                return;
+              }
 
-              const start = dayjs(`${baseDate} ${range.from}`);
-              const end = dayjs(`${baseDate} ${range.to}`);
-
-              setUpdated({
-                ...updated,
-                startTime: start.toDate(),
-                endTime: end.toDate(),
-              });
+              setUpdated((prev) => ({
+                ...prev,
+                startTime: range.from, // 그대로 Date 객체
+                endTime: range.to,
+              }));
             }}
           />
         </div>
@@ -191,8 +191,20 @@ export default function ApproveExamPage() {
     );
   };
 
+  const finalRoomId = updated.examRoomId ?? exam.roomId;
+
   const handleApprove = async () => {
     const roomIdToSend = updated.examRoomId ?? exam.roomId;
+    console.log('💥 updated.startTime:', updated.startTime);
+    console.log('💥 updated.endTime:', updated.endTime);
+
+    if (
+      isNaN(updated.startTime?.getTime()) ||
+      isNaN(updated.endTime?.getTime())
+    ) {
+      alert('시간이 올바르게 설정되지 않았습니다. 다시 선택해주세요.');
+      return;
+    }
 
     if (!roomIdToSend) {
       alert('시험 장소가 선택되지 않았습니다.');
@@ -200,7 +212,11 @@ export default function ApproveExamPage() {
     }
 
     const hasOverlap = roomSchedules.some((item) => {
-      if (item.examId === exam.examId) return false; // 자기 자신 제외
+      console.log('🔥 finalRoomId:', finalRoomId);
+      console.log('🔥 roomSchedules:', roomSchedules);
+      console.log('roomid : ', item.roomId);
+      if (Number(item.examId) === Number(exam.examId)) return false; // 자기 자신 제외
+      if (Number(item.roomId) !== Number(finalRoomId)) return false;
 
       const existingStart = new Date(item.startTime);
       const existingEnd = new Date(item.endTime);
@@ -247,7 +263,6 @@ export default function ApproveExamPage() {
   const buttons = [
     { text: approveButtonText, color: 'gold', onClick: handleApprove },
   ];
-  const finalRoomId = updated.examRoomId ?? exam.roomId;
 
   return (
     <Layout
@@ -300,7 +315,10 @@ export default function ApproveExamPage() {
               roomNumber: exam.roomNumber,
             }}
             weekDate={weekDate}
-            onFetchSchedule={(scheduleList) => setRoomSchedules(scheduleList)}
+            onFetchSchedule={(scheduleList) => {
+              console.log('🔥 roomSchedules 도착:', scheduleList);
+              setRoomSchedules(scheduleList);
+            }}
           />
         )}
       </div>
@@ -328,7 +346,7 @@ export default function ApproveExamPage() {
               roomId: room.id,
             });
 
-            setUpdated({ ...updated, examRoomId: room.id });
+            setUpdated((prev) => ({ ...prev, examRoomId: room.id }));
             setShowRoomModal(false);
           }}
         />
