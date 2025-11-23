@@ -123,9 +123,25 @@ export default function ApproveExamPage() {
         />
       ),
     },
-
     {
       id: '3',
+      label: '장소',
+      labelWidth: '100px',
+      contentWidth: '200px',
+      content: (
+        <div
+          className='cursor-pointer rounded p-1 hover:bg-yellow-50'
+          onClick={() => setShowBuildingModal(true)}
+        >
+          {exam.buildingName && exam.roomNumber
+            ? `${exam.buildingName} ${exam.roomNumber}`
+            : '미배정'}
+        </div>
+      ),
+    },
+
+    {
+      id: '4',
       label: '일정',
       labelWidth: '72px',
       contentWidth: '308px',
@@ -148,22 +164,6 @@ export default function ApproveExamPage() {
               });
             }}
           />
-        </div>
-      ),
-    },
-    {
-      id: '4',
-      label: '장소',
-      labelWidth: '100px',
-      contentWidth: '200px',
-      content: (
-        <div
-          className='cursor-pointer rounded p-1 hover:bg-yellow-50'
-          onClick={() => setShowBuildingModal(true)}
-        >
-          {exam.buildingName && exam.roomNumber
-            ? `${exam.buildingName} ${exam.roomNumber}`
-            : '미배정'}
         </div>
       ),
     },
