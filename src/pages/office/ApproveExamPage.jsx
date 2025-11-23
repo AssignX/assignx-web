@@ -9,8 +9,7 @@ import dayjs from 'dayjs';
 import { useAuthStore } from '@/store/useAuthStore';
 import HorizontalTable from '@/components/table/HorizontalTable';
 import DropdownCell from '@/components/table/cells/DropdownCell';
-//import DateTimePicker from '@/components/pickers/DateTimePicker';
-import DateTimePickerV2 from '@/components/pickers/DateTimePickerV2';
+import DateTimePicker from '@/components/pickers/DateTimePicker';
 import ExamTimeTable from '@/pages/office/ExamTimeTable';
 import WeekPicker from '@/components/pickers/WeekPicker';
 import Button from '@/components/buttons/Button';
@@ -70,11 +69,6 @@ export default function ApproveExamPage() {
           console.error('⚠️ 지정한 examId로 데이터를 찾을 수 없습니다:', id);
           return;
         }
-
-        console.log(
-          '전체 시험 목록 중 examId 찾기:',
-          res.data.filter((e) => e.examId === Number(id))
-        );
 
         setExam(found);
       } catch (err) {
@@ -137,34 +131,20 @@ export default function ApproveExamPage() {
       contentWidth: '308px',
       content: (
         <div className='flex h-[32px] items-center'>
-          {/* <DateTimePicker
+          <DateTimePicker
             initialDate={exam.startTime}
             initialStart={dayjs(exam.startTime).format('HH:mm')}
             initialEnd={dayjs(exam.endTime).format('HH:mm')}
             onUpdate={({ range }) => {
-              console.log('📌 DateTimePicker range:', range);
-              console.log('📌 from:', range.from, 'type:', typeof range.from);
-              console.log('📌 to:', range.to, 'type:', typeof range.to);
-              setUpdated({
-                ...updated,
-                startTime: range.from,
-                endTime: range.to,
-              });
-            }}
-          /> */}
-          <DateTimePickerV2
-            initialDate={exam.startTime}
-            initialStart={dayjs(exam.startTime).format('HH:mm')}
-            initialEnd={dayjs(exam.endTime).format('HH:mm')}
-            onUpdate={({ range }) => {
-              console.log('=== 🕒 DateTimePickerV2 업데이트됨 ===');
-              console.log('from:', range.from, typeof range.from);
-              console.log('to:', range.to, typeof range.to);
+              const baseDate = dayjs(exam.startTime).format('YYYY-MM-DD');
+
+              const start = dayjs(`${baseDate} ${range.from}`);
+              const end = dayjs(`${baseDate} ${range.to}`);
 
               setUpdated({
                 ...updated,
-                startTime: range.from,
-                endTime: range.to,
+                startTime: start.toDate(),
+                endTime: end.toDate(),
               });
             }}
           />
@@ -189,23 +169,6 @@ export default function ApproveExamPage() {
     },
   ];
 
-  // // 승인/수정 처리
-  // const handleApprove = async () => {
-  //   try {
-  //     const res = await apiClient.post('/api/exam/confirm', {
-  //       examId: exam.examId,
-  //       examType: updated.examType,
-  //       startTime: updated.startTime.toISOString(),
-  //       endTime: updated.endTime.toISOString(),
-  //       examRoomId: updated.examRoomId ?? exam.roomId,
-  //     });
-  //     //console.log('🎯 confirm 결과:', res.data);
-  //     setShowSuccessModal(true);
-  //   } catch (err) {
-  //     console.error(err);
-  //     setShowErrorModal(true);
-  //   }
-  // };
   const formatToLocalISO = (dateObj) => {
     const pad = (n) => String(n).padStart(2, '0');
     return (
@@ -233,9 +196,6 @@ export default function ApproveExamPage() {
     const startLocal = formatToLocalISO(updated.startTime);
     const endLocal = formatToLocalISO(updated.endTime);
 
-    console.log('📌 최종 전송 start:', startLocal);
-    console.log('📌 최종 전송 end:', endLocal);
-
     try {
       const res = await apiClient.post('/api/exam/confirm', {
         examId: exam.examId,
@@ -258,6 +218,8 @@ export default function ApproveExamPage() {
   const buttons = [
     { text: approveButtonText, color: 'gold', onClick: handleApprove },
   ];
+  const finalRoomId = updated.examRoomId ?? exam.roomId;
+
   return (
     <Layout
       username={`${userNameFromStore ?? '사용자'} 님`}
@@ -298,26 +260,15 @@ export default function ApproveExamPage() {
 
       {/* 강의실 시간표 (buildingName + roomNumber 기준 표시됨) */}
       <div className='mt-[10px]'>
-        {/* <ExamTimeTable
-          selectedRoom={{
-            year: exam.year,
-            semester: exam.semester,
-            buildingName: exam.buildingName,
-            roomNumber: exam.roomNumber,
-            id: exam.roomId,
-          }}
-          weekDate={weekDate}
-        /> */}
-        {exam && exam.roomId && (
+        {finalRoomId && (
           <ExamTimeTable
-            key={exam.roomId}
             selectedRoom={{
               year: exam.year,
               semester: exam.semester,
               departmentId,
+              roomId: finalRoomId,
               buildingName: exam.buildingName,
               roomNumber: exam.roomNumber,
-              roomId: exam.roomId,
             }}
             weekDate={weekDate}
           />
@@ -328,7 +279,6 @@ export default function ApproveExamPage() {
           isOpen={showBuildingModal}
           onClose={() => setShowBuildingModal(false)}
           onSelect={(building) => {
-            // building = { buildingId, buildingNum, buildingName }
             setSelectedBuilding(building);
             setShowBuildingModal(false);
             setShowRoomModal(true); // 강의실 모달로 넘어감

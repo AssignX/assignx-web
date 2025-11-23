@@ -5,8 +5,10 @@ import apiClient from '@/api/apiClient';
 import TimeTable from '@/components/TimeTable';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
+import isBetween from 'dayjs/plugin/isBetween';
 
 dayjs.extend(isoWeek);
+dayjs.extend(isBetween);
 
 export default function ExamTimeTable({ selectedRoom, weekDate }) {
   const [entries, setEntries] = useState({});
@@ -51,43 +53,140 @@ export default function ExamTimeTable({ selectedRoom, weekDate }) {
   }, []);
 
   /** 2) 시험 조회 및 Slot 기반 timetable 생성 */
+  // useEffect(() => {
+  //   if (!selectedRoom || !selectedRoom.roomId || !weekDate) return;
+
+  //   const fetchExams = async () => {
+  //     try {
+  //       const res = await apiClient.get('/api/exam/search', {
+  //         params: {
+  //           year: selectedRoom.year,
+  //           semester: selectedRoom.semester,
+  //           roomId: selectedRoom.roomId,
+  //           departmentId: selectedRoom.departmentId,
+  //         },
+  //       });
+
+  //       const exams = res.data || [];
+  //       const newEntries = {};
+
+  //       const weekStart = dayjs(weekDate).startOf('isoWeek');
+  //       const weekEnd = dayjs(weekDate).endOf('isoWeek');
+
+  //       exams.forEach((exam) => {
+  //         const { courseName, courseCode, startTime, endTime, examType } = exam;
+
+  //         const start = dayjs(startTime);
+  //         const end = dayjs(endTime);
+
+  //         // 날짜가 null이거나 Invalid Date이면 skip
+  //         if (!start.isValid() || !end.isValid()) return;
+
+  //         // 주간 범위에 들어가지 않으면 skip
+  //         if (start.isBefore(weekStart) || start.isAfter(weekEnd)) return;
+
+  //         // 요일
+  //         const dayMap = ['일', '월', '화', '수', '목', '금', '토'];
+  //         const day = dayMap[start.day()];
+
+  //         // 슬롯 → 시간 범위 체크 후 채우기
+  //         slots.forEach((slot) => {
+  //           const slotStart = dayjs(
+  //             `${start.format('YYYY-MM-DD')} ${slot.from}`
+  //           );
+  //           const slotEnd = dayjs(`${start.format('YYYY-MM-DD')} ${slot.to}`);
+
+  //           const isInside =
+  //             (slotStart.isSame(start) || slotStart.isAfter(start)) &&
+  //             (slotEnd.isSame(end) || slotEnd.isBefore(end));
+
+  //           if (isInside) {
+  //             const key = `${day}-${slot.label}`;
+  //             newEntries[key] =
+  //               `${courseName}\n${courseCode}\n(${examType || ''})`;
+  //           }
+  //         });
+  //       });
+
+  //       setEntries(newEntries);
+  //     } catch (err) {
+  //       console.error('시험 목록 조회 실패:', err);
+  //       setEntries({});
+  //     }
+  //   };
+
+  //   fetchExams();
+  // }, [selectedRoom, weekDate, slots]);
   useEffect(() => {
-    if (!selectedRoom || !selectedRoom.roomId || !weekDate) return;
+    console.log('=== 🟦 ExamTimeTable 렌더링됨 ===');
+    console.log('selectedRoom:', selectedRoom);
+    console.log('weekDate:', weekDate?.format?.('YYYY-MM-DD'));
+
+    if (!selectedRoom || !selectedRoom.roomId) {
+      console.warn('⚠️ selectedRoom 또는 roomId 없음 → 렌더 중단');
+      return;
+    }
 
     const fetchExams = async () => {
+      console.log('📡 API 호출 params:', {
+        year: selectedRoom.year,
+        semester: selectedRoom.semester,
+        departmentId: selectedRoom.departmentId,
+        roomId: selectedRoom.roomId,
+      });
+
       try {
-        const res = await apiClient.get('/api/exam/search', {
+        const res = await apiClient.get(`/api/exam/search`, {
           params: {
             year: selectedRoom.year,
             semester: selectedRoom.semester,
-            roomId: selectedRoom.roomId,
             departmentId: selectedRoom.departmentId,
+            roomId: selectedRoom.roomId,
           },
         });
 
+        console.log('📥 API 응답:', res.data);
+
         const exams = res.data || [];
-        const newEntries = {};
+        console.log('📥 전체 exam 개수:', exams.length);
 
         const weekStart = dayjs(weekDate).startOf('isoWeek');
         const weekEnd = dayjs(weekDate).endOf('isoWeek');
 
-        exams.forEach((exam) => {
+        console.log(
+          '📅 주간 범위:',
+          weekStart.format('YYYY-MM-DD'),
+          '~',
+          weekEnd.format('YYYY-MM-DD')
+        );
+
+        // 필터링된 시험 리스트
+        const filtered = exams.filter((exam) => {
+          const start = dayjs(exam.startTime);
+          return start.isBetween(weekStart, weekEnd, 'day', '[]');
+        });
+
+        console.log('🎯 주간 일정 exam:', filtered);
+
+        const newEntries = {};
+
+        filtered.forEach((exam) => {
+          console.log('🧩 개별 exam 처리:', exam);
+
           const { courseName, courseCode, startTime, endTime, examType } = exam;
 
-          const start = dayjs(startTime);
-          const end = dayjs(endTime);
+          const start = dayjs(startTime, 'YYYY-MM-DDTHH:mm:ss', true);
+          const end = dayjs(endTime, 'YYYY-MM-DDTHH:mm:ss', true);
 
-          // 날짜가 null이거나 Invalid Date이면 skip
-          if (!start.isValid() || !end.isValid()) return;
+          if (!start.isValid() || !end.isValid()) {
+            console.warn('❌ Invalid Date exam:', exam);
+            return;
+          }
 
-          // 주간 범위에 들어가지 않으면 skip
-          if (start.isBefore(weekStart) || start.isAfter(weekEnd)) return;
-
-          // 요일
           const dayMap = ['일', '월', '화', '수', '목', '금', '토'];
           const day = dayMap[start.day()];
 
-          // 슬롯 → 시간 범위 체크 후 채우기
+          // slot 기반 매칭
           slots.forEach((slot) => {
             const slotStart = dayjs(
               `${start.format('YYYY-MM-DD')} ${slot.from}`
@@ -100,21 +199,26 @@ export default function ExamTimeTable({ selectedRoom, weekDate }) {
 
             if (isInside) {
               const key = `${day}-${slot.label}`;
-              newEntries[key] =
-                `${courseName}\n${courseCode}\n(${examType || ''})`;
+              const val = `${courseName}\n${courseCode}\n(${examType})`;
+
+              console.log(`➡️ slot 배정: ${key} = ${val}`);
+
+              newEntries[key] = val;
             }
           });
         });
 
+        console.log('📦 최종 entries:', newEntries);
+
         setEntries(newEntries);
       } catch (err) {
-        console.error('시험 목록 조회 실패:', err);
+        console.error('❌ 시험 목록 조회 실패:', err);
         setEntries({});
       }
     };
 
     fetchExams();
-  }, [selectedRoom, weekDate, slots]);
+  }, [selectedRoom, weekDate]);
 
   return (
     <TimeTable
