@@ -2,15 +2,17 @@ import Section from '@/components/common/Section';
 import PageHeader from '@/components/headers/PageHeader';
 import SectionHeader from '@/components/headers/SectionHeader';
 import VerticalTable from '@/components/table/VerticalTable';
-import TimeTable from '@/components/TimeTable';
-import InputCell from '@/components/table/cells/InputCell';
 import HorizontalTable from '@/components/table/HorizontalTable';
+import TimeTable from '@/components/TimeTable';
 
+import InputCell from '@/components/table/cells/InputCell';
 import { SearchIcon } from '@/assets/icons';
 
 import apiClient from '@/api/apiClient';
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
+
+import { buildCourseRealTime, buildTimeTableEntries } from './parsingTime';
 
 const courseTableColumns = [
   { id: 'no', accessorKey: 'no', header: 'No', size: 40 },
@@ -43,109 +45,15 @@ const courseTableColumns = [
   },
 ];
 
+// 시간표 범위/요일
 const timetableStart = '08:00';
 const timetableEnd = '20:00';
 const timetableDays = ['월', '화', '수', '목', '금', '토'];
-const toMinutes = (hhmm) => {
-  const [h, m] = hhmm.split(':').map((n) => parseInt(n, 10));
-  return h * 60 + m;
-};
-
-const fromMinutes = (min) => {
-  const h = String(Math.floor(min / 60)).padStart(2, '0');
-  const m = String(min % 60).padStart(2, '0');
-  return `${h}:${m}`;
-};
-
-const slotLabelToRange = (label) => {
-  const startBase = toMinutes(timetableStart);
-  const num = parseInt(label.slice(0, -1), 10);
-  const isA = label.endsWith('A');
-  const from = startBase + num * 60 + (isA ? 0 : 30);
-  const to = from + 30;
-  return { from, to };
-};
-
-const parseCourseTime = (courseTime) => {
-  const result = [];
-  if (!courseTime) return result;
-
-  const dayPattern = /^(월|화|수|목|금|토|일)\s*/;
-
-  const parts = courseTime.split(',');
-  let currentDay = null;
-
-  parts.forEach((raw) => {
-    const token = raw.trim();
-    if (!token) return;
-
-    const match = token.match(dayPattern);
-    if (match) {
-      currentDay = match[1];
-      const slot = token.slice(match[0].length);
-      if (slot) result.push({ day: currentDay, slot });
-    } else if (currentDay) {
-      result.push({ day: currentDay, slot: token });
-    }
-  });
-
-  return result;
-};
-
-function buildCourseRealTime(courseTime) {
-  const daySlots = parseCourseTime(courseTime);
-  if (!daySlots.length) return '';
-
-  const grouped = {};
-  daySlots.forEach(({ day, slot }) => {
-    const { from, to } = slotLabelToRange(slot);
-    if (!grouped[day]) grouped[day] = [];
-    grouped[day].push({ from, to });
-  });
-
-  const dayStrings = Object.entries(grouped).map(([day, slots]) => {
-    slots.sort((a, b) => a.from - b.from);
-    const merged = [];
-    let current = { ...slots[0] };
-
-    for (let i = 1; i < slots.length; i++) {
-      const s = slots[i];
-      if (s.from === current.to) {
-        current.to = s.to;
-      } else {
-        merged.push(current);
-        current = { ...s };
-      }
-    }
-    merged.push(current);
-
-    return merged
-      .map((seg) => `${day} ${fromMinutes(seg.from)}~${fromMinutes(seg.to)}`)
-      .join(', ');
-  });
-
-  return dayStrings.join(', ');
-}
-
-function buildTimeTableEntries(courses) {
-  const result = {};
-
-  courses.forEach((course) => {
-    if (!course.courseTime) return;
-    const displayText = `${course.courseName}\n${course.courseCode}`;
-
-    const daySlots = parseCourseTime(course.courseTime);
-    daySlots.forEach(({ day, slot }) => {
-      result[`${day}-${slot}`] = displayText;
-    });
-  });
-
-  return result;
-}
 
 function ApplicationStatusPage() {
   const [openYear, setOpenYear] = useState(2025);
-  const [openSemester, setOpenSemester] = useState('2학기'); // 추후 학기 받아오는 부분도 넣을지 고민해봐야할듯
+  const [openSemester, setOpenSemester] = useState('2학기');
+
   const departmentName = useAuthStore((state) => state.departmentName);
   const idNumber = useAuthStore((state) => state.idNumber);
   const name = useAuthStore((state) => state.name);
@@ -275,7 +183,6 @@ function ApplicationStatusPage() {
         />
       </div>
 
-      {/* 시간표 카드 */}
       <div>
         <SectionHeader title='강의 시간표' />
         <TimeTable

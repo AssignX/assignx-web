@@ -1,8 +1,14 @@
-// src/pages/professor/parsingTime.js
-
 const DAY_CHARS = ['월', '화', '수', '목', '금', '토', '일'];
+const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 const DAY_TO_INDEX = { 일: 0, 월: 1, 화: 2, 수: 3, 목: 4, 금: 5, 토: 6 };
+
 const BASE_START_MIN = 8 * 60;
+
+const minutesToHHMM = (min) => {
+  const h = String(Math.floor(min / 60)).padStart(2, '0');
+  const m = String(min % 60).padStart(2, '0');
+  return `${h}:${m}`;
+};
 
 const toDateOnly = (iso) => {
   if (!iso) return null;
@@ -17,12 +23,7 @@ const formatDate = (d) => {
   return `${yyyy}/${mm}/${dd}`;
 };
 
-const minutesToHHMM = (min) => {
-  const h = String(Math.floor(min / 60)).padStart(2, '0');
-  const m = String(min % 60).padStart(2, '0');
-  return `${h}:${m}`;
-};
-
+// ---- 슬롯 / 강의시간 파싱 ----
 const parseSlotLabel = (label) => {
   const cleaned = label.replace(/\s+/g, '');
   const m = cleaned.match(/(\d+)([AB])/);
@@ -37,6 +38,7 @@ const slotIndex = (num, half) => num * 2 + half;
 const slotToStartMinutes = (num, half) =>
   BASE_START_MIN + num * 60 + (half === 0 ? 0 : 30);
 
+// "01A,01B,03A,03B" → "09:00~10:00, 11:00~12:00"
 const buildTimeRangesFromSlots = (slots) => {
   const parsed = slots
     .map((s) => parseSlotLabel(s))
@@ -70,6 +72,7 @@ const buildTimeRangesFromSlots = (slots) => {
   return ranges.join(', ');
 };
 
+// "목 01A,01B,03A,03B, 화 02A,02B" → [{ day:'목', slots:[...] }, { day:'화', slots:[...] }]
 const parseCourseTimeToDaySlots = (courseTime) => {
   const result = [];
   if (!courseTime) return result;
@@ -105,6 +108,7 @@ const parseCourseTimeToDaySlots = (courseTime) => {
   return result;
 };
 
+// ---- 시험 기간 내 날짜 계산 ----
 const getDatesWithinPeriodForDay = (start, end, day) => {
   const targetDow = DAY_TO_INDEX[day];
   const dates = [];
@@ -119,6 +123,9 @@ const getDatesWithinPeriodForDay = (start, end, day) => {
   return dates;
 };
 
+// ---- 1차 시험 신청용 Dropdown 옵션 생성 ----
+// courseTime: "목 01A,01B,03A,03B"
+// examPeriod: { midFirstStartDateTime, midFirstEndDateTime, ... }
 const buildApplicationOptions = (courseTime, examPeriod) => {
   const startDate = toDateOnly(examPeriod.midFirstStartDateTime);
   const endDate = toDateOnly(examPeriod.midFirstEndDateTime);
@@ -143,6 +150,7 @@ const buildApplicationOptions = (courseTime, examPeriod) => {
   return options;
 };
 
+// "2025/10/23(목) 09:00~10:00, 11:00~12:00" → ISO 시작/끝
 const parseApplicationTimeToISO = (applicationTime) => {
   if (!applicationTime) return { startTime: null, endTime: null };
 
@@ -164,8 +172,8 @@ const parseApplicationTimeToISO = (applicationTime) => {
   };
 };
 
-const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
-
+// ---- 확정 시간 포맷팅 ----
+// ISO 두 개 → "2025/10/23(목) 13:00~15:00"
 const formatExamDateTimeRange = (startIso, endIso) => {
   if (!startIso || !endIso) return '';
   const s = new Date(startIso);
@@ -183,8 +191,51 @@ const formatExamDateTimeRange = (startIso, endIso) => {
   return `${dateStr}(${dayChar}) ${startTime}~${endTime}`;
 };
 
+// ---- 강의시간 → "월 09:00~11:00, 수 13:00~15:00" 텍스트 ----
+const buildCourseRealTime = (courseTime) => {
+  const daySlotsList = parseCourseTimeToDaySlots(courseTime);
+  if (!daySlotsList.length) return '';
+
+  const dayStrings = daySlotsList.map(({ day, slots }) => {
+    const rangesText = buildTimeRangesFromSlots(slots);
+    if (!rangesText) return '';
+    return rangesText
+      .split(',')
+      .map((seg) => `${day} ${seg.trim()}`)
+      .join(', ');
+  });
+
+  return dayStrings.filter(Boolean).join(', ');
+};
+
+// ---- 강의목록 → 시간표 엔트리 맵 ----
+// result key: "목-01A"  value: "과목명\n코드"
+const buildTimeTableEntries = (courses) => {
+  const result = {};
+
+  courses.forEach((course) => {
+    const { courseTime, courseName, courseCode } = course;
+    if (!courseTime) return;
+
+    const display = `${courseName}\n${courseCode}`;
+    const daySlotsList = parseCourseTimeToDaySlots(courseTime);
+
+    daySlotsList.forEach(({ day, slots }) => {
+      slots.forEach((slot) => {
+        result[`${day}-${slot}`] = display;
+      });
+    });
+  });
+
+  return result;
+};
+
 export {
+  // 1차 신청 관련
   buildApplicationOptions,
   parseApplicationTimeToISO,
   formatExamDateTimeRange,
+  // 시간표/강의시간 관련
+  buildCourseRealTime,
+  buildTimeTableEntries,
 };
