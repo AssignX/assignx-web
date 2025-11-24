@@ -3,6 +3,8 @@ const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 const DAY_TO_INDEX = { 일: 0, 월: 1, 화: 2, 수: 3, 목: 4, 금: 5, 토: 6 };
 
 const BASE_START_MIN = 8 * 60;
+const DEFAULT_TIMETABLE_END_MIN = 20 * 60;
+const SLOT_INTERVAL_MINUTES = 30;
 
 const minutesToHHMM = (min) => {
   const h = String(Math.floor(min / 60)).padStart(2, '0');
@@ -37,6 +39,23 @@ const slotIndex = (num, half) => num * 2 + half;
 
 const slotToStartMinutes = (num, half) =>
   BASE_START_MIN + num * 60 + (half === 0 ? 0 : 30);
+
+const minutesToSlotLabel = (
+  minutes,
+  {
+    startMinutes = BASE_START_MIN,
+    endMinutes = DEFAULT_TIMETABLE_END_MIN,
+    intervalMinutes = SLOT_INTERVAL_MINUTES,
+  } = {}
+) => {
+  if (minutes < startMinutes || minutes >= endMinutes) return null;
+
+  const offset = minutes - startMinutes;
+  const slotIndex = Math.floor(offset / intervalMinutes);
+  const hourIndex = Math.floor(slotIndex / 2);
+  const halfIndex = slotIndex % 2;
+  return `${hourIndex}${halfIndex === 0 ? 'A' : 'B'}`;
+};
 
 // "01A,01B,03A,03B" → "09:00~10:00, 11:00~12:00"
 const buildTimeRangesFromSlots = (slots) => {
@@ -238,4 +257,7 @@ export {
   // 시간표/강의시간 관련
   buildCourseRealTime,
   buildTimeTableEntries,
+  minutesToSlotLabel,
+  SLOT_INTERVAL_MINUTES,
+  WEEKDAYS,
 };
