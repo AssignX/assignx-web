@@ -97,10 +97,6 @@ function ClassRoomModal({ setIsOpen, onSelect }) {
     fetchBuildings(buildingKeyword);
   };
 
-  useEffect(() => {
-    fetchBuildings();
-  }, [fetchBuildings]);
-
   const buildingSearchItems = [
     {
       id: 'building',
@@ -236,36 +232,40 @@ function ClassRoomModal({ setIsOpen, onSelect }) {
     <Modal
       title='강의실 조회'
       content={
-        <div className='h-[450px]'>
+        <div className='h-[400px] overflow-hidden'>
           <div className='pb-[10px]'>
             <SectionHeader title='강의실 검색' />
             <HorizontalTable items={buildingSearchItems} />
           </div>
 
-          <div className='flex flex-row items-center'>
-            <VerticalTable
-              columns={buildingColumns}
-              data={buildingData}
-              headerHeight={40}
-              maxHeight={300}
-              selectable={true}
-              singleSelect={true}
-              updateSelection={handleBuildingSelectionChange}
-            />
-
+          <div className='flex h-full flex-row items-start'>
             <div>
+              <VerticalTable
+                columns={buildingColumns}
+                data={buildingData}
+                headerHeight={40}
+                maxHeight={300}
+                selectable={true}
+                singleSelect={true}
+                updateSelection={handleBuildingSelectionChange}
+              />
+            </div>
+
+            <div className='flex h-full items-center self-stretch px-4'>
               <ChevronRightIcon />
             </div>
 
-            <VerticalTable
-              columns={roomColumns}
-              data={classRoomData}
-              headerHeight={40}
-              maxHeight={300}
-              selectable={true}
-              singleSelect={true}
-              updateSelection={setSelectedClassRoomIds}
-            />
+            <div>
+              <VerticalTable
+                columns={roomColumns}
+                data={classRoomData}
+                headerHeight={40}
+                maxHeight={300}
+                selectable={true}
+                singleSelect={true}
+                updateSelection={setSelectedClassRoomIds}
+              />
+            </div>
           </div>
         </div>
       }
@@ -276,8 +276,8 @@ function ClassRoomModal({ setIsOpen, onSelect }) {
       onClose={handleClose}
       width
       height
-      maxWidth='600px'
-      maxHeight='500px'
+      maxWidth='800px'
+      maxHeight='600px'
     />
   );
 }
