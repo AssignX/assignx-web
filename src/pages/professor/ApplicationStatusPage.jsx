@@ -157,7 +157,7 @@ function ApplicationStatusPage() {
 
   return (
     <Section>
-      <div>
+      <div className='flex flex-col'>
         <PageHeader
           title='시간표 조회'
           buttonsData={[
@@ -172,7 +172,7 @@ function ApplicationStatusPage() {
         <HorizontalTable items={filterItems} />
       </div>
 
-      <div>
+      <div className='flex h-[240px] flex-col'>
         <SectionHeader title='과목 조회 목록' subtitle={subtitle} />
         <VerticalTable
           columns={courseTableColumns}
@@ -183,7 +183,7 @@ function ApplicationStatusPage() {
         />
       </div>
 
-      <div>
+      <div className='flex flex-col'>
         <SectionHeader title='강의 시간표' />
         <TimeTable
           startTime={timetableStart}
