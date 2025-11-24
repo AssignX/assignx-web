@@ -10,7 +10,7 @@ import SearchCell from '@/components/table/cells/SearchCell';
 import DateTimePickerCell from '@/components/table/cells/DateTimePickerCell.jsx';
 
 import ClassRoomModal from '@/components/ClassRoomModal.jsx';
-import ConfirmModal from './ConfirmModal.jsx';
+import ConfirmModal from '@/components/ConfirmModal.jsx';
 
 import { useState, useCallback, useMemo } from 'react';
 import apiClient from '@/api/apiClient';

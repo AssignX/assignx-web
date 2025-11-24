@@ -4,7 +4,7 @@ import SectionHeader from '@/components/headers/SectionHeader';
 import HorizontalTable from '@/components/table/HorizontalTable';
 import VerticalTable from '@/components/table/VerticalTable';
 
-import ConfirmModal from './ConfirmModal.jsx';
+import ConfirmModal from '@/components/ConfirmModal.jsx';
 
 import InputCell from '@/components/table/cells/InputCell';
 import DropdownCell from '@/components/table/cells/DropdownCell';
