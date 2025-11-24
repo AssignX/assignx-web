@@ -215,6 +215,7 @@ export default function ApproveExamPage() {
       console.log('🔥 finalRoomId:', finalRoomId);
       console.log('🔥 roomSchedules:', roomSchedules);
       console.log('roomid : ', item.roomId);
+      if (!item.roomId) return false;
       if (Number(item.examId) === Number(exam.examId)) return false; // 자기 자신 제외
       if (Number(item.roomId) !== Number(finalRoomId)) return false;
 
