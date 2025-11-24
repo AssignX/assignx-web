@@ -4,7 +4,7 @@ import SectionHeader from '@/components/headers/SectionHeader';
 import HorizontalTable from '@/components/table/HorizontalTable';
 import VerticalTable from '@/components/table/VerticalTable';
 
-import FirstApplicationModal from './FirstApplicationModal.jsx';
+import ConfirmModal from './ConfirmModal.jsx';
 
 import InputCell from '@/components/table/cells/InputCell';
 import DropdownCell from '@/components/table/cells/DropdownCell';
@@ -279,13 +279,14 @@ function FirstApplicationPage() {
       </div>
 
       {isModalOpen && (
-        <FirstApplicationModal
+        <ConfirmModal
           setIsOpen={setIsModalOpen}
           onConfirm={handleConfirmApplyFirst}
-          courseName={unconfirmedRows
+          title='1차 신청'
+          body={`신청하시겠습니까? (${unconfirmedRows
             .filter((r) => selectedIds.includes(String(r.examId)))
-            .map((r) => r.courseName)
-            .join(', ')}
+            .map((r) => r.subjectName)
+            .join(', ')})`}
         />
       )}
     </Section>
