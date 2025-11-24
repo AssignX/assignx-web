@@ -1,7 +1,7 @@
 // src/pages/SchedulePage.jsx
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import Layout from '@/pages/office/Layout';
+import Layout from '@/components/Layout';
 import PageHeader from '@/components/headers/PageHeader';
 import ScheduleSearchTable from '@/components/table/ScheduleSearchTable';
 import VerticalTable from '@/components/table/VerticalTable';

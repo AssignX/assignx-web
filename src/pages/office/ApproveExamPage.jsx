@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Layout from '@/pages/office/Layout';
+import Layout from '@/components/Layout';
 import PageHeader from '@/components/headers/PageHeader';
 import apiClient from '@/api/apiClient';
 import dayjs from 'dayjs';

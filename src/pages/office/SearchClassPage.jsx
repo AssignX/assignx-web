@@ -1,6 +1,6 @@
 // src/pages/SearchClassPage.jsx
 import React, { useState, useEffect, useMemo } from 'react';
-import Layout from '@/pages/office/Layout';
+import Layout from '@/components/Layout';
 import HorizontalTable from '@/components/table/HorizontalTable';
 import InputCell from '@/components/table/cells/InputCell';
 import Button from '@/components/buttons/Button';
