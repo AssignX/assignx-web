@@ -246,7 +246,7 @@ function FirstApplicationPage() {
         <HorizontalTable items={filterItems} />
       </div>
 
-      <div className='flex h-[320px] flex-col'>
+      <div className='flex h-[260px] flex-col'>
         <SectionHeader
           title='미확정 과목 목록'
           subtitle={`${unconfirmedRows.length}건`}
@@ -274,7 +274,7 @@ function FirstApplicationPage() {
           columns={confirmedTableColumns}
           data={confirmedRows}
           selectable={false}
-          maxHeight={260}
+          maxHeight={320}
         />
       </div>
 

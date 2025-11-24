@@ -134,7 +134,7 @@ function CourseSchedulePage() {
           endTime={timetableEnd}
           dayRange={timetableDays}
           entries={weekEntries}
-          maxHeight='600px'
+          maxHeight='550px'
         />
       </div>
     </Section>

@@ -190,7 +190,7 @@ function ExamStatusPage() {
           endTime={timetableEnd}
           dayRange={timetableDays}
           entries={timeTableEntries}
-          maxHeight='360px'
+          maxHeight='320px'
         />
       </div>
     </Section>

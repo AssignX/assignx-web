@@ -1,4 +1,3 @@
-// src/pages/professor/SecondApplicationPage.jsx
 import Section from '@/components/common/Section';
 import PageHeader from '@/components/headers/PageHeader';
 import SectionHeader from '@/components/headers/SectionHeader';
@@ -457,7 +456,7 @@ function SecondApplicationPage() {
       </div>
 
       {/* 미신청 과목 목록 */}
-      <div className='flex h-[200px] flex-col'>
+      <div className='flex h-[180px] flex-col'>
         <SectionHeader
           title='미신청 과목 목록'
           subtitle={`${unappliedRows.length}건`}
@@ -470,7 +469,7 @@ function SecondApplicationPage() {
           columns={unconfirmedTableColumns}
           data={unappliedRows}
           headerHeight={40}
-          maxHeight={240}
+          maxHeight={160}
           selectable
           updateSelection={setSelectedUnappliedIds}
         />
@@ -490,7 +489,7 @@ function SecondApplicationPage() {
           columns={unconfirmedTableColumns}
           data={unconfirmedRows}
           headerHeight={40}
-          maxHeight={240}
+          maxHeight={160}
           selectable
           updateSelection={setSelectedUnconfirmedIds}
         />
@@ -506,7 +505,7 @@ function SecondApplicationPage() {
           columns={confirmedTableColumns}
           data={confirmedRows}
           headerHeight={40}
-          maxHeight={240}
+          maxHeight={160}
           selectable={false}
         />
       </div>
