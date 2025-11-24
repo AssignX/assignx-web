@@ -11,7 +11,7 @@ import DropdownCell from '@/components/table/cells/DropdownCell';
 import { SearchIcon } from '@/assets/icons';
 
 import apiClient from '@/api/apiClient';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
 
 import {
@@ -200,33 +200,59 @@ function FirstApplicationPage() {
     }
   };
 
-  const filterItems = [
-    {
-      id: 'year',
-      label: '개설연도',
-      content: <InputCell value={openYear} disabled height={32} />,
-    },
-    {
-      id: 'semester',
-      label: '개설학기',
-      content: <InputCell value={openSemester} disabled height={32} />,
-    },
-    {
-      id: 'department',
-      label: '소속학과',
-      content: <InputCell value={departmentName} disabled height={32} />,
-    },
-    {
-      id: 'professorId',
-      label: '학번',
-      content: <InputCell value={professorId} disabled height={32} />,
-    },
-    {
-      id: 'professorName',
-      label: '이름',
-      content: <InputCell value={professorName} disabled height={32} />,
-    },
-  ];
+  const filterItems = useMemo(
+    () => [
+      {
+        id: 'openYear',
+        label: '개설연도',
+        required: true,
+        labelWidth: '80px',
+        contentWidth: '80px',
+        content: (
+          <InputCell value={String(openYear)} height={32} disabled={true} />
+        ),
+      },
+      {
+        id: 'openSemester',
+        label: '개설학기',
+        required: true,
+        labelWidth: '80px',
+        contentWidth: '80px',
+        content: (
+          <InputCell value={String(openSemester)} height={32} disabled={true} />
+        ),
+      },
+      {
+        id: 'department',
+        label: '소속학과',
+        required: true,
+        labelWidth: '80px',
+        contentWidth: '220px',
+        content: (
+          <InputCell value={departmentName} height={32} disabled={true} />
+        ),
+      },
+      {
+        id: 'professorId',
+        label: '학번',
+        required: true,
+        labelWidth: '60px',
+        contentWidth: '120px',
+        content: <InputCell value={professorId} height={32} disabled={true} />,
+      },
+      {
+        id: 'professorName',
+        label: '이름',
+        required: true,
+        labelWidth: '60px',
+        contentWidth: '80px',
+        content: (
+          <InputCell value={professorName} height={32} disabled={true} />
+        ),
+      },
+    ],
+    [departmentName, openSemester, openYear, professorId, professorName]
+  );
 
   return (
     <Section>

@@ -9,7 +9,7 @@ import InputCell from '@/components/table/cells/InputCell';
 import { SearchIcon } from '@/assets/icons';
 
 import apiClient from '@/api/apiClient';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
 
 import { buildCourseRealTime, buildTimeTableEntries } from './parsingTime';
@@ -106,52 +106,57 @@ function ExamStatusPage() {
     }
   };
 
-  const filterItems = [
-    {
-      id: 'openYear',
-      label: '개설연도',
-      required: true,
-      labelWidth: '80px',
-      contentWidth: '80px',
-      content: (
-        <InputCell value={String(openYear)} height={32} disabled={true} />
-      ),
-    },
-    {
-      id: 'openSemester',
-      label: '개설학기',
-      required: true,
-      labelWidth: '80px',
-      contentWidth: '80px',
-      content: (
-        <InputCell value={String(openSemester)} height={32} disabled={true} />
-      ),
-    },
-    {
-      id: 'department',
-      label: '소속학과',
-      required: true,
-      labelWidth: '80px',
-      contentWidth: '220px', // fill
-      content: <InputCell value={departmentName} height={32} disabled={true} />,
-    },
-    {
-      id: 'professorId',
-      label: '학번',
-      required: true,
-      labelWidth: '60px',
-      contentWidth: '120px',
-      content: <InputCell value={idNumber} height={32} disabled={true} />,
-    },
-    {
-      id: 'professorName',
-      label: '이름',
-      required: true,
-      labelWidth: '60px',
-      contentWidth: '80px',
-      content: <InputCell value={name} height={32} disabled={true} />,
-    },
-  ];
+  const filterItems = useMemo(
+    () => [
+      {
+        id: 'openYear',
+        label: '개설연도',
+        required: true,
+        labelWidth: '80px',
+        contentWidth: '80px',
+        content: (
+          <InputCell value={String(openYear)} height={32} disabled={true} />
+        ),
+      },
+      {
+        id: 'openSemester',
+        label: '개설학기',
+        required: true,
+        labelWidth: '80px',
+        contentWidth: '80px',
+        content: (
+          <InputCell value={String(openSemester)} height={32} disabled={true} />
+        ),
+      },
+      {
+        id: 'department',
+        label: '소속학과',
+        required: true,
+        labelWidth: '80px',
+        contentWidth: '220px', // fill
+        content: (
+          <InputCell value={departmentName} height={32} disabled={true} />
+        ),
+      },
+      {
+        id: 'professorId',
+        label: '학번',
+        required: true,
+        labelWidth: '60px',
+        contentWidth: '120px',
+        content: <InputCell value={idNumber} height={32} disabled={true} />,
+      },
+      {
+        id: 'professorName',
+        label: '이름',
+        required: true,
+        labelWidth: '60px',
+        contentWidth: '80px',
+        content: <InputCell value={name} height={32} disabled={true} />,
+      },
+    ],
+    [departmentName, openSemester, openYear, idNumber, name]
+  );
 
   const subtitle = `${courseTableRows.length}건`;
 
