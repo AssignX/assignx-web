@@ -36,6 +36,8 @@ export default function ApproveExamPage() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [showOverlapModal, setShowOverlapModal] = useState(false);
+  const [showInvalidTimeModal, setShowInvalidTimeModal] = useState(false);
+  const [showNoRoomModal, setShowNoRoomModal] = useState(false);
 
   const [updated, setUpdated] = useState({
     examType: '',
@@ -202,12 +204,12 @@ export default function ApproveExamPage() {
       isNaN(updated.startTime?.getTime()) ||
       isNaN(updated.endTime?.getTime())
     ) {
-      alert('시간이 올바르게 설정되지 않았습니다. 다시 선택해주세요.');
+      setShowInvalidTimeModal(true);
       return;
     }
 
     if (!roomIdToSend) {
-      alert('시험 장소가 선택되지 않았습니다.');
+      setShowNoRoomModal(true);
       return;
     }
 
@@ -394,6 +396,34 @@ export default function ApproveExamPage() {
           }
           confirmText='확인'
           onConfirm={() => setShowErrorModal(false)}
+          width='400px'
+          height='200px'
+        />
+      )}
+
+      {showInvalidTimeModal && (
+        <Modal
+          title='시간 오류'
+          content={
+            <div className='p-3'>
+              시간이 올바르게 설정되지 않았습니다.
+              <br />
+              다시 선택해 주세요.
+            </div>
+          }
+          confirmText='확인'
+          onConfirm={() => setShowInvalidTimeModal(false)}
+          width='400px'
+          height='200px'
+        />
+      )}
+
+      {showNoRoomModal && (
+        <Modal
+          title='장소 선택 필요'
+          content={<div className='p-3'>시험 장소가 선택되지 않았습니다.</div>}
+          confirmText='확인'
+          onConfirm={() => setShowNoRoomModal(false)}
           width='400px'
           height='200px'
         />

@@ -9,6 +9,7 @@ import apiClient from '@/api/apiClient';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
 import Button from '@/components/buttons/Button';
+import Modal from '@/components/modal/Modal';
 
 export default function SchedulePage() {
   const navigate = useNavigate();
@@ -16,9 +17,11 @@ export default function SchedulePage() {
 
   const handleEdit = () => {
     if (!selectedExam) {
-      alert('수정할 시험을 선택하세요.');
+      setSelectExamMessage('수정할 시험을 선택하세요.');
+      setShowSelectExamModal(true);
       return;
     }
+
     navigate(`/office/exam/approve/${selectedExam.examId}`);
   };
 
@@ -36,6 +39,8 @@ export default function SchedulePage() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedExam, setSelectedExam] = useState(null);
+  const [showSelectExamModal, setShowSelectExamModal] = useState(false);
+  const [selectExamMessage, setSelectExamMessage] = useState('');
 
   const buttons = selected
     ? [{ text: '수정', color: 'lightgray', onClick: handleEdit }]
@@ -45,9 +50,11 @@ export default function SchedulePage() {
           color: 'lightgray',
           onClick: () => {
             if (!selectedExam) {
-              alert('승인할 시험을 선택하세요.');
+              setSelectExamMessage('승인할 시험을 선택하세요.');
+              setShowSelectExamModal(true);
               return;
             }
+
             navigate(`/office/exam/approve/${selectedExam.examId}`);
           },
         },
@@ -275,6 +282,17 @@ export default function SchedulePage() {
           )}
         </div>
       </div>
+
+      {showSelectExamModal && (
+        <Modal
+          title='알림'
+          content={<div className='p-3'>{selectExamMessage}</div>}
+          confirmText='확인'
+          onConfirm={() => setShowSelectExamModal(false)}
+          width='360px'
+          height='180px'
+        />
+      )}
     </Layout>
   );
 }
