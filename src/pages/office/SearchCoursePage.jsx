@@ -25,7 +25,6 @@ export default function SearchCoursePage() {
   const { name, departmentName } = useAuthStore();
   const navigate = useNavigate();
   const accessToken = useAuthStore((state) => state.accessToken);
-  const logout = useAuthStore((state) => state.logout);
 
   const [isMappingModalOpen, setIsMappingModalOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -83,17 +82,6 @@ export default function SearchCoursePage() {
       setResetSelection((prev) => !prev);
     } catch (err) {
       console.error('과목 목록 새로고침 실패:', err);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await apiClient.post('/api/auth/logout');
-    } catch {
-      console.warn('서버 로그아웃 실패 (클라이언트만 처리)');
-    } finally {
-      logout();
-      navigate('/login');
     }
   };
 
@@ -187,7 +175,6 @@ export default function SearchCoursePage() {
     <Layout
       username={`${name ?? '사용자'} 님`}
       headerTitle={`${departmentName ?? ''} 메뉴`}
-      onLogout={handleLogout}
       menus={[
         {
           title: '과목',
