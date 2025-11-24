@@ -8,7 +8,7 @@ import InputCell from '@/components/table/cells/InputCell.jsx';
 import Button from '@/components/buttons/Button.jsx';
 import { SearchIcon } from '@/assets/icons';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ChevronRightIcon } from '@/assets/icons';
 import apiClient from '@/api/apiClient';
 
@@ -39,38 +39,67 @@ function ClassRoomModal({ setIsOpen, onSelect }) {
   const [selectedBuildingDetail, setSelectedBuildingDetail] = useState(null);
   const [buildingFilter, setBuildingFilter] = useState(null);
 
-  const handleBuildingSearch = async () => {
-    const keyword = buildingKeyword.trim();
-    if (!keyword) {
-      alert('건물코드 또는 건물명을 입력해주세요.');
-      return;
-    }
-
-    const isNumber = /^\d+$/.test(keyword);
-    const params = isNumber ? { number: keyword } : { name: keyword };
-
-    try {
-      const res = await apiClient.get('/api/building/search', { params });
-      const list = Array.isArray(res.data) ? res.data : [];
-      console.log(list);
-      const mapped = list.map((building, idx) => ({
+  const mapBuildingList = useCallback(
+    (list) =>
+      list.map((building, idx) => ({
         id: String(building.buildingId),
         buildingId: building.buildingId,
-        buildingNumber: building.buildingNumber,
-        buildingName: building.buildingName,
+        buildingNumber: building.buildingNumber ?? building.buildingNum ?? '',
+        buildingName: building.buildingName ?? '',
         no: idx + 1,
-      }));
-      setBuildingData(mapped);
-      setSelectedBuildingIds([]);
-      setSelectedBuildingDetail(null);
-      setClassRoomData([]);
-      setSelectedClassRoomIds([]);
-      setBuildingFilter(null);
-    } catch (error) {
-      console.error('건물 검색 실패:', error);
-      alert('건물 검색 중 오류가 발생했습니다.');
-    }
+      })),
+    []
+  );
+
+  const fetchBuildings = useCallback(
+    async (keyword = '') => {
+      try {
+        const res = await apiClient.get('/api/building');
+        const raw = Array.isArray(res.data)
+          ? res.data
+          : Array.isArray(res.data?.data)
+            ? res.data.data
+            : [];
+
+        const trimmed = keyword.trim();
+        const filtered = trimmed
+          ? raw.filter((b) => {
+              const key = trimmed.toLowerCase();
+              return (
+                String(b.buildingId ?? '')
+                  .toLowerCase()
+                  .includes(key) ||
+                String(b.buildingNumber ?? b.buildingNum ?? '')
+                  .toLowerCase()
+                  .includes(key) ||
+                String(b.buildingName ?? '')
+                  .toLowerCase()
+                  .includes(key)
+              );
+            })
+          : raw;
+
+        setBuildingData(mapBuildingList(filtered));
+        setSelectedBuildingIds([]);
+        setSelectedBuildingDetail(null);
+        setClassRoomData([]);
+        setSelectedClassRoomIds([]);
+        setBuildingFilter(null);
+      } catch (error) {
+        console.error('건물 목록 조회 실패:', error);
+        alert('건물 목록 조회 중 오류가 발생했습니다.');
+      }
+    },
+    [mapBuildingList]
+  );
+
+  const handleBuildingSearch = () => {
+    fetchBuildings(buildingKeyword);
   };
+
+  useEffect(() => {
+    fetchBuildings();
+  }, [fetchBuildings]);
 
   const buildingSearchItems = [
     {
