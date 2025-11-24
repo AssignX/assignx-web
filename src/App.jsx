@@ -49,7 +49,7 @@ export default function App() {
       <Route path='office'>
         <Route path='classrooms' element={<SearchClassPage />} />
         <Route path='professors' element={<SearchProfessorPage />} />
-        <Route path='exam' element={<ApproveExamPage />} />
+        <Route path='exam' element={<SchedulePage />} />
         <Route path='exam/approve/:id' element={<ApproveExamPage />} />
       </Route>
       <Route path='login' element={<LoginPage />} />
