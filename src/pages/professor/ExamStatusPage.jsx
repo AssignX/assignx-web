@@ -50,7 +50,7 @@ const timetableStart = '08:00';
 const timetableEnd = '20:00';
 const timetableDays = ['월', '화', '수', '목', '금', '토'];
 
-function ApplicationStatusPage() {
+function ExamStatusPage() {
   const [openYear, setOpenYear] = useState(2025);
   const [openSemester, setOpenSemester] = useState('2학기');
 
@@ -197,4 +197,4 @@ function ApplicationStatusPage() {
   );
 }
 
-export default ApplicationStatusPage;
+export default ExamStatusPage;

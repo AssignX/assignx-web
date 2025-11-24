@@ -18,8 +18,8 @@ import IconTestPage from './pages/test/IconTestPage.jsx';
 import TableTestPage from './pages/test/TableTestPage.jsx';
 import TimetableTest from './pages/test/TimetableTest.jsx';
 import Professor from './pages/professor/Professor.jsx';
-import ApplicationStatusPage from './pages/professor/ApplicationStatusPage.jsx';
-import SubjectListPage from './pages/professor/SubjectListPage.jsx';
+import ExamStatusPage from './pages/professor/ExamStatusPage.jsx';
+import CourseSchedulePage from './pages/professor/CourseSchedulePage.jsx';
 import FirstApplicationPage from './pages/professor/FirstApplicationPage.jsx';
 import SecondApplicationPage from './pages/professor/SecondApplicationPage.jsx';
 import DepartmentListPage from './pages/admin/DepartmentListPage.jsx';
@@ -71,10 +71,13 @@ export default function App() {
 
       {/* Professor Pages */}
       <Route path='professor' element={<Professor />}>
-        <Route path='status' element={<ApplicationStatusPage />} />
-        <Route path='subject' element={<SubjectListPage />} />
+        <Route index element={<CourseSchedulePage />} />
+        {/* 강의 조회 */}
+        <Route path='schedule' element={<CourseSchedulePage />} />
+        {/* 시험 신청 */}
         <Route path='first' element={<FirstApplicationPage />} />
         <Route path='second' element={<SecondApplicationPage />} />
+        <Route path='status' element={<ExamStatusPage />} />
       </Route>
 
       {/* Modal test */}

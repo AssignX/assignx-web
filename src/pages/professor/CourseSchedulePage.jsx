@@ -63,7 +63,7 @@ const buildWeekEntriesFromExams = (exams, currentWeek) => {
   return entries;
 };
 
-function SubjectListPage() {
+function CourseSchedulePage() {
   const [examRows, setExamRows] = useState([]);
   const [date, setDate] = useState(dayjs());
   const [selected, setSelected] = useState(true); // true: 수업, false: 시험
@@ -112,7 +112,7 @@ function SubjectListPage() {
     <Section>
       <div>
         <PageHeader
-          title='신청 현황 조회'
+          title='시간표 조회'
           helperText='※해당 시간표는 시스템 선정 기준 유력 후보 1순위만 표기하고 있습니다.'
         />
         <ClassRoomSearchTable onSearch={handleSearchCondition} />
@@ -141,4 +141,4 @@ function SubjectListPage() {
   );
 }
 
-export default SubjectListPage;
+export default CourseSchedulePage;

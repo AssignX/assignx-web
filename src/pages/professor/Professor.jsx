@@ -9,7 +9,7 @@ function Professor() {
   const baseMenus = [
     {
       title: '강의 조회',
-      subItems: [{ label: '시간표 조회', path: 'subject' }],
+      subItems: [{ label: '시간표 조회', path: 'schedule' }],
     },
     {
       title: '시험 신청',
@@ -23,10 +23,18 @@ function Professor() {
 
   const professorMenus = baseMenus.map((menu) => ({
     ...menu,
-    subItems: menu.subItems.map((sub) => ({
-      ...sub,
-      isSelected: location.pathname.startsWith(`/professor/${sub.path}`),
-    })),
+    subItems: menu.subItems.map((sub) => {
+      const basePath = `/professor/${sub.path}`;
+      const isStatus =
+        sub.path === 'subject' &&
+        (location.pathname === '/professor' ||
+          location.pathname.startsWith('/professor/subject'));
+
+      return {
+        ...sub,
+        isSelected: isStatus || location.pathname.startsWith(basePath),
+      };
+    }),
   }));
 
   return (
