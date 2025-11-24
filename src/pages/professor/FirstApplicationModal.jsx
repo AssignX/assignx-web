@@ -1,7 +1,7 @@
 import Modal from '@/components/modal/Modal.jsx';
 import PropTypes from 'prop-types';
 
-function ApplyConfirmModal({ setIsOpen, onConfirm }) {
+function FirstApplicationModal({ setIsOpen, onConfirm, courseName }) {
   const handleConfirm = () => {
     if (onConfirm) {
       onConfirm();
@@ -20,7 +20,7 @@ function ApplyConfirmModal({ setIsOpen, onConfirm }) {
   return (
     <Modal
       title='1차 신청'
-      content={<div>신청하시겠습니까?</div>}
+      content={<div>{courseName} 신청하시겠습니까?</div>}
       confirmText='확인'
       cancelText='취소'
       onConfirm={handleConfirm}
@@ -34,9 +34,10 @@ function ApplyConfirmModal({ setIsOpen, onConfirm }) {
   );
 }
 
-ApplyConfirmModal.propTypes = {
+FirstApplicationModal.propTypes = {
   setIsOpen: PropTypes.func.isRequired,
   onConfirm: PropTypes.func,
+  courseName: PropTypes.string.isRequired,
 };
 
-export default ApplyConfirmModal;
+export default FirstApplicationModal;
