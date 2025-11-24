@@ -259,7 +259,7 @@ export default function SchedulePage() {
         <div className='mt-[10px] bg-white'>
           {loading && <p className='mt-3 px-2 text-gray-500'>불러오는 중...</p>}
           {!loading && (
-            <>
+            <div className='bg-white'>
               <VerticalTable
                 columns={columns}
                 selectable={true}
@@ -276,9 +276,9 @@ export default function SchedulePage() {
                   setSelectedExam(exam);
                 }}
               />
-
-              {rows.length === 0}
-            </>
+              {/* 빈 데이터일 때 흰색 배경 유지 */}
+              {rows.length === 0 && <div className='flex h-[600px] bg-white' />}
+            </div>
           )}
         </div>
       </div>
