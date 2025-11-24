@@ -4,268 +4,290 @@ import SectionHeader from '@/components/headers/SectionHeader';
 import HorizontalTable from '@/components/table/HorizontalTable';
 import VerticalTable from '@/components/table/VerticalTable';
 
+import FirstApplicationModal from './FirstApplicationModal.jsx';
+
 import InputCell from '@/components/table/cells/InputCell';
-import SearchCell from '@/components/table/cells/SearchCell';
+import DropdownCell from '@/components/table/cells/DropdownCell';
 import { SearchIcon } from '@/assets/icons';
 
-import { useEffect, useCallback, useState } from 'react';
-import DropdownCell from '../../components/table/cells/DropdownCell';
+import apiClient from '@/api/apiClient';
+import { useState } from 'react';
+import { useAuthStore } from '@/store/useAuthStore';
+
+import {
+  buildApplicationOptions,
+  parseApplicationTimeToISO,
+  formatExamDateTimeRange,
+} from './parsingTime';
+
+const getDummyExamPeriod = (year, semester) => ({
+  examPeriodId: 1,
+  year: String(year),
+  semester: String(semester).replace('학기', ''),
+  midFirstStartDateTime: '2025-10-22T00:00:00.000Z',
+  midFirstEndDateTime: '2025-10-28T23:59:59.000Z',
+});
 
 const unconfirmedTableColumns = [
   {
     header: 'No',
     accessorKey: 'number',
-    size: 50,
+    size: 40,
     cell: ({ row }) => row.index + 1,
   },
-  { header: '과목명', accessorKey: 'subjectName', size: 120 },
-  { header: '과목코드', accessorKey: 'subjectCode', size: 100 },
-  { header: '분반', accessorKey: 'classSection', size: 50 },
-  {
-    header: '강의시간',
-    accessorKey: 'classTime',
-    size: 200,
-    cell: (info) => info.getValue(),
-  },
-  {
-    header: '수강인원',
-    accessorKey: 'studentCount',
-    size: 64,
-    cell: (info) => info.getValue(),
-  },
+  { header: '과목명', accessorKey: 'courseName', size: 140 },
+  { header: '과목코드', accessorKey: 'courseCode', size: 100 },
+  { header: '분반', accessorKey: 'courseSection', size: 60 },
+  { header: '강의시간', accessorKey: 'courseTime', size: 200 },
+  { header: '수강인원', accessorKey: 'enrolledCount', size: 60 },
   {
     header: '신청시간',
     accessorKey: 'applicationTime',
-    size: 300,
+    size: 260,
     cell: (info) => {
-      const rowData = info.row.original;
-      const options = rowData.applicationOptions ?? [];
+      const row = info.row.original;
       return (
         <DropdownCell
-          initialValue={rowData.applicationTime ?? ''} // 또는 info.getValue()
-          options={options} // ⭐ row별 옵션 사용
-          rowId={rowData.number.toString()} // 너가 구분에 쓰고 싶은 값
+          initialValue={row.applicationTime ?? ''}
+          options={row.applicationOptions ?? []}
+          rowId={String(row.examId)}
           columnKey='applicationTime'
-          updateData={(rowId, columnKey, newValue) => {
-            console.log('[신청시간 변경]', {
-              rowId,
-              columnKey,
-              newValue,
-              rowData,
-            });
-            // 여기서 setState로 실제 값 업데이트 하면 되고
-            // DropdownCell은 그대로 둬도 됨
-          }}
+          updateData={row.updateApplicationTime}
         />
       );
     },
   },
-  {
-    header: '강의실',
-    accessorKey: 'classRoom',
-    size: 150,
-    cell: (info) => (
-      <SearchCell
-        initialValue={info.getValue() ?? ''}
-        onSearch={(val) => {
-          // 강의실 검색 모달 연결
-          console.log('[강의실 검색]', { value: val, row: info.row.original });
-        }}
-      />
-    ),
-  },
+  { header: '강의실', accessorKey: 'classRoom', size: 140 },
 ];
 const confirmedTableColumns = [
   {
     header: 'No',
     accessorKey: 'number',
-    size: 50,
+    size: 40,
     cell: ({ row }) => row.index + 1,
   },
-  { header: '과목명', accessorKey: 'subjectName', size: 120 },
-  { header: '과목코드', accessorKey: 'subjectCode', size: 100 },
-  { header: '분반', accessorKey: 'classSection', size: 50 },
-  { header: '강의시간', accessorKey: 'classTime', size: 200 },
-  { header: '확정 시간', accessorKey: 'confirmedTime', size: 300 },
-  { header: '강의실', accessorKey: 'classRoom', size: 150 },
-  { header: '수강인원', accessorKey: 'studentCount', size: 64 },
-  { header: '확정여부', accessorKey: 'confirmationStatus', size: 100 },
-];
-
-const dummyUnconfirmedTableRows = [
-  {
-    number: 1,
-    subjectName: '자료구조',
-    subjectCode: 'CS101',
-    classSection: '1',
-    classTime: '월 10:00-12:00',
-    classRoom: 'A101',
-    studentCount: 45,
-    applicationTime: '2024-06-01 09:00~12:00',
-    applicationOptions: [
-      { value: '2024-06-01 09:00~12:00', label: '2024-06-01 09:00~12:00' },
-      { value: '2024-06-01 10:00~12:00', label: '2024-06-01 10:00~12:00' },
-    ],
-  },
-  {
-    number: 2,
-    subjectName: '운영체제',
-    subjectCode: 'CS102',
-    classSection: '2',
-    classTime: '화 14:00-16:00',
-    classRoom: 'B202',
-    studentCount: 40,
-    applicationTime: '2024-06-01 10:00',
-    applicationOptions: [
-      { value: '2024-06-01 10:30~12:00', label: '2024-06-01 10:30~12:00' },
-      { value: '2024-06-01 12:00~13:00', label: '2024-06-01 12:00~13:00' },
-    ],
-  },
-];
-const dummyConfirmedTableRows = [
-  {
-    number: 1,
-    subjectName: '알고리즘',
-    subjectCode: 'CS201',
-    classSection: '1',
-    classTime: '수 10:00-12:00',
-    confirmedTime: '2024-06-02 09:00~12:00',
-    classRoom: 'C303',
-    studentCount: 50,
-    confirmationStatus: '확정',
-  },
-  {
-    number: 2,
-    subjectName: '데이터베이스',
-    subjectCode: 'CS202',
-    classSection: '2',
-    classTime: '목 14:00-16:00',
-    confirmedTime: '2024-06-02 10:00~12:00',
-    classRoom: 'D404',
-    studentCount: 35,
-    confirmationStatus: '확정',
-  },
+  { header: '과목명', accessorKey: 'courseName', size: 140 },
+  { header: '과목코드', accessorKey: 'courseCode', size: 100 },
+  { header: '분반', accessorKey: 'courseSection', size: 60 },
+  { header: '강의시간', accessorKey: 'courseTime', size: 200 },
+  { header: '확정 시간', accessorKey: 'examTimeRange', size: 280 },
+  { header: '강의실', accessorKey: 'classRoom', size: 120 },
+  { header: '수강인원', accessorKey: 'enrolledCount', size: 60 },
+  { header: '확정여부', accessorKey: 'confirmationStatus', size: 80 },
 ];
 
 function FirstApplicationPage() {
-  const [openYear, setOpenYear] = useState(2025);
-  const [openSemester, setOpenSemester] = useState('1학기');
-  const [department, setDepartment] = useState('컴퓨터공학과');
-  const [professorId, setProfessorId] = useState('학번');
-  const [professorName, setProfessorName] = useState('홍길동');
-  const [unconfirmedTableRows, setUnconfirmedTableRows] = useState({});
-  const [confirmedTableRows, setConfirmedTableRows] = useState({});
+  const [openYear] = useState(2025);
+  const [openSemester] = useState('2학기');
 
-  const fetchUserData = useCallback(() => {
-    setOpenYear(2025);
-    setOpenSemester('1학기');
-    setDepartment('컴퓨터공학과');
-    setProfessorId('학번');
-    setProfessorName('홍길동');
-  }, []);
+  const departmentName = useAuthStore((s) => s.departmentName);
+  const professorName = useAuthStore((s) => s.name);
+  const professorId = useAuthStore((s) => String(s.idNumber));
+  const memberId = useAuthStore((s) => s.memberId);
 
-  useEffect(() => {
-    fetchUserData();
-  }, [fetchUserData]);
+  const [unconfirmedRows, setUnconfirmedRows] = useState([]);
+  const [confirmedRows, setConfirmedRows] = useState([]);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const convertAssignedStatus = (status) =>
+    status === 'COMPLETED_FIRST' ? 'Y' : '';
+
+  const handleSearch = async () => {
+    try {
+      const semester = openSemester.replace('학기', '');
+      const examPeriodDummy = getDummyExamPeriod(openYear, semester); // /api/exam-period에서 받아와야 하지만.. 권한이 없어서 우선 더미 사용
+
+      const res = await apiClient.get('/api/exam/search', {
+        params: { year: openYear, semester, professorId: memberId },
+      });
+
+      const list = Array.isArray(res.data) ? res.data : [];
+
+      const unconfirmed = list.filter((e) => e.examAssigned === 'NOT_YET');
+      const confirmed = list.filter((e) => e.examAssigned !== 'NOT_YET');
+
+      const mappedUnconfirmed = unconfirmed.map((exam) => {
+        const [code, section] = exam.courseCode?.split('-') ?? ['', ''];
+
+        const applicationOptions = buildApplicationOptions(
+          exam.courseTime,
+          examPeriodDummy
+        );
+
+        return {
+          examId: exam.examId,
+          courseName: exam.courseName,
+          courseCode: code,
+          courseSection: section,
+          courseTime: exam.courseTime,
+          studentCount: exam.enrolledCount,
+          enrolledCount: exam.enrolledCount,
+          classRoom:
+            `${exam.buildingName ?? ''} ${exam.roomNumber ?? ''}`.trim() || '-',
+          applicationOptions,
+          applicationTime: applicationOptions[0]?.value ?? '',
+          updateApplicationTime: (rowId, val) => {
+            setUnconfirmedRows((prev) =>
+              prev.map((r) =>
+                String(r.examId) === String(rowId)
+                  ? { ...r, applicationTime: val }
+                  : r
+              )
+            );
+          },
+        };
+      });
+
+      const mappedConfirmed = confirmed.map((exam) => {
+        const [code, section] = exam.courseCode?.split('-') ?? ['', ''];
+
+        return {
+          examId: exam.examId,
+          courseName: exam.courseName,
+          courseCode: code,
+          courseSection: section,
+          courseTime: exam.courseTime,
+          enrolledCount: exam.enrolledCount,
+          classRoom:
+            `${exam.buildingName ?? ''} ${exam.roomNumber ?? ''}`.trim() || '-',
+          examTimeRange: formatExamDateTimeRange(exam.startTime, exam.endTime),
+          confirmationStatus: convertAssignedStatus(exam.examAssigned),
+        };
+      });
+
+      setUnconfirmedRows(mappedUnconfirmed);
+      setConfirmedRows(mappedConfirmed);
+      setSelectedIds([]);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleApplyFirstClick = () => {
+    if (!selectedIds.length) {
+      alert('신청할 과목을 선택해주세요.');
+      return;
+    }
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmApplyFirst = async () => {
+    try {
+      for (const id of selectedIds) {
+        const row = unconfirmedRows.find(
+          (r) => String(r.examId) === String(id)
+        );
+        if (!row) continue;
+        const { startTime, endTime } = parseApplicationTimeToISO(
+          row.applicationTime
+        );
+        if (!startTime) continue;
+
+        await apiClient.post('/api/exam/apply/first', {
+          examId: row.examId,
+          examType: 'MID',
+          startTime,
+          endTime,
+          isApply: true,
+        });
+      }
+      alert('신청이 완료되었습니다.');
+      await handleSearch();
+    } catch (err) {
+      alert('신청 중 오류 발생');
+      console.error(err);
+    }
+  };
 
   const filterItems = [
     {
-      id: 'openYear',
+      id: 'year',
       label: '개설연도',
-      required: true,
-      labelWidth: '80px',
-      contentWidth: '80px',
-      content: (
-        <InputCell value={String(openYear)} height={32} disabled={true} />
-      ),
+      content: <InputCell value={openYear} disabled height={32} />,
     },
     {
-      id: 'openSemester',
+      id: 'semester',
       label: '개설학기',
-      required: true,
-      labelWidth: '80px',
-      contentWidth: '80px',
-      content: (
-        <InputCell value={String(openSemester)} height={32} disabled={true} />
-      ),
+      content: <InputCell value={openSemester} disabled height={32} />,
     },
     {
       id: 'department',
       label: '소속학과',
-      required: true,
-      labelWidth: '80px',
-      contentWidth: '220px', // fill
-      content: <InputCell value={department} height={32} disabled={true} />,
+      content: <InputCell value={departmentName} disabled height={32} />,
     },
     {
       id: 'professorId',
       label: '학번',
-      required: true,
-      labelWidth: '60px',
-      contentWidth: '120px',
-      content: <InputCell value={professorId} height={32} disabled={true} />,
+      content: <InputCell value={professorId} disabled height={32} />,
     },
     {
       id: 'professorName',
       label: '이름',
-      required: true,
-      labelWidth: '60px',
-      contentWidth: '80px',
-      content: <InputCell value={professorName} height={32} disabled={true} />,
+      content: <InputCell value={professorName} disabled height={32} />,
     },
   ];
 
-  useEffect(() => {
-    // fetch 함수
-    setUnconfirmedTableRows(dummyUnconfirmedTableRows);
-    setConfirmedTableRows(dummyConfirmedTableRows);
-  }, []);
-
   return (
     <Section>
-      <div className='isolate'>
+      <div className='flex flex-col'>
         <PageHeader
           title='1차 시험 신청'
-          helperText='※해당 시간표는 시스템 선정 기준 유력 후보 1순위만 표기하고 있습니다.'
+          helperText='※ 시스템이 추천한 우선순위 기준으로 표시됩니다.'
           buttonsData={[
             {
               text: '조회',
-              color: 'lightgray',
               Icon: SearchIcon,
-              onClick: () => {},
+              color: 'lightgray',
+              onClick: handleSearch,
             },
           ]}
         />
         <HorizontalTable items={filterItems} />
       </div>
 
-      {/* 시간표 카드 */}
-      <div className='isolate'>
+      <div className='flex h-[320px] flex-col'>
         <SectionHeader
           title='미확정 과목 목록'
-          subtitle='5건'
+          subtitle={`${unconfirmedRows.length}건`}
           controlGroup='buttonGroup'
-          buttonsData={[{ text: '신청', color: 'red', onClick: () => {} }]}
+          buttonsData={[
+            { text: '신청', color: 'red', onClick: handleApplyFirstClick },
+          ]}
         />
         <VerticalTable
           columns={unconfirmedTableColumns}
-          data={unconfirmedTableRows}
-          headerHeight={40}
-          maxHeight={240}
+          data={unconfirmedRows}
           selectable={true}
+          singleSelect={true}
+          updateSelection={setSelectedIds}
+          maxHeight={260}
         />
       </div>
 
-      <div className='isolate'>
-        <SectionHeader title='확정 과목 목록' subtitle='5건' />
+      <div className='flex h-[320px] flex-col'>
+        <SectionHeader
+          title='확정 과목 목록'
+          subtitle={`${confirmedRows.length}건`}
+        />
         <VerticalTable
           columns={confirmedTableColumns}
-          data={confirmedTableRows}
-          headerHeight={40}
-          maxHeight={240}
+          data={confirmedRows}
           selectable={false}
+          maxHeight={260}
         />
       </div>
+
+      {isModalOpen && (
+        <FirstApplicationModal
+          setIsOpen={setIsModalOpen}
+          onConfirm={handleConfirmApplyFirst}
+          courseName={unconfirmedRows
+            .filter((r) => selectedIds.includes(String(r.examId)))
+            .map((r) => r.courseName)
+            .join(', ')}
+        />
+      )}
     </Section>
   );
 }
