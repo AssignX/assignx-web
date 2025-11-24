@@ -4,7 +4,6 @@ import dayjs from 'dayjs';
 import { CalendarDaysIcon } from '@/assets/icons';
 import ButtonGroup from '../buttons/ButtonGroup';
 
-// 시간 문자열 파싱 함수 "HH:mm" -> {h, m}
 const parseTime = (str) => {
   if (!str) return null;
   const [h, m] = str.split(':').map((v) => parseInt(v, 10));
@@ -12,7 +11,6 @@ const parseTime = (str) => {
   return { h, m };
 };
 
-// date 객체 통합 함수
 const combineDateAndTime = (date, timeStr) => {
   if (!date || !timeStr) return undefined;
   const t = parseTime(timeStr);
@@ -22,7 +20,6 @@ const combineDateAndTime = (date, timeStr) => {
   return d;
 };
 
-// placeholer 생성 함수
 const formatPlaceholder = (date, startStr, endStr) => {
   if (!date || !startStr || !endStr) return '날짜/시간을 선택해 주세요.';
   const d = dayjs(date);
@@ -30,7 +27,6 @@ const formatPlaceholder = (date, startStr, endStr) => {
   return `${d.format('YYYY.MM.DD.')} ${startStr}~${endStr}`;
 };
 
-// endTime 자동 설정 함수
 const addMinutesToTime = (timeStr, minutes) => {
   const t = parseTime(timeStr);
   if (!t) return timeStr;
@@ -61,28 +57,39 @@ function DateTimePicker({ initialDate, initialStart, initialEnd, onUpdate }) {
     return initialEnd;
   });
 
-  // PopOver 상태 관리 변수
   const [open, setOpen] = useState(false);
   const popoverRef = useRef(null);
+  const wrapperRef = useRef(null);
+  const [anchorStyle, setAnchorStyle] = useState(null);
 
-  // 시간 관리 변수
   const [editDate, setEditDate] = useState(new Date());
   const [editStart, setEditStart] = useState('09:00');
   const [editEnd, setEditEnd] = useState('12:00');
 
-  // handlers
   const openEditor = () => {
     setEditDate(date ?? new Date());
     setEditStart(startStr || '09:00');
     setEditEnd(endStr || '12:00');
+
+    if (wrapperRef.current) {
+      const rect = wrapperRef.current.getBoundingClientRect();
+      setAnchorStyle({
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+        width: rect.width,
+      });
+    }
+
     setOpen(true);
   };
+
   const handleCancel = () => {
     setEditDate(date ?? new Date());
     setEditStart(startStr || '09:00');
     setEditEnd(endStr || '12:00');
-    setOpen(true);
+    setOpen(false);
   };
+
   const handleUpdate = () => {
     const [sh, sm] = (editStart || '').split(':').map(Number);
     const [eh, em] = (editEnd || '').split(':').map(Number);
@@ -123,8 +130,7 @@ function DateTimePicker({ initialDate, initialStart, initialEnd, onUpdate }) {
   const placeholder = formatPlaceholder(date, startStr, endStr);
 
   return (
-    <div className='relative inline-flex w-full'>
-      {/* Trigger */}
+    <div ref={wrapperRef} className='relative inline-flex w-full'>
       <button
         type='button'
         onClick={openEditor}
@@ -135,72 +141,72 @@ function DateTimePicker({ initialDate, initialStart, initialEnd, onUpdate }) {
         <CalendarDaysIcon />
       </button>
 
-      {/* Popover */}
       {open && (
-        <>
-          <div
-            ref={popoverRef}
-            className='border-light-gray absolute top-full left-0 z-50 w-full rounded border bg-white p-3 shadow-lg'
-            role='dialog'
-            aria-modal='true'
-          >
-            <div>
-              <div className='flex flex-col gap-2'>
-                {/* 상단: DatePicker */}
-                <div>
-                  <div className='text-text-sub mb-1 text-xs'>날짜</div>
+        <div
+          ref={popoverRef}
+          className='border-light-gray z-[9999] rounded border bg-white p-3 shadow-lg'
+          role='dialog'
+          aria-modal='true'
+          style={{
+            position: 'fixed',
+            top: anchorStyle?.top ?? 0,
+            left: anchorStyle?.left ?? 0,
+            width: anchorStyle?.width ?? 'auto',
+          }}
+        >
+          <div>
+            <div className='flex flex-col gap-2'>
+              <div>
+                <div className='text-text-sub mb-1 text-xs'>날짜</div>
+                <input
+                  type='date'
+                  className='border-light-gray w-full rounded border px-2 py-1 text-sm'
+                  value={
+                    editDate
+                      ? dayjs(editDate).format('YYYY-MM-DD')
+                      : dayjs().format('YYYY-MM-DD')
+                  }
+                  onChange={(e) => {
+                    const d = dayjs(e.target.value, 'YYYY-MM-DD', true);
+                    if (d.isValid()) setEditDate(d.toDate());
+                  }}
+                />
+              </div>
+
+              <div>
+                <div className='text-text-sub mb-1 text-xs'>시간</div>
+                <div className='flex items-center gap-2'>
                   <input
-                    type='date'
+                    type='time'
                     className='border-light-gray w-full rounded border px-2 py-1 text-sm'
-                    value={
-                      editDate
-                        ? dayjs(editDate).format('YYYY-MM-DD')
-                        : dayjs().format('YYYY-MM-DD')
-                    }
+                    value={editStart}
                     onChange={(e) => {
-                      const d = dayjs(e.target.value, 'YYYY-MM-DD', true);
-                      if (d.isValid()) setEditDate(d.toDate());
+                      const v = e.target.value;
+                      setEditStart(v);
+                      setEditEnd(addMinutesToTime(v, 90));
                     }}
                   />
-                </div>
-
-                {/* 하단: TimePicker */}
-                <div>
-                  <div className='text-text-sub mb-1 text-xs'>시간</div>
-                  <div className='flex items-center gap-2'>
-                    <input
-                      type='time'
-                      className='border-light-gray w-full rounded border px-2 py-1 text-sm'
-                      value={editStart}
-                      onChange={(e) => {
-                        const v = e.target.value;
-                        setEditStart(v);
-                        setEditEnd(addMinutesToTime(v, 90));
-                      }}
-                    />
-                    <span className='text-sm'>~</span>
-                    <input
-                      type='time'
-                      className='border-light-gray w-full rounded border px-2 py-1 text-sm'
-                      value={editEnd}
-                      onChange={(e) => setEditEnd(e.target.value)}
-                    />
-                  </div>
+                  <span className='text-sm'>~</span>
+                  <input
+                    type='time'
+                    className='border-light-gray w-full rounded border px-2 py-1 text-sm'
+                    value={editEnd}
+                    onChange={(e) => setEditEnd(e.target.value)}
+                  />
                 </div>
               </div>
             </div>
-
-            {/* Footer */}
-            <div className='flex items-center justify-end pt-3'>
-              <ButtonGroup
-                buttons={[
-                  { text: '취소', color: 'lightgray', onClick: handleCancel },
-                  { text: '확인', color: 'red', onClick: handleUpdate },
-                ]}
-              />
-            </div>
           </div>
-        </>
+
+          <div className='flex items-center justify-end pt-3'>
+            <ButtonGroup
+              buttons={[
+                { text: '취소', color: 'lightgray', onClick: handleCancel },
+                { text: '확인', color: 'red', onClick: handleUpdate },
+              ]}
+            />
+          </div>
+        </div>
       )}
     </div>
   );
@@ -209,15 +215,15 @@ function DateTimePicker({ initialDate, initialStart, initialEnd, onUpdate }) {
 DateTimePicker.propTypes = {
   initialDate: PropTypes.oneOfType([
     PropTypes.instanceOf(Date),
-    PropTypes.string, // "YYYY-MM-DD"
+    PropTypes.string,
   ]),
   initialStart: PropTypes.oneOfType([
     PropTypes.instanceOf(Date),
-    PropTypes.string, // "HH:mm"
+    PropTypes.string,
   ]),
   initialEnd: PropTypes.oneOfType([
     PropTypes.instanceOf(Date),
-    PropTypes.string, // "HH:mm"
+    PropTypes.string,
   ]),
   onUpdate: PropTypes.func,
 };
