@@ -9,7 +9,7 @@ import PlusCell from '@/components/table/cells/PlusCell';
 import { SaveIcon } from '@/assets/icons';
 
 import EmployeeModal from './EmployeeModal';
-import ClassRoomModal from './ClassRoomModal';
+import ClassRoomModal from '@/components/ClassRoomModal';
 import SaveConfirmModal from './SaveConfirmModal';
 
 import { useEffect, useState } from 'react';

@@ -25,7 +25,7 @@ import SecondApplicationPage from './pages/professor/SecondApplicationPage.jsx';
 import DepartmentListPage from './pages/admin/DepartmentListPage.jsx';
 import DepartmentEditPage from './pages/admin/DepartmentEditPage.jsx';
 import EmployeeModal from './pages/admin/EmployeeModal.jsx';
-import ClassRoomModal from './pages/admin/ClassRoomModal.jsx';
+import ClassRoomModal from './components/ClassRoomModal.jsx';
 
 import BuildingListPage from './pages/admin/BuildingListPage.jsx';
 import BuildingEditPage from './pages/admin/BuildingEditPage.jsx';

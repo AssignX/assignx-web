@@ -10,7 +10,7 @@ import InputCell from '@/components/table/cells/InputCell';
 import SearchCell from '@/components/table/cells/SearchCell';
 import DateTimePickerCell from '@/components/table/cells/DateTimePickerCell.jsx';
 
-import ClassRoomModal from '@/pages/admin/ClassRoomModal.jsx';
+import ClassRoomModal from '@/components/ClassRoomModal.jsx';
 import ConfirmModal from './ConfirmModal.jsx';
 
 import { useState, useCallback, useMemo } from 'react';
