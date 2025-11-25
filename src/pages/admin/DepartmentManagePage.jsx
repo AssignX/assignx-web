@@ -63,6 +63,12 @@ const classroomDummyData = [
   },
 ];
 
+/* 남은 할 일
+1. 각 헤더 버튼 함수 구현
+2. URL endpoint에 따라 추가/수정 모드 구분
+3. dummyData 대신 API 연동하여 데이터 불러오기
+4. 간격 조정
+*/
 function DepartmentManagePage() {
   const [college, setCollege] = useState('');
   const [department, setDepartment] = useState('');
@@ -127,6 +133,7 @@ function DepartmentManagePage() {
             { text: '추가', color: 'lightgray', onClick: () => {} },
             { text: '삭제', color: 'lightgray', onClick: () => {} },
           ]}
+          // 추가일 경우 buttonsDat 그대로 하고 수정일 경우 수정 버튼 추가 필요
         />
         <VerticalTable
           columns={employeeColumns}

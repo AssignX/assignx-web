@@ -19,6 +19,7 @@ import TableTestPage from './pages/test/TableTestPage.jsx';
 import TimetableTest from './pages/test/TimetableTest.jsx';
 import DepartmentListPage from './pages/admin/DepartmentListPage.jsx';
 import DepartmentManagePage from './pages/admin/DepartmentManagePage.jsx';
+import EmployeeModal from './pages/admin/EmployeeModal.jsx';
 
 export default function App() {
   return (
@@ -40,6 +41,7 @@ export default function App() {
         <Route path='manage' element={<DepartmentManagePage />} />
         <Route path='building' element={<AdminPage />} />
       </Route>
+      <Route path='employeemodaltest' element={<EmployeeModal />} />
     </Routes>
   );
 }
