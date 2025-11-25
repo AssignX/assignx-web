@@ -22,6 +22,9 @@ import DepartmentManagePage from './pages/admin/DepartmentManagePage.jsx';
 import EmployeeModal from './pages/admin/EmployeeModal.jsx';
 import ClassRoomModal from './pages/admin/ClassRoomModal.jsx';
 
+import BuildingListPage from './pages/admin/BuildingListPage.jsx';
+import BuildingManagePage from './pages/admin/BuildingManagePage.jsx';
+
 export default function App() {
   return (
     <Routes>
@@ -38,10 +41,15 @@ export default function App() {
 
       {/* Admin Pages */}
       <Route path='admin' element={<AdminPage />}>
-        <Route path='department' element={<DepartmentListPage />} />
-        <Route path='manage' element={<DepartmentManagePage />} />
-        <Route path='building' element={<AdminPage />} />
+        <Route path='department' element={<DepartmentListPage />}>
+          <Route path='manage' element={<DepartmentManagePage />} />
+        </Route>
+        <Route path='building' element={<BuildingListPage />}>
+          <Route path='manage' element={<BuildingManagePage />} />
+        </Route>
       </Route>
+
+      {/* Modal test */}
       <Route path='employeemodaltest' element={<EmployeeModal />} />
       <Route path='classroommodaltest' element={<ClassRoomModal />} />
     </Routes>
