@@ -41,10 +41,12 @@ export default function App() {
 
       {/* Admin Pages */}
       <Route path='admin' element={<AdminPage />}>
-        <Route path='department' element={<DepartmentListPage />}>
+        <Route path='department'>
+          <Route path='list' element={<DepartmentListPage />} />
           <Route path='manage' element={<DepartmentManagePage />} />
         </Route>
-        <Route path='building' element={<BuildingListPage />}>
+        <Route path='building'>
+          <Route path='list' element={<BuildingListPage />} />
           <Route path='manage' element={<BuildingManagePage />} />
         </Route>
       </Route>
