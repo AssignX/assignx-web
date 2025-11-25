@@ -4,7 +4,7 @@ import {
   flexRender,
   getFilteredRowModel,
 } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SelectionColumn } from './SelectionColumn';
 import PropTypes from 'prop-types';
 import InputCell from './cells/InputCell';
@@ -21,6 +21,7 @@ import InputCell from './cells/InputCell';
  * @param {array} newRows - 테이블 하단에 추가할 새로운 행들의 데이터 배열 (기본값: [])
  * @param {function} onNewRowChange - '새로운 행'의 InputCell 값이 변경될 때 호출되는 콜백 함수. (rowIndex, columnKey, value)를 인자로 받음
  * @param {function} renderNewRowActions - '새로운 행'의 첫 번째 액션 셀을 렌더링하는 함수. (rowIndex)를 인자로 받음
+ * @param {boolean} resetSelection - 새로고침/필터링 시 선택된 행(rowSelection) 초기화 기능 (기본값: false-초기화 기능 사용 X)
  */
 export default function VerticalTable({
   columns,
@@ -33,8 +34,14 @@ export default function VerticalTable({
   newRows = [],
   onNewRowChange = () => {},
   renderNewRowActions = () => null,
+  resetSelection = false,
 }) {
   const [rowSelection, setRowSelection] = useState({});
+
+  // resetSelection 변하면 선택 초기화
+  useEffect(() => {
+    setRowSelection({});
+  }, [resetSelection]);
 
   const handleRowSelectionChange = (updater) => {
     let newSelection =
@@ -182,4 +189,5 @@ VerticalTable.propTypes = {
   newRows: PropTypes.array,
   onNewRowChange: PropTypes.func,
   renderNewRowActions: PropTypes.func,
+  resetSelection: PropTypes.bool,
 };
