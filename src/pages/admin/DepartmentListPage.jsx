@@ -1,4 +1,4 @@
-import Section from '@/components/common/Section';
+import Section from '@/components/layout/Section';
 import PageHeader from '@/components/headers/PageHeader';
 import VerticalTable from '@/components/table/VerticalTable';
 
