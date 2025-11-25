@@ -5,6 +5,7 @@ import SectionHeader from '@/components/headers/SectionHeader';
 import ClassRoomSearchTable from '../../components/table/ClassRoomSearchTable';
 import SyClassRoomTable from './SyClassRoomTable';
 import SyCourseTimeTable from './SyCourseTimeTable';
+import SyExamTimeTable from './SyExamTimeTable';
 
 export default function Sy() {
   const [selected, setSelected] = useState(true);
@@ -44,7 +45,11 @@ export default function Sy() {
             setDate={setDate}
           />
           <div className='bg-white'>
-            <SyCourseTimeTable selectedRoom={selectedRoom} />{' '}
+            {selected ? (
+              <SyCourseTimeTable selectedRoom={selectedRoom} />
+            ) : (
+              <SyExamTimeTable selectedRoom={selectedRoom} date={date} />
+            )}
           </div>
         </div>
       </section>
