@@ -38,6 +38,7 @@ export default function ApproveExamPage() {
   const [showOverlapModal, setShowOverlapModal] = useState(false);
   const [showInvalidTimeModal, setShowInvalidTimeModal] = useState(false);
   const [showNoRoomModal, setShowNoRoomModal] = useState(false);
+  
 
   const [updated, setUpdated] = useState({
     examType: '',
@@ -91,12 +92,14 @@ export default function ApproveExamPage() {
   useEffect(() => {
     if (!exam) return;
 
-    setUpdated({
-      examType: exam.examType,
-      startTime: new Date(exam.startTime),
-      endTime: new Date(exam.endTime),
-    });
+    setUpdated((prev) => ({
+      examType: prev.examType || exam.examType,
+      startTime: prev.startTime || new Date(exam.startTime),
+      endTime: prev.endTime || new Date(exam.endTime),
+    }));
   }, [exam]);
+
+  console.log('updated:', updated);
 
   if (!exam) return <div>Loading...</div>;
 
@@ -114,23 +117,17 @@ export default function ApproveExamPage() {
       label: '구분',
       labelWidth: '72px',
       contentWidth: '106px',
-      content: (
-        <DropdownCell
-          initialValue={updated.examType}
-          rowId='examType'
-          columnKey='examType'
-          height={32} // HorizontalTable 행 높이(41px)에 맞춘 값
-          updateData={(rowId, columnKey, newValue) => {
-            setUpdated((prev) => ({ ...prev, [columnKey]: newValue }));
-          }}
-          options={[
-            { value: 'MID', label: '중간' },
-            { value: 'FINAL', label: '기말' },
-            { value: 'ETC', label: '기타' },
-          ]}
-        />
-      ),
+      content: (() => {
+        const labelMap = { MID: '중간', FINAL: '기말', ETC: '기타' };
+
+        return (
+          <div className='text-[13px]'>
+            {labelMap[exam.examType] ?? exam.examType}
+          </div>
+        );
+      })(),
     },
+
     {
       id: '3',
       label: '장소',
@@ -199,6 +196,7 @@ export default function ApproveExamPage() {
     const roomIdToSend = updated.examRoomId ?? exam.roomId;
     console.log('💥 updated.startTime:', updated.startTime);
     console.log('💥 updated.endTime:', updated.endTime);
+    console.log('API로 보내는 examType =', updated.examType);
 
     if (
       isNaN(updated.startTime?.getTime()) ||
