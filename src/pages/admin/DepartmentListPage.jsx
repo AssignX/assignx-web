@@ -4,6 +4,7 @@ import VerticalTable from '@/components/table/VerticalTable';
 
 import DeleteConfirmModal from './DeleteConfirmModal';
 
+import apiClient from '@/api/apiClient';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -22,11 +23,6 @@ const departmentColumns = [
   },
 ];
 
-const dummyData = [
-  { id: '1', number: 1, college: '공과대학', major: '컴퓨터공학과' },
-  { id: '2', number: 2, college: '공과대학', major: '전자공학과' },
-];
-
 function DepartmentListPage() {
   const navigate = useNavigate();
   const [departmentData, setDepartmentData] = useState([]);
@@ -34,18 +30,47 @@ function DepartmentListPage() {
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
+  const fetchDepartments = async () => {
+    try {
+      const res = await apiClient.get('/api/department/admin');
+      const list = Array.isArray(res.data) ? res.data : [];
+
+      const mapped = list.map((item, index) => ({
+        id: String(item.departmentId),
+        number: index + 1,
+        college: item.college,
+        major: item.major,
+      }));
+
+      setDepartmentData(mapped);
+    } catch (error) {
+      console.error('학과 목록 조회 실패:', error);
+      setDepartmentData([]);
+    }
+  };
+
   useEffect(() => {
-    // Fetch department data from API
-    setDepartmentData(dummyData);
+    fetchDepartments();
   }, []);
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     const targetId = selectedRowIds[0];
+    if (!targetId) return;
 
-    // TODO: /api/department/{departmentId} DELETE 요청
+    try {
+      await apiClient.delete(`/api/department/admin/${targetId}`);
 
-    setDepartmentData((prev) => prev.filter((row) => row.id !== targetId));
-    setSelectedRowIds([]);
+      setDepartmentData((prev) => prev.filter((row) => row.id !== targetId));
+
+      setSelectedRowIds([]);
+      setIsDeleteModalOpen(false);
+
+      alert('삭제가 완료되었습니다.'); // 추후 머지 이후 수정 예정
+      console.log('학과 삭제 완료');
+    } catch (error) {
+      console.error('학과 삭제 실패:', error);
+      alert('학과 삭제 중 오류가 발생했습니다.');
+    }
   };
 
   return (
@@ -63,18 +88,20 @@ function DepartmentListPage() {
               text: '수정',
               color: 'lightgray',
               onClick: () => {
-                if (selectedRowIds.length > 0) {
-                  navigate(`/admin/department/edit/${selectedRowIds[0]}`); // +1을 해야 하나?
-                } else {
+                const targetId = selectedRowIds[0];
+                if (!targetId) {
                   alert('수정할 학과를 선택해주세요.');
+                  return;
                 }
+                navigate(`/admin/department/edit/${targetId}`);
               },
             },
             {
               text: '삭제',
               color: 'lightgray',
               onClick: () => {
-                if (selectedRowIds.length === 0) {
+                const targetId = selectedRowIds[0];
+                if (!targetId) {
                   alert('삭제할 학과를 선택해주세요.');
                   return;
                 }
