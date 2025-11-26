@@ -30,7 +30,7 @@ export default function HorizontalTable({ items = [] }) {
                   {item.label}
                 </th>
                 <td
-                  className='border-table-border h-[41px] border p-1 align-middle'
+                  className='border-table-border h-[41px] border p-1 text-center align-middle'
                   style={{ width: item.contentWidth || 'auto' }}
                 >
                   {item.content}
@@ -39,7 +39,7 @@ export default function HorizontalTable({ items = [] }) {
             ) : (
               <td
                 key={item.id}
-                className='border-table-border h-[41px] border p-1 align-middle'
+                className='border-table-border h-[41px] border p-1 text-center align-middle'
                 style={{ width: item.contentWidth || 'auto' }}
               >
                 {item.content}
