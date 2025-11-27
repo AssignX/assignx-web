@@ -7,9 +7,9 @@ import Modal from '@/components/modal/Modal';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '@/api/apiClient';
-import Body from '@/components/common/Body';
-import PageWrapper from '@/components/common/PageWrapper';
-import Section from '@/components/common/Section';
+import Body from '@/components/layout/Body';
+import PageWrapper from '@/components/layout/PageWrapper';
+import Section from '@/components/layout/Section';
 
 /**
  * 공용 페이지 레이아웃

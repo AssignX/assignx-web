@@ -227,7 +227,10 @@ export default function SchedulePage() {
       headerTitle={`${departmentName ?? ''} 메뉴`}
       onLogout={handleLogout} // 교수 페이지와 동일
       menus={[
-        { title: '과목', subItems: [{ label: '과목 목록', path: '/classes' }] },
+        {
+          title: '과목',
+          subItems: [{ label: '과목 목록', path: '/office/courses' }],
+        },
         {
           title: '교수',
           subItems: [{ label: '교수 목록', path: '/office/professors' }],

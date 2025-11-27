@@ -135,7 +135,7 @@ export default function SearchProfessorPage() {
       menus={[
         {
           title: '과목',
-          subItems: [{ label: '과목 목록', path: '/office/subjects' }],
+          subItems: [{ label: '과목 목록', path: '/office/courses' }],
         },
         {
           title: '교수',
