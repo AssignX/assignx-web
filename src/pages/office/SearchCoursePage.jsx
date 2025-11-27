@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import Layout from '@/pages/office/Layout';
+import Layout from '@/components/Layout';
 import CourseSearchTable from './CourseSearchTable';
 import VerticalTable from '@/components/table/VerticalTable';
 import apiClient from '@/api/apiClient';
@@ -128,7 +128,6 @@ export default function SearchCoursePage() {
   }, [filters, toggleUnassigned, allCourses, applyFilter]);
 
   const handleSearch = (newFilters) => {
-    console.log('현재 검색 필터:', filters);
     setFilters(newFilters);
   };
 
@@ -192,11 +191,9 @@ export default function SearchCoursePage() {
           subItems: [{ label: '강의실 목록', path: '/office/classrooms' }],
         },
         {
-          title: '일정',
-          subItems: [
-            { label: '확정 목록', path: '/confirmed' },
-            { label: '미확정 목록', path: '/unconfirmed' },
-          ],
+          title: '시험',
+          isOpen: true,
+          subItems: [{ label: '시험 일정', path: '/office/exam' }],
         },
       ]}
     >

@@ -1,5 +1,5 @@
-// src/pages/SearchClassPage.jsx
-import React, { useState, useEffect, useMemo } from 'react';
+// src/pages/SearchProfessorPage.jsx
+import { useState, useEffect } from 'react';
 import Layout from '@/components/Layout';
 import HorizontalTable from '@/components/table/HorizontalTable';
 import InputCell from '@/components/table/cells/InputCell';
@@ -12,18 +12,18 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
 import TableWrapper from '@/components/layout/TableWrapper';
 
-/**
- * SearchClassPage (강의실 조회 페이지)
- * - 로그인한 유저의 departmentId 기반으로 강의실 목록 조회
- */
-export default function SearchClassPage() {
-  const [rooms, setRooms] = useState([]);
-  const [searchKeyword, setSearchKeyword] = useState('');
-  const [filteredRooms, setFilteredRooms] = useState([]);
-  const { name, departmentName, departmentId } = useAuthStore();
+export default function SearchProfessorPage() {
+  const [professors, setProfessors] = useState([]);
+  const [name, setName] = useState('');
+  const {
+    name: userNameFromStore,
+    departmentName,
+    departmentId,
+  } = useAuthStore();
   const navigate = useNavigate();
   const accessToken = useAuthStore((state) => state.accessToken);
   const logout = useAuthStore((state) => state.logout);
+  const [allProfessors, setAllProfessors] = useState([]);
 
   useEffect(() => {
     if (!accessToken) {
@@ -43,68 +43,69 @@ export default function SearchClassPage() {
     }
   };
 
-  const columns = useMemo(
-    () => [
-      {
-        accessorKey: 'no',
-        header: 'No',
-        size: 50,
-        cell: ({ row }) => row.index + 1,
-      },
-      { accessorKey: 'buildingName', header: '건물명', size: 300 },
-      { accessorKey: 'buildingNumber', header: '건물번호', size: 100 },
-      { accessorKey: 'roomNumber', header: '호실번호', size: 100 },
-      { accessorKey: 'roomCapacity', header: '수용인원', size: 100 },
-    ],
-    []
-  );
+  const columns = [
+    {
+      accessorKey: 'no',
+      header: 'No',
+      size: 50,
+      cell: ({ row }) => row.index + 1,
+    },
+    { accessorKey: 'name', header: '교수명', size: 200 },
+    { accessorKey: 'departmentName', header: '소속 학과', size: 400 },
+  ];
 
   useEffect(() => {
-    const fetchRooms = async () => {
+    const fetchProfessors = async () => {
       if (!departmentId) return;
+
       try {
-        const { data } = await apiClient.get('/api/building/department', {
+        const { data } = await apiClient.get('/api/member/search/professor', {
           params: { departmentId },
         });
-        setRooms(data);
-        setFilteredRooms(data);
+        setProfessors(data); // 화면에 보여줄 목록
+        setAllProfessors(data); // 전체 목록 저장
       } catch (err) {
-        console.error('강의실 불러오기 실패:', err);
+        console.error('교수 목록 불러오기 실패:', err);
       }
     };
 
-    fetchRooms();
+    fetchProfessors();
   }, [departmentId]);
 
-  const handleSearch = () => {
-    const keyword = searchKeyword.trim();
-    if (!keyword) {
-      setFilteredRooms(rooms);
+  const handleSearch = async () => {
+    const trimmed = name.trim();
+
+    if (!trimmed) {
+      setProfessors(allProfessors); // 전체 교수 목록 다시 표시
       return;
     }
 
-    const lower = keyword.toLowerCase();
-    const result = rooms.filter(
-      (r) =>
-        r.buildingName.toLowerCase().includes(lower) ||
-        String(r.buildingNumber).includes(keyword) ||
-        r.roomNumber.includes(keyword)
-    );
-    setFilteredRooms(result);
+    try {
+      // 이미 fetchProfessors()에서 전체 목록을 로드했다고 가정
+      const filtered = allProfessors.filter((p) =>
+        p.name.toLowerCase().includes(trimmed.toLowerCase())
+      );
+
+      setProfessors(filtered);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const searchFormItems = [
     {
-      id: 'classroom-search',
-      label: '건물코드/명',
+      id: 'professor-search',
+      label: '교수명',
       labelWidth: '130px',
       content: (
         <div className='flex items-center gap-1'>
           <div className='w-[200px]'>
             <InputCell
-              value={searchKeyword}
-              onChange={(e) => setSearchKeyword(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleSearch();
+              }}
               height={32}
             />
           </div>
@@ -123,7 +124,7 @@ export default function SearchClassPage() {
 
   return (
     <Layout
-      username={`${name ?? '사용자'} 님`}
+      username={`${userNameFromStore ?? '사용자'} 님`}
       headerTitle={`${departmentName ?? ''} 메뉴`}
       onLogout={handleLogout}
       menus={[
@@ -133,18 +134,18 @@ export default function SearchClassPage() {
         },
         {
           title: '교수',
-          subItems: [{ label: '교수 목록', path: '/office/professors' }],
-        },
-        {
-          title: '강의실',
           isOpen: true,
           subItems: [
             {
-              label: '강의실 목록',
-              path: '/office/classrooms',
+              label: '교수 목록',
+              path: '/office/professors',
               isSelected: true,
             },
           ],
+        },
+        {
+          title: '강의실',
+          subItems: [{ label: '강의실 목록', path: '/office/classrooms' }],
         },
         {
           title: '시험',
@@ -153,13 +154,14 @@ export default function SearchClassPage() {
         },
       ]}
     >
-      <PageHeader title='강의실 목록' />
+      <PageHeader title='교수 목록' />
+
       <div className='h-full w-full space-y-[10px]'>
         <HorizontalTable items={searchFormItems} />
         <TableWrapper height='470px'>
           <VerticalTable
             columns={columns}
-            data={filteredRooms}
+            data={professors}
             selectable={false}
             headerHeight={32}
             maxHeight={470}
