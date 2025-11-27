@@ -291,7 +291,10 @@ export default function SchedulePage() {
           title='알림'
           content={<div className='p-3'>{selectExamMessage}</div>}
           confirmText='확인'
+          cancelText='취소'
           onConfirm={() => setShowSelectExamModal(false)}
+          onCancel={() => setShowSelectExamModal(false)} // 취소 버튼 기능 추가
+          onClose={() => setShowSelectExamModal(false)} // X 버튼도 닫기
           width='360px'
           height='180px'
         />

@@ -38,7 +38,7 @@ export default function ApproveExamPage() {
   const [showOverlapModal, setShowOverlapModal] = useState(false);
   const [showInvalidTimeModal, setShowInvalidTimeModal] = useState(false);
   const [showNoRoomModal, setShowNoRoomModal] = useState(false);
-  
+  const closeNoRoomModal = () => setShowNoRoomModal(false);
 
   const [updated, setUpdated] = useState({
     examType: '',
@@ -359,10 +359,13 @@ export default function ApproveExamPage() {
             <div className='p-3'>시험 일정이 성공적으로 확정되었습니다.</div>
           }
           confirmText='확인'
+          cancelText='취소'
           onConfirm={() => {
             setShowSuccessModal(false);
             navigate('/office/exam');
           }}
+          onCancel={() => setShowSuccessModal(false)}
+          onClose={() => setShowSuccessModal(false)}
           width='400px'
           height='200px'
         />
@@ -378,7 +381,10 @@ export default function ApproveExamPage() {
             </div>
           }
           confirmText='확인'
+          cancelText='취소'
           onConfirm={() => setShowOverlapModal(false)}
+          onCancel={() => setShowOverlapModal(false)}
+          onClose={() => setShowOverlapModal(false)}
         />
       )}
 
@@ -393,7 +399,10 @@ export default function ApproveExamPage() {
             </div>
           }
           confirmText='확인'
+          cancelText='취소'
           onConfirm={() => setShowErrorModal(false)}
+          onCancel={() => setShowErrorModal(false)}
+          onClose={() => setShowErrorModal(false)}
           width='400px'
           height='200px'
         />
@@ -410,7 +419,10 @@ export default function ApproveExamPage() {
             </div>
           }
           confirmText='확인'
+          cancelText='취소'
           onConfirm={() => setShowInvalidTimeModal(false)}
+          onCancel={() => setShowInvalidTimeModal(false)}
+          onClose={() => setShowInvalidTimeModal(false)}
           width='400px'
           height='200px'
         />
@@ -421,7 +433,10 @@ export default function ApproveExamPage() {
           title='장소 선택 필요'
           content={<div className='p-3'>시험 장소가 선택되지 않았습니다.</div>}
           confirmText='확인'
-          onConfirm={() => setShowNoRoomModal(false)}
+          cancelText='취소'
+          onConfirm={closeNoRoomModal}
+          onCancel={closeNoRoomModal}
+          onClose={closeNoRoomModal}
           width='400px'
           height='200px'
         />
