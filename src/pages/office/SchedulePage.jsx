@@ -108,7 +108,6 @@ export default function SchedulePage() {
       });
 
       const data = res.data;
-      console.log('🔍 GET /api/exam/search 결과:', data);
       const confirmedStates = ['COMPLETED_FIRST', 'COMPLETED_SECOND'];
 
       // 확정/미확정 필터

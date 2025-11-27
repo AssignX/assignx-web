@@ -128,7 +128,6 @@ export default function SearchCoursePage() {
   }, [filters, toggleUnassigned, allCourses, applyFilter]);
 
   const handleSearch = (newFilters) => {
-    console.log('현재 검색 필터:', filters);
     setFilters(newFilters);
   };
 

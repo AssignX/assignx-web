@@ -100,8 +100,6 @@ export default function ApproveExamPage() {
     }));
   }, [exam]);
 
-  console.log('updated:', updated);
-
   if (!exam) return <div>Loading...</div>;
 
   // HorizontalTable 용 데이터
@@ -205,22 +203,11 @@ export default function ApproveExamPage() {
 
   const handleApprove = async () => {
     const roomIdToSend = updated.examRoomId ?? exam.roomId;
-    console.log('💥 updated.startTime:', updated.startTime);
-    console.log('💥 updated.endTime:', updated.endTime);
-    console.log('API로 보내는 examType =', updated.examType);
 
     if (
       isNaN(updated.startTime?.getTime()) ||
       isNaN(updated.endTime?.getTime())
     ) {
-      setShowInvalidTimeModal(true);
-      return;
-    }
-    if (
-      !isValidExamDate(updated.startTime) ||
-      !isValidExamDate(updated.endTime)
-    ) {
-      console.log('시간 미선택 또는 비정상 시간 → 승인 차단');
       setShowInvalidTimeModal(true);
       return;
     }
@@ -230,10 +217,14 @@ export default function ApproveExamPage() {
       return;
     }
 
+    if (
+      !isValidExamDate(updated.startTime) ||
+      !isValidExamDate(updated.endTime)
+    ) {
+      setShowInvalidTimeModal(true);
+      return;
+    }
     const hasOverlap = roomSchedules.some((item) => {
-      console.log('🔥 finalRoomId:', finalRoomId);
-      console.log('🔥 roomSchedules:', roomSchedules);
-      console.log('roomid : ', item.roomId);
       if (!item.roomId) return false;
       if (Number(item.examId) === Number(exam.examId)) return false; // 자기 자신 제외
       if (Number(item.roomId) !== Number(finalRoomId)) return false;
@@ -336,7 +327,6 @@ export default function ApproveExamPage() {
             }}
             weekDate={weekDate}
             onFetchSchedule={(scheduleList) => {
-              console.log('🔥 roomSchedules 도착:', scheduleList);
               setRoomSchedules(scheduleList);
             }}
           />

@@ -72,7 +72,6 @@ export default function SearchClassPage() {
         const { data } = await apiClient.get('/api/building/department', {
           params: { departmentId },
         });
-        //console.log('[DEBUG] fetched rooms:', data);
         setRooms(data);
         setFilteredRooms(data);
       } catch (err) {
