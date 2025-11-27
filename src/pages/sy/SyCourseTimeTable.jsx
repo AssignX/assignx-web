@@ -67,7 +67,7 @@ export default function CourseTimeTable({ selectedRoom }) {
       endTime='22:30'
       dayRange={['월', '화', '수', '목', '금', '토']}
       entries={entries}
-      maxHeight='740px'
+      maxHeight='560px'
     />
   );
 }
