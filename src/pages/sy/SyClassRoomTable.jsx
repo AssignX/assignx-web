@@ -72,6 +72,7 @@ export default function SyClassRoomTable({
       data={data}
       selectable={true}
       singleSelect={true}
+      showSelectionCheckbox={true}
       updateSelection={handleSelectionChange}
       maxHeight={maxHeight}
     />
