@@ -17,7 +17,6 @@ export default function RoomSearchModal({
   onSelect,
   buildingId,
 }) {
-  const [keyword, setKeyword] = useState('');
   const [rooms, setRooms] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState(null);
@@ -53,26 +52,12 @@ export default function RoomSearchModal({
     fetchRooms();
   }, [isOpen, buildingId]);
 
-  const handleSearch = () => {
-    if (!keyword.trim()) {
-      setFiltered(rooms);
-      return;
-    }
-
-    const lower = keyword.toLowerCase();
-    const result = rooms.filter((r) =>
-      r.roomNumber.toLowerCase().includes(lower)
-    );
-
-    setFiltered(result);
-  };
   const content = (
     <div className='flex flex-col text-sm'>
       <div className='flex flex-col pb-[10px]'>
         <PageHeader title='강의실 검색' />
         <RoomSearchTable
           onSearch={(kw) => {
-            setKeyword(kw);
             if (!kw.trim()) {
               setFiltered(rooms);
             } else {

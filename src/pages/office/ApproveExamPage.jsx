@@ -59,7 +59,9 @@ export default function ApproveExamPage() {
   const handleLogout = async () => {
     try {
       await apiClient.post('/api/auth/logout');
-    } catch {}
+    } catch (err) {
+      console.warn('logout failed', err);
+    }
     logout();
     navigate('/login');
   };
