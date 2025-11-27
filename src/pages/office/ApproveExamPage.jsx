@@ -8,14 +8,13 @@ import apiClient from '@/api/apiClient';
 import dayjs from 'dayjs';
 import { useAuthStore } from '@/store/useAuthStore';
 import HorizontalTable from '@/components/table/HorizontalTable';
-import DropdownCell from '@/components/table/cells/DropdownCell';
 import DateTimePicker from '@/components/pickers/DateTimePicker';
 import ExamTimeTable from '@/pages/office/ExamTimeTable';
 import WeekPicker from '@/components/pickers/WeekPicker';
-import Button from '@/components/buttons/Button';
 import Modal from '@/components/modal/Modal';
 import BuildingSearchModal from '@/components/BuildingSearchModal';
 import RoomSearchModal from '@/components/RoomSearchModal';
+import TableWrapper from '@/components/layout/TableWrapper';
 
 export default function ApproveExamPage() {
   const { id } = useParams();
@@ -306,18 +305,14 @@ export default function ApproveExamPage() {
     >
       <PageHeader title='일정 수정' buttonsData={buttons} />
 
-      {/* 시험 기본 정보 영역 */}
-      <div className='w-full'>
-        <HorizontalTable items={infoItems} />
-      </div>
-
-      <div className='mt-[10px] flex justify-end'>
-        <WeekPicker date={weekDate} setDate={setWeekDate} />
-      </div>
-
-      {/* 강의실 시간표 (buildingName + roomNumber 기준 표시됨) */}
-      <div className='mt-[10px]'>
-        {finalRoomId && (
+      <div className='space-y-[10px]'>
+        <div className='w-full'>
+          <HorizontalTable items={infoItems} />
+        </div>
+        <div className='flex justify-end'>
+          <WeekPicker date={weekDate} setDate={setWeekDate} />
+        </div>
+        <TableWrapper height='440px'>
           <ExamTimeTable
             selectedRoom={{
               year: exam.year,
@@ -332,7 +327,7 @@ export default function ApproveExamPage() {
               setRoomSchedules(scheduleList);
             }}
           />
-        )}
+        </TableWrapper>
       </div>
       {showBuildingModal && (
         <BuildingSearchModal
