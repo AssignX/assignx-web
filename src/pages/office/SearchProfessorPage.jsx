@@ -1,5 +1,5 @@
 // src/pages/SearchProfessorPage.jsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Layout from '@/components/Layout';
 import HorizontalTable from '@/components/table/HorizontalTable';
 import InputCell from '@/components/table/cells/InputCell';
@@ -10,12 +10,11 @@ import apiClient from '@/api/apiClient';
 import PageHeader from '@/components/headers/PageHeader';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
+import TableWrapper from '@/components/layout/TableWrapper';
 
 export default function SearchProfessorPage() {
   const [professors, setProfessors] = useState([]);
   const [name, setName] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const {
     name: userNameFromStore,
     departmentName,
@@ -59,7 +58,6 @@ export default function SearchProfessorPage() {
     const fetchProfessors = async () => {
       if (!departmentId) return;
 
-      setLoading(true);
       try {
         const { data } = await apiClient.get('/api/member/search/professor', {
           params: { departmentId },
@@ -68,9 +66,6 @@ export default function SearchProfessorPage() {
         setAllProfessors(data); // 전체 목록 저장
       } catch (err) {
         console.error('교수 목록 불러오기 실패:', err);
-        setError('조회 중 오류 발생');
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -85,9 +80,6 @@ export default function SearchProfessorPage() {
       return;
     }
 
-    setLoading(true);
-    setError(null);
-
     try {
       // 이미 fetchProfessors()에서 전체 목록을 로드했다고 가정
       const filtered = allProfessors.filter((p) =>
@@ -96,10 +88,7 @@ export default function SearchProfessorPage() {
 
       setProfessors(filtered);
     } catch (err) {
-      setError('조회 중 오류 발생');
       console.error(err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -167,23 +156,17 @@ export default function SearchProfessorPage() {
     >
       <PageHeader title='교수 목록' />
 
-      <div className='h-[764px] w-full'>
+      <div className='h-full w-full space-y-[10px]'>
         <HorizontalTable items={searchFormItems} />
-
-        {loading && <p className='mt-3 text-gray-500'>불러오는 중...</p>}
-        {error && <p className='mt-3 text-red-500'>{error}</p>}
-
-        {!loading && !error && professors.length > 0 && (
-          <div className='mt-[10px] w-full bg-white'>
-            <VerticalTable
-              columns={columns}
-              data={professors}
-              selectable={false}
-              headerHeight={32}
-              maxHeight={600}
-            />
-          </div>
-        )}
+        <TableWrapper height='470px'>
+          <VerticalTable
+            columns={columns}
+            data={professors}
+            selectable={false}
+            headerHeight={32}
+            maxHeight={470}
+          />
+        </TableWrapper>
       </div>
     </Layout>
   );
