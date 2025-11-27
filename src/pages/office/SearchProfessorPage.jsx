@@ -37,6 +37,7 @@ export default function SearchProfessorPage() {
       await apiClient.post('/api/auth/logout');
     } catch (err) {
       console.warn('서버 로그아웃 실패 (클라이언트만 처리)');
+      console.error(err);
     } finally {
       logout();
       navigate('/login');
@@ -96,6 +97,7 @@ export default function SearchProfessorPage() {
       setProfessors(filtered);
     } catch (err) {
       setError('조회 중 오류 발생');
+      console.error(err);
     } finally {
       setLoading(false);
     }

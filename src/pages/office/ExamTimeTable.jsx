@@ -58,7 +58,6 @@ export default function ExamTimeTable({ selectedRoom, weekDate }) {
     }
 
     const fetchExams = async () => {
-
       try {
         const res = await apiClient.get(`/api/exam/search`, {
           params: {

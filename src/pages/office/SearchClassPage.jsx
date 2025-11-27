@@ -38,6 +38,7 @@ export default function SearchClassPage() {
       await apiClient.post('/api/auth/logout');
     } catch (err) {
       console.warn('서버 로그아웃 실패 (클라이언트만 처리)');
+      console.error(err);
     } finally {
       logout();
       navigate('/login');

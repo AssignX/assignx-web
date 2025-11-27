@@ -257,7 +257,7 @@ export default function ApproveExamPage() {
     const endLocal = formatToLocalISO(updated.endTime);
 
     try {
-      const res = await apiClient.post('/api/exam/confirm', {
+      await apiClient.post('/api/exam/confirm', {
         examId: exam.examId,
         examType: updated.examType,
         startTime: startLocal,
