@@ -24,6 +24,7 @@ export default function SearchProfessorPage() {
   const navigate = useNavigate();
   const accessToken = useAuthStore((state) => state.accessToken);
   const logout = useAuthStore((state) => state.logout);
+  const [allProfessors, setAllProfessors] = useState([]);
 
   useEffect(() => {
     if (!accessToken) {
@@ -62,7 +63,8 @@ export default function SearchProfessorPage() {
         const { data } = await apiClient.get('/api/member/search/professor', {
           params: { departmentId },
         });
-        setProfessors(data);
+        setProfessors(data); // 화면에 보여줄 목록
+        setAllProfessors(data); // 전체 목록 저장
       } catch (err) {
         console.error('교수 목록 불러오기 실패:', err);
         setError('조회 중 오류 발생');
@@ -76,21 +78,23 @@ export default function SearchProfessorPage() {
 
   const handleSearch = async () => {
     const trimmed = name.trim();
-    if (!trimmed && !departmentId) return;
+
+    if (!trimmed) {
+      setProfessors(allProfessors); // 전체 교수 목록 다시 표시
+      return;
+    }
 
     setLoading(true);
     setError(null);
 
     try {
-      const { data } = await apiClient.get('/api/member/search/professor', {
-        params: {
-          name: trimmed || undefined,
-          departmentId: departmentId || undefined,
-        },
-      });
-      setProfessors(data);
+      // 이미 fetchProfessors()에서 전체 목록을 로드했다고 가정
+      const filtered = allProfessors.filter((p) =>
+        p.name.toLowerCase().includes(trimmed.toLowerCase())
+      );
+
+      setProfessors(filtered);
     } catch (err) {
-      console.error('교수 조회 실패:', err);
       setError('조회 중 오류 발생');
     } finally {
       setLoading(false);
