@@ -94,8 +94,9 @@ export default function ApproveExamPage() {
 
     setUpdated((prev) => ({
       examType: prev.examType || exam.examType,
-      startTime: prev.startTime || new Date(exam.startTime),
-      endTime: prev.endTime || new Date(exam.endTime),
+      startTime:
+        prev.startTime !== null ? prev.startTime : new Date(exam.startTime),
+      endTime: prev.endTime !== null ? prev.endTime : new Date(exam.endTime),
     }));
   }, [exam]);
 
@@ -192,6 +193,16 @@ export default function ApproveExamPage() {
 
   const finalRoomId = updated.examRoomId ?? exam.roomId;
 
+  const isValidExamDate = (date) => {
+    if (!(date instanceof Date)) return false;
+    if (Number.isNaN(date.getTime())) return false;
+
+    // 말도 안 되게 과거인 값(예: epoch) 방지용
+    if (date.getFullYear() < 2000) return false;
+
+    return true;
+  };
+
   const handleApprove = async () => {
     const roomIdToSend = updated.examRoomId ?? exam.roomId;
     console.log('💥 updated.startTime:', updated.startTime);
@@ -202,6 +213,14 @@ export default function ApproveExamPage() {
       isNaN(updated.startTime?.getTime()) ||
       isNaN(updated.endTime?.getTime())
     ) {
+      setShowInvalidTimeModal(true);
+      return;
+    }
+    if (
+      !isValidExamDate(updated.startTime) ||
+      !isValidExamDate(updated.endTime)
+    ) {
+      console.log('시간 미선택 또는 비정상 시간 → 승인 차단');
       setShowInvalidTimeModal(true);
       return;
     }
