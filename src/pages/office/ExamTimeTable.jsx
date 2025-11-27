@@ -123,7 +123,7 @@ export default function ExamTimeTable({ selectedRoom, weekDate }) {
     };
 
     fetchExams();
-  }, [selectedRoom, weekDate]);
+  }, [selectedRoom, weekDate, slots]);
 
   return (
     <TimeTable
@@ -132,7 +132,7 @@ export default function ExamTimeTable({ selectedRoom, weekDate }) {
       endTime='22:30'
       dayRange={['월', '화', '수', '목', '금', '토', '일']}
       entries={entries}
-      maxHeight='740px'
+      maxHeight='440px'
     />
   );
 }
