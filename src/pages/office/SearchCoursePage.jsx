@@ -10,6 +10,7 @@ import ToggleSwitch from '@/components/ToggleSwitch';
 import Button from '@/components/buttons/Button';
 import ProfessorMappingModal from './ProfessorMappingModal';
 import { TriangleAlertIcon } from '@/assets/icons/index.js';
+import TableWrapper from '@/components/layout/TableWrapper';
 
 export default function SearchCoursePage() {
   const [allCourses, setAllCourses] = useState([]);
@@ -206,7 +207,7 @@ export default function SearchCoursePage() {
           />
         </div>
 
-        <div className='flex h-[764px] w-full flex-col gap-y-2.5'>
+        <div className='flex h-full w-full flex-col gap-y-2.5'>
           <div className='flex w-full items-center justify-end gap-2'>
             <span className='text-[16px]'>담당교수 미배정 과목</span>
             <ToggleSwitch
@@ -220,14 +221,14 @@ export default function SearchCoursePage() {
             />
           </div>
 
-          <div className='bg-white'>
+          <TableWrapper height='450px'>
             <VerticalTable
               columns={columns}
               data={courses}
               selectable={true}
               singleSelect={true}
               headerHeight={32}
-              maxHeight={670}
+              maxHeight={450}
               resetSelection={resetSelection}
               updateSelection={(rows) => {
                 const idx = rows[0];
@@ -236,7 +237,7 @@ export default function SearchCoursePage() {
                 );
               }}
             />
-          </div>
+          </TableWrapper>
         </div>
       </div>
 
