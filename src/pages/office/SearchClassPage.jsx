@@ -10,18 +10,16 @@ import apiClient from '@/api/apiClient';
 import PageHeader from '@/components/headers/PageHeader';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
+import TableWrapper from '@/components/layout/TableWrapper';
 
 /**
  * SearchClassPage (강의실 조회 페이지)
  * - 로그인한 유저의 departmentId 기반으로 강의실 목록 조회
  */
 export default function SearchClassPage() {
-  /* ------------------ 🧩 State ------------------ */
   const [rooms, setRooms] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [filteredRooms, setFilteredRooms] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const { name, departmentName, departmentId } = useAuthStore();
   const navigate = useNavigate();
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -45,7 +43,6 @@ export default function SearchClassPage() {
     }
   };
 
-  /* ------------------ ⚙️ Columns ------------------ */
   const columns = useMemo(
     () => [
       {
@@ -62,12 +59,9 @@ export default function SearchClassPage() {
     []
   );
 
-  /* ------------------ 📡 API 호출 ------------------ */
-  //onsole.log('[DEBUG] user.departmentId:', departmentId);
   useEffect(() => {
     const fetchRooms = async () => {
-      if (!departmentId) return; // 로그인 전에는 실행하지 않음
-      setLoading(true);
+      if (!departmentId) return;
       try {
         const { data } = await apiClient.get('/api/building/department', {
           params: { departmentId },
@@ -76,16 +70,12 @@ export default function SearchClassPage() {
         setFilteredRooms(data);
       } catch (err) {
         console.error('강의실 불러오기 실패:', err);
-        setError(err);
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchRooms();
   }, [departmentId]);
 
-  /* ------------------ 🔍 검색 기능 ------------------ */
   const handleSearch = () => {
     const keyword = searchKeyword.trim();
     if (!keyword) {
@@ -103,7 +93,6 @@ export default function SearchClassPage() {
     setFilteredRooms(result);
   };
 
-  /* ------------------ 🎨 검색 폼 ------------------ */
   const searchFormItems = [
     {
       id: 'classroom-search',
@@ -132,7 +121,6 @@ export default function SearchClassPage() {
     },
   ];
 
-  /* ------------------ 🧱 Render ------------------ */
   return (
     <Layout
       username={`${name ?? '사용자'} 님`}
@@ -166,21 +154,17 @@ export default function SearchClassPage() {
       ]}
     >
       <PageHeader title='강의실 목록' />
-      <div className='h-[764px] w-full'>
+      <div className='h-full w-full space-y-[10px]'>
         <HorizontalTable items={searchFormItems} />
-        {loading && <p className='mt-3 text-gray-500'>불러오는 중...</p>}
-        {error && <p className='mt-3 text-red-500'>데이터 불러오기 실패</p>}
-        {!loading && !error && (
-          <div className='mt-[10px] w-full bg-white'>
-            <VerticalTable
-              columns={columns}
-              data={filteredRooms}
-              selectable={false}
-              headerHeight={32}
-              maxHeight={600}
-            />
-          </div>
-        )}
+        <TableWrapper height='470px'>
+          <VerticalTable
+            columns={columns}
+            data={filteredRooms}
+            selectable={false}
+            headerHeight={32}
+            maxHeight={470}
+          />
+        </TableWrapper>
       </div>
     </Layout>
   );
