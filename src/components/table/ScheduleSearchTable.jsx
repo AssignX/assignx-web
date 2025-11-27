@@ -27,7 +27,7 @@ export default function ScheduleSearchTable({ onSearch }) {
     keyword: '',
   });
 
-  // console.log('ScheduleSearchTable filters:', filters);
+  console.log('ScheduleSearchTable filters:', filters);
 
   const updateFilters = (rowId, columnKey, value) => {
     setFilters((prev) => ({ ...prev, [columnKey]: value }));
@@ -45,8 +45,10 @@ export default function ScheduleSearchTable({ onSearch }) {
       contentWidth: '150px',
       content: (
         <YearPickerCell
-          value={filters.year}
-          onChange={(v) => setFilters((prev) => ({ ...prev, year: v }))}
+          initialValue={filters.year}
+          rowId='filters'
+          columnKey='year'
+          updateData={updateFilters}
         />
       ),
     },
@@ -57,10 +59,10 @@ export default function ScheduleSearchTable({ onSearch }) {
       contentWidth: '150px',
       content: (
         <DropdownCell
-          value={filters.semester}
-          onChange={(value) =>
-            setFilters((prev) => ({ ...prev, semester: value }))
-          }
+          initialValue={filters.semester}
+          rowId='filters'
+          columnKey='semester'
+          updateData={updateFilters}
           options={semesterOptions}
           height={32}
         />
