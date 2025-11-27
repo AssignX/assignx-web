@@ -1,5 +1,5 @@
 // src/pages/SchedulePage.jsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import PageHeader from '@/components/headers/PageHeader';
@@ -8,8 +8,8 @@ import VerticalTable from '@/components/table/VerticalTable';
 import apiClient from '@/api/apiClient';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
-import Button from '@/components/buttons/Button';
 import Modal from '@/components/modal/Modal';
+import TableWrapper from '@/components/layout/TableWrapper';
 
 export default function SchedulePage() {
   const navigate = useNavigate();
@@ -37,7 +37,6 @@ export default function SchedulePage() {
 
   const [selected, setSelected] = useState(true); // true=확정, false=미확정
   const [rows, setRows] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [selectedExam, setSelectedExam] = useState(null);
   const [showSelectExamModal, setShowSelectExamModal] = useState(false);
   const [selectExamMessage, setSelectExamMessage] = useState('');
@@ -96,7 +95,6 @@ export default function SchedulePage() {
       return;
     }
 
-    setLoading(true);
     try {
       const res = await apiClient.get('/api/exam/search', {
         params: {
@@ -133,10 +131,10 @@ export default function SchedulePage() {
         const kw = filters.keyword.trim();
         filtered = filtered.filter(
           (item) =>
-            item.courseName.includes(kw) ||
-            item.courseCode.includes(kw) ||
-            item.buildingName.includes(kw) ||
-            item.roomNumber.includes(kw)
+            item.courseName?.includes(kw) ||
+            item.courseCode?.includes(kw) ||
+            item.buildingName?.includes(kw) ||
+            item.roomNumber?.includes(kw)
         );
       }
 
@@ -150,8 +148,6 @@ export default function SchedulePage() {
     } catch (err) {
       console.error('시험 조회 실패:', err);
       setRows([]);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -256,33 +252,28 @@ export default function SchedulePage() {
         buttonsData={buttons}
       />
 
-      <div className='h-[764px] overflow-y-auto'>
+      <div className='h-full'>
         <ScheduleSearchTable onSearch={handleSearch} />
 
         <div className='mt-[10px] bg-white'>
-          {loading && <p className='mt-3 px-2 text-gray-500'>불러오는 중...</p>}
-          {!loading && (
-            <div className='bg-white'>
-              <VerticalTable
-                columns={columns}
-                selectable={true}
-                singleSelect={true}
-                data={rows}
-                maxHeight={600}
-                updateSelection={(ids) => {
-                  if (ids.length === 0) {
-                    setSelectedExam(null);
-                    return;
-                  }
-                  const examId = Number(ids[0]);
-                  const exam = rows.find((item) => item.id === examId);
-                  setSelectedExam(exam);
-                }}
-              />
-              {/* 빈 데이터일 때 흰색 배경 유지 */}
-              {rows.length === 0 && <div className='flex h-[600px] bg-white' />}
-            </div>
-          )}
+          <TableWrapper height='470px'>
+            <VerticalTable
+              columns={columns}
+              selectable={true}
+              singleSelect={true}
+              data={rows}
+              maxHeight={470}
+              updateSelection={(ids) => {
+                if (ids.length === 0) {
+                  setSelectedExam(null);
+                  return;
+                }
+                const examId = Number(ids[0]);
+                const exam = rows.find((item) => item.id === examId);
+                setSelectedExam(exam);
+              }}
+            />
+          </TableWrapper>
         </div>
       </div>
 
