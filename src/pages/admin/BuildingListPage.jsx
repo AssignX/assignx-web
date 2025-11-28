@@ -19,28 +19,15 @@ const buildingColumns = [
   },
 ];
 
-const dummyData = [
-  {
-    id: 1,
-    buildingId: 1,
-    number: 1,
-    buildingNumber: '001',
-    buildingName: 'IT대학5호관(IT융복합)',
-  },
-  {
-    id: 2,
-    buildingId: 2,
-    number: 2,
-    buildingNumber: '002',
-    buildingName: 'Science Center',
-  },
-];
-
 function BuildingListPage() {
   const navigate = useNavigate();
   const accessToken = useAuthStore((state) => state.accessToken);
   const logout = useAuthStore((state) => state.logout);
-  const { name: userNameFromStore, departmentName } = useAuthStore();
+  const {
+    name: userNameFromStore,
+    departmentName,
+    departmentId,
+  } = useAuthStore();
 
   useEffect(() => {
     if (!accessToken) navigate('/login');
@@ -61,19 +48,58 @@ function BuildingListPage() {
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
+  const fetchBuildings = async () => {
+    if (!departmentId) return;
+
+    try {
+      const res = await apiClient.get('/api/building');
+      const list = Array.isArray(res.data) ? res.data : [];
+
+      const mapped = list.map((item, idx) => ({
+        id: String(item.buildingId ?? idx),
+        buildingId: item.buildingId,
+        buildingNumber: String(item.buildingNumber ?? ''),
+        buildingName: item.buildingName ?? '',
+      }));
+
+      setBuildingData(mapped);
+    } catch (err) {
+      console.error('건물 목록 조회 실패:', err);
+      setBuildingData([]);
+    }
+  };
+
   useEffect(() => {
-    // Fetch building data from API
-    setBuildingData(dummyData);
-  }, []);
+    fetchBuildings();
+  }, [departmentId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleConfirmDelete = () => {
-    const targetId = selectedRowIds[0];
-    // TODO: /api/building/{buildingId} DELETE 요청
+  const handleConfirmDelete = async () => {
+    if (!selectedRowIds.length) {
+      alert('삭제할 건물을 선택해주세요.');
+      return;
+    }
 
-    setBuildingData((prev) =>
-      prev.filter((row) => String(row.id) !== String(targetId))
+    const targetRowId = selectedRowIds[0];
+    const targetRow = buildingData.find(
+      (row) => String(row.id) === String(targetRowId)
     );
-    setSelectedRowIds([]);
+
+    if (!targetRow || !targetRow.buildingId) {
+      alert('선택한 건물 정보를 찾을 수 없습니다.');
+      return;
+    }
+
+    try {
+      await apiClient.delete(`/api/building/${targetRow.buildingId}`);
+      setSelectedRowIds([]);
+      setIsDeleteModalOpen(false);
+
+      await fetchBuildings();
+      alert('삭제가 완료되었습니다.');
+    } catch (err) {
+      console.error('건물 삭제 실패:', err);
+      alert('건물 삭제 중 오류가 발생했습니다.');
+    }
   };
 
   return (
@@ -108,7 +134,7 @@ function BuildingListPage() {
               color: 'lightgray',
               onClick: () => {
                 if (selectedRowIds.length > 0) {
-                  navigate(`/admin/building/edit/${selectedRowIds[0]}`); // +1을 해야 하나?
+                  navigate(`/admin/building/edit/${selectedRowIds[0]}`);
                 } else {
                   alert('수정할 건물을 선택해주세요.');
                 }
