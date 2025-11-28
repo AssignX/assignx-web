@@ -19,15 +19,8 @@ import {
   buildApplicationOptions,
   parseApplicationTimeToISO,
   formatExamDateTimeRange,
+  getFirstExamTypeForNow,
 } from './parsingTime';
-
-const getDummyExamPeriod = (year, semester) => ({
-  examPeriodId: 1,
-  year: String(year),
-  semester: String(semester).replace('학기', ''),
-  midFirstStartDateTime: '2025-10-22T00:00:00.000Z',
-  midFirstEndDateTime: '2025-10-28T23:59:59.000Z',
-});
 
 const unconfirmedTableColumns = [
   {
@@ -60,6 +53,7 @@ const unconfirmedTableColumns = [
   },
   { header: '강의실', accessorKey: 'classRoom', size: 140 },
 ];
+
 const confirmedTableColumns = [
   {
     header: 'No',
@@ -110,32 +104,81 @@ function FirstApplicationPage() {
   const [selectedIds, setSelectedIds] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const [examPeriod, setExamPeriod] = useState(null);
+
   const convertAssignedStatus = (status) =>
     status === 'COMPLETED_FIRST' ? 'Y' : '';
 
   const handleSearch = async () => {
     try {
       const semester = openSemester.replace('학기', '');
-      const examPeriodDummy = getDummyExamPeriod(openYear, semester); // /api/exam-period에서 받아와야 하지만.. 권한이 없어서 우선 더미 사용
 
-      const res = await apiClient.get('/api/exam/search', {
-        params: { year: openYear, semester, professorId: memberId },
+      const periodRes = await apiClient.get('/api/exam-period', {
+        params: { year: openYear, semester },
       });
 
-      const list = Array.isArray(res.data) ? res.data : [];
+      if (!periodRes.data) {
+        alert('시험 신청 기간이 설정되지 않았습니다.');
+        return;
+      }
+      setExamPeriod(periodRes.data);
 
-      const unconfirmed = list.filter((e) => e.examAssigned === 'NOT_YET');
-      const confirmed = list.filter((e) => e.examAssigned !== 'NOT_YET');
+      const courseRes = await apiClient.get('/api/course/search', {
+        params: { year: openYear, semester, professorId: memberId },
+      });
+      const courseList = Array.isArray(courseRes.data) ? courseRes.data : [];
+
+      const courseById = new Map();
+      const courseByCode = new Map();
+      courseList.forEach((c) => {
+        if (c.courseId !== null && c.courseId !== undefined) {
+          courseById.set(String(c.courseId), c);
+        }
+        if (c.courseCode) {
+          courseByCode.set(c.courseCode, c);
+        }
+      });
+
+      const examRes = await apiClient.get('/api/exam/search', {
+        params: { year: openYear, semester, professorId: memberId },
+      });
+      if (!examRes.data || examRes.data.length === 0) {
+        alert('신청 가능한 시험이 없습니다.');
+        setUnconfirmedRows([]);
+        setConfirmedRows([]);
+        return;
+      }
+
+      const list = Array.isArray(examRes.data) ? examRes.data : [];
+      const enrichedList = list.map((exam) => {
+        const course =
+          courseById.get(String(exam.courseId)) ||
+          courseByCode.get(exam.courseCode);
+
+        const buildingName = exam.buildingName || course?.buildingName || '';
+        const roomNumber = exam.roomNumber || course?.roomNumber || '';
+        const enrolledCount = exam.enrolledCount ?? course?.enrolledCount ?? 0;
+        const courseTime = exam.courseTime || course?.courseTime || '';
+
+        return { ...exam, buildingName, roomNumber, enrolledCount, courseTime };
+      });
+
+      const unconfirmed = enrichedList.filter(
+        (e) => e.examAssigned === 'NOT_YET'
+      );
+      const confirmed = enrichedList.filter(
+        (e) => e.examAssigned !== 'NOT_YET'
+      );
 
       const mappedUnconfirmed = unconfirmed.map((exam) => {
         const [code, section] = exam.courseCode?.split('-') ?? ['', ''];
-
         const applicationOptions = buildApplicationOptions(
           exam.courseTime,
-          examPeriodDummy
+          periodRes.data
         );
 
         return {
+          id: String(exam.examId),
           examId: exam.examId,
           courseName: exam.courseName,
           courseCode: code,
@@ -147,11 +190,11 @@ function FirstApplicationPage() {
             `${exam.buildingName ?? ''} ${exam.roomNumber ?? ''}`.trim() || '-',
           applicationOptions,
           applicationTime: applicationOptions[0]?.value ?? '',
-          updateApplicationTime: (rowId, val) => {
+          updateApplicationTime: (rowId, _columnKey, newValue) => {
             setUnconfirmedRows((prev) =>
               prev.map((r) =>
                 String(r.examId) === String(rowId)
-                  ? { ...r, applicationTime: val }
+                  ? { ...r, applicationTime: newValue }
                   : r
               )
             );
@@ -163,6 +206,7 @@ function FirstApplicationPage() {
         const [code, section] = exam.courseCode?.split('-') ?? ['', ''];
 
         return {
+          id: String(exam.examId),
           examId: exam.examId,
           courseName: exam.courseName,
           courseCode: code,
@@ -185,7 +229,13 @@ function FirstApplicationPage() {
   };
 
   const handleApplyFirstClick = () => {
-    if (!selectedIds.length) {
+    const selectedArray = Array.isArray(selectedIds)
+      ? selectedIds
+      : selectedIds
+        ? [selectedIds]
+        : [];
+
+    if (!selectedArray.length) {
       alert('신청할 과목을 선택해주세요.');
       return;
     }
@@ -193,11 +243,34 @@ function FirstApplicationPage() {
   };
 
   const handleConfirmApplyFirst = async () => {
+    if (!examPeriod) {
+      alert('시험 신청 기간 정보가 없습니다. 먼저 조회 버튼을 눌러주세요.');
+      return;
+    }
+
+    const examType = getFirstExamTypeForNow(examPeriod);
+    if (!examType) {
+      alert('지금은 1차 시험 신청 기간이 아닙니다.');
+      return;
+    }
+
+    const selectedArray = Array.isArray(selectedIds)
+      ? selectedIds
+      : selectedIds
+        ? [selectedIds]
+        : [];
+
+    if (!selectedArray.length) {
+      alert('신청할 과목을 선택해주세요.');
+      return;
+    }
+
     try {
-      for (const id of selectedIds) {
+      for (const id of selectedArray) {
         const row = unconfirmedRows.find(
           (r) => String(r.examId) === String(id)
         );
+        console.log('applying for row', row);
         if (!row) continue;
         const { startTime, endTime } = parseApplicationTimeToISO(
           row.applicationTime
@@ -206,13 +279,14 @@ function FirstApplicationPage() {
 
         await apiClient.post('/api/exam/apply/first', {
           examId: row.examId,
-          examType: 'MID',
+          examType,
           startTime,
           endTime,
           isApply: true,
         });
       }
       alert('신청이 완료되었습니다.');
+      setIsModalOpen(false);
       await handleSearch();
     } catch (err) {
       alert('신청 중 오류 발생');
@@ -351,10 +425,7 @@ function FirstApplicationPage() {
           setIsOpen={setIsModalOpen}
           onConfirm={handleConfirmApplyFirst}
           title='1차 신청'
-          body={`신청하시겠습니까? (${unconfirmedRows
-            .filter((r) => selectedIds.includes(String(r.examId)))
-            .map((r) => r.subjectName)
-            .join(', ')})`}
+          body='선택한 과목을 신청하시겠습니까?'
         />
       )}
     </Layout>

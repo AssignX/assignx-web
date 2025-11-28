@@ -249,6 +249,40 @@ const buildTimeTableEntries = (courses) => {
   return result;
 };
 
+// ---- 1차 시험 신청 기간 체크 & MID/FINAL 구분 ----
+const isWithinPeriod = (now, startIso, endIso) => {
+  if (!startIso || !endIso) return false;
+  const t = now.getTime();
+  const s = new Date(startIso).getTime();
+  const e = new Date(endIso).getTime();
+  return t >= s && t <= e;
+};
+
+// examPeriod: /api/exam-period 응답 객체
+// 현재 시각 기준으로 1차(MID/FINAL) 중 어느 기간인지 판별
+const getFirstExamTypeForNow = (examPeriod, now = new Date()) => {
+  if (!examPeriod) return null;
+
+  const inMidFirst = isWithinPeriod(
+    now,
+    examPeriod.midFirstStartDateTime,
+    examPeriod.midFirstEndDateTime
+  );
+
+  const inFinalFirst = isWithinPeriod(
+    now,
+    examPeriod.finalFirstStartDateTime,
+    examPeriod.finalFirstEndDateTime
+  );
+
+  if (inMidFirst && !inFinalFirst) return 'MID';
+  if (!inMidFirst && inFinalFirst) return 'FINAL';
+
+  // 둘 다 겹치거나 둘 다 아니면 처리 곤란 → null
+  if (inMidFirst && inFinalFirst) return 'MID'; // 겹치는 경우에는 우선 MID로 처리
+  return null;
+};
+
 export {
   // 1차 신청 관련
   buildApplicationOptions,
@@ -260,4 +294,6 @@ export {
   minutesToSlotLabel,
   SLOT_INTERVAL_MINUTES,
   WEEKDAYS,
+  // 1차 시험
+  getFirstExamTypeForNow,
 };
