@@ -52,6 +52,7 @@ export default function App() {
 
       {/* Admin Pages */}
       <Route path='admin' element={<AdminPage />}>
+        <Route index element={<DepartmentListPage />} />
         {/* Department */}
         <Route path='department'>
           <Route index element={<DepartmentListPage />} />

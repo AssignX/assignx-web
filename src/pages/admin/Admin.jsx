@@ -17,12 +17,20 @@ function Admin() {
       subItems: [{ label: '건물 목록', path: 'building' }],
     },
   ];
+
   const departmentMenus = baseMenus.map((menu) => ({
     ...menu,
-    subItems: menu.subItems.map((sub) => ({
-      ...sub,
-      isSelected: location.pathname.startsWith(`/admin/${sub.path}`),
-    })),
+    subItems: menu.subItems.map((sub) => {
+      const basePath = `/admin/${sub.path}`;
+      const isStatus =
+        sub.path === 'department' &&
+        (location.pathname === '/admin' ||
+          location.pathname.startsWith('/admin/department'));
+      return {
+        ...sub,
+        isSelected: isStatus || location.pathname.startsWith(basePath),
+      };
+    }),
   }));
 
   return (
