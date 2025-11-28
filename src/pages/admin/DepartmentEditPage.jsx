@@ -148,8 +148,6 @@ function DepartmentEditPage() {
       setClassroomData(mappedClassrooms);
     } catch (error) {
       console.error('학과 상세 조회 실패:', error);
-    } finally {
-      console.log(classroomData);
     }
   };
 
@@ -157,7 +155,7 @@ function DepartmentEditPage() {
     if (isEditMode) {
       fetchDepartmentDetails(id);
     }
-  }, [id, isEditMode]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [id, isEditMode]);
 
   const handleEmployeeNewRowChange = (rowId, columnKey, value) => {
     setEmployeeNewRows((prev) =>
@@ -214,29 +212,56 @@ function DepartmentEditPage() {
   };
   const handleSelectClassRoom = (rooms) => {
     setClassroomData((prev) => {
-      const newOnes = rooms.filter(
-        (room) => !prev.some((r) => r.id === room.id)
-      );
-      return [...prev, ...newOnes];
+      const mappedNew = rooms.map((room) => ({
+        id: String(room.id ?? room.roomId),
+        roomId: room.roomId,
+        buildingNumber: room.buildingNumber ?? room.buildingNo ?? '',
+        buildingName: room.buildingName ?? '',
+        roomNumber: room.roomNumber ?? room.roomNo ?? '',
+        roomCapacity: room.roomCapacity ?? room.capacity ?? 0,
+      }));
+
+      const merged = [...prev];
+      mappedNew.forEach((newRoom) => {
+        const exists = merged.some(
+          (r) => String(r.roomId) === String(newRoom.roomId)
+        );
+        if (!exists) {
+          merged.push(newRoom);
+        }
+      });
+
+      return merged;
     });
   };
 
   const handleOpenSaveModal = () => {
     setIsSaveModalOpen(true);
   };
-  const handleConfirmSave = () => {
+  const handleConfirmSave = async () => {
+    const deptId = isEditMode ? Number(departmentId) : 0;
     const payload = {
-      departmentId: departmentId,
+      departmentId: deptId,
       college: college,
       major: department,
-      employeeIds: employeeData.map((emp) => emp.memberId),
-      roomIds: classroomData.map((room) => room.roomId),
+      employeeIds: employeeData.map((emp) => Number(emp.memberId)),
+      roomIds: classroomData.map((room) => Number(room.roomId)),
     };
 
-    apiClient.put('/api/department/admin', payload);
+    try {
+      if (isEditMode) {
+        await apiClient.put('/api/department/admin', payload);
+      } else {
+        await apiClient.post('/api/department/admin', payload);
+      }
 
-    console.log('저장 완료');
-    navigate(-1); // 저장 후 이전 페이지로 이동
+      alert('학과 정보가 저장되었습니다.');
+      setIsSaveModalOpen(false);
+      navigate(-1); // 저장 후 이전 페이지로 이동
+    } catch (error) {
+      console.error('학과 저장 실패:', error);
+      alert('학과 정보를 저장하는 중 오류가 발생했습니다.');
+    }
   };
 
   const employeeSectionButtons = isEditMode
