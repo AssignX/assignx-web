@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import dayjs from 'dayjs';
 import PageHeader from '@/components/headers/PageHeader';
 import SectionHeader from '@/components/headers/SectionHeader';
-import BreadCrumb from '@/components/BreadCrumb';
+import BreadCrumb from '@/components/Breadcrumb';
 import DateTimePicker from '@/components/pickers/DateTimePicker';
 
 function ComponentTest() {
