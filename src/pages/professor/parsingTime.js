@@ -145,13 +145,16 @@ const getDatesWithinPeriodForDay = (start, end, day) => {
 // ---- 1차 시험 신청용 Dropdown 옵션 생성 ----
 // courseTime: "목 01A,01B,03A,03B"
 // examPeriod: { midFirstStartDateTime, midFirstEndDateTime, ... }
+// ---- 1차 시험 신청용 Dropdown 옵션 생성 ----
+// courseTime: "목 01A,01B,03A,03B"
+// examPeriod: { midFirstStartDateTime, midFirstEndDateTime, ... }
 const buildApplicationOptions = (courseTime, examPeriod) => {
   const startDate = toDateOnly(examPeriod.midFirstStartDateTime);
   const endDate = toDateOnly(examPeriod.midFirstEndDateTime);
   if (!startDate || !endDate) return [];
 
   const daySlotsList = parseCourseTimeToDaySlots(courseTime);
-  const options = [];
+  const candidates = [];
 
   daySlotsList.forEach(({ day, slots }) => {
     const timeRangesText = buildTimeRangesFromSlots(slots);
@@ -160,10 +163,21 @@ const buildApplicationOptions = (courseTime, examPeriod) => {
     const dates = getDatesWithinPeriodForDay(startDate, endDate, day);
 
     dates.forEach((d) => {
-      const dateStr = formatDate(d);
-      const label = `${dateStr}(${day}) ${timeRangesText}`;
-      options.push({ value: label, label });
+      candidates.push({ date: d, day, timeRangesText });
     });
+  });
+
+  candidates.sort((a, b) => {
+    const at = a.date.getTime();
+    const bt = b.date.getTime();
+    if (at !== bt) return at - bt;
+    return DAY_TO_INDEX[a.day] - DAY_TO_INDEX[b.day];
+  });
+
+  const options = candidates.map(({ date, day, timeRangesText }) => {
+    const dateStr = formatDate(date);
+    const label = `${dateStr}(${day}) ${timeRangesText}`;
+    return { value: label, label };
   });
 
   return options;
