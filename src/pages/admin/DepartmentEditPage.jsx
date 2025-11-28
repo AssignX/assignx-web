@@ -12,6 +12,7 @@ import EmployeeModal from './EmployeeModal';
 import ClassRoomModal from './ClassRoomModal';
 import SaveConfirmModal from './SaveConfirmModal';
 
+import apiClient from '@/api/apiClient';
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -22,9 +23,9 @@ const employeeColumns = [
     size: 50,
     cell: ({ row }) => row.index + 1,
   },
-  { header: '교번', accessorKey: 'employeeId', size: 200 },
+  { header: '교번', accessorKey: 'idNumber', size: 200 },
   { header: '이름', accessorKey: 'name', size: 200 },
-  { header: '소속학과', accessorKey: 'department', size: 400 },
+  { header: '소속학과', accessorKey: 'departmentName', size: 400 },
 ];
 
 const ClassroomColumns = [
@@ -34,40 +35,10 @@ const ClassroomColumns = [
     size: 50,
     cell: ({ row }) => row.index + 1,
   },
-  { header: '건물 번호', accessorKey: 'buildingNo', size: 200 },
+  { header: '건물 번호', accessorKey: 'buildingNumber', size: 200 },
   { header: '건물 이름', accessorKey: 'buildingName', size: 400 },
-  { header: '강의실 번호', accessorKey: 'roomNo', size: 200 },
-  { header: '수용 인원', accessorKey: 'capacity', size: 100 },
-];
-
-const employeeDummyData = [
-  { id: '1', employeeId: 'EMP001', name: '홍길동', department: '컴퓨터공학' },
-  { id: '2', employeeId: 'EMP002', name: '김철수', department: '전자공학과' },
-  { id: '3', employeeId: 'EMP003', name: '이영희', department: '기계공학' },
-];
-
-const classroomDummyData = [
-  {
-    id: '1',
-    buildingNo: '451',
-    buildingName: 'IT대학5호관(IT융복합관)',
-    roomNo: '348',
-    capacity: 60,
-  },
-  {
-    id: '2',
-    buildingNo: '451',
-    buildingName: 'IT대학5호관(IT융복합관)',
-    roomNo: '352',
-    capacity: 45,
-  },
-  {
-    id: '3',
-    buildingNo: '451',
-    buildingName: 'IT대학5호관(IT융복합관)',
-    roomNo: '355',
-    capacity: 55,
-  },
+  { header: '강의실 번호', accessorKey: 'roomNumber', size: 200 },
+  { header: '수용 인원', accessorKey: 'roomCapacity', size: 100 },
 ];
 
 /* 남은 할 일
@@ -86,6 +57,7 @@ function DepartmentEditPage() {
 
   const [college, setCollege] = useState('');
   const [department, setDepartment] = useState('');
+  const [departmentId, setDepartmentId] = useState(null);
 
   const [employeeData, setEmployeeData] = useState([]);
   const [classroomData, setClassroomData] = useState([]);
@@ -127,12 +99,46 @@ function DepartmentEditPage() {
     },
   ];
 
+  const fetchDepartmentDetails = async (departmentId) => {
+    try {
+      const res = await apiClient.get(`/api/department/admin/${departmentId}`);
+      const data = res.data;
+
+      setCollege(data.college || '');
+      setDepartment(data.major || '');
+      setDepartmentId(data.departmentId || '');
+
+      const mappedEmployees = (data.employees || []).map((emp) => ({
+        id: String(emp.memberId), // 사용 안할듯?
+        memberId: emp.memberId,
+        idNumber: emp.idNumber,
+        name: emp.name,
+        departmentId: emp.departmentId,
+        departmentName: emp.departmentName,
+      }));
+      setEmployeeData(mappedEmployees);
+
+      const mappedClassrooms = (data.rooms || []).map((room) => ({
+        id: String(room.roomId), // 사용 안할듯?
+        roomId: room.roomId,
+        buildingNumber: room.buildingNumber,
+        buildingName: room.buildingName,
+        roomNumber: room.roomNumber,
+        roomCapacity: room.roomCapacity,
+      }));
+      setClassroomData(mappedClassrooms);
+    } catch (error) {
+      console.error('학과 상세 조회 실패:', error);
+    } finally {
+      console.log(classroomData);
+    }
+  };
+
   useEffect(() => {
-    // Fetch employee data from API
-    setEmployeeData(employeeDummyData);
-    // Fetch classroom data from API
-    setClassroomData(classroomDummyData);
-  }, []);
+    if (isEditMode) {
+      fetchDepartmentDetails(id);
+    }
+  }, [id, isEditMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleEmployeeNewRowChange = (rowId, columnKey, value) => {
     setEmployeeNewRows((prev) =>
@@ -141,7 +147,14 @@ function DepartmentEditPage() {
       )
     );
   };
-
+  const handleEditEmployeeRows = () => {
+    // 수정은 추후 구현 예정
+    if (employeeSelectedRows.length === 0) {
+      alert('수정할 직원을 선택해주세요.');
+      return;
+    }
+    console.log('수정', employeeSelectedRows);
+  };
   const handleDeleteEmployeeRows = () => {
     if (employeeSelectedRows.length === 0) {
       alert('삭제할 직원을 선택해주세요.');
@@ -151,11 +164,6 @@ function DepartmentEditPage() {
       prev.filter((row) => !employeeSelectedRows.includes(row.id))
     );
     setEmployeeSelectedRows([]);
-  };
-
-  const handleEditEmployeeRows = () => {
-    // 수정은 추후 구현 예정
-    console.log('수정', employeeSelectedRows);
   };
 
   const handleClassroomNewRowChange = (rowId, columnKey, value) => {
@@ -185,7 +193,6 @@ function DepartmentEditPage() {
       return [...prev, ...newOnes];
     });
   };
-
   const handleSelectClassRoom = (rooms) => {
     setClassroomData((prev) => {
       const newOnes = rooms.filter(
@@ -199,7 +206,17 @@ function DepartmentEditPage() {
     setIsSaveModalOpen(true);
   };
   const handleConfirmSave = () => {
-    // TODO: 실제 저장 API 호출
+    const payload = {
+      departmentId: departmentId,
+      college: college,
+      major: department,
+      employeeIds: employeeData.map((emp) => emp.memberId),
+      roomIds: classroomData.map((room) => room.roomId),
+    };
+
+    apiClient.put('/api/department/admin', payload);
+
+    console.log('저장 완료');
     navigate(-1); // 저장 후 이전 페이지로 이동
   };
 
