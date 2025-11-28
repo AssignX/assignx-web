@@ -16,7 +16,10 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import apiClient from '@/api/apiClient';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
-import { formatExamDateTimeRange } from './parsingTime';
+import {
+  formatExamDateTimeRange,
+  getSecondExamTypeForNow,
+} from './parsingTime';
 
 const mapExamAssignedToLabel = (status) => {
   switch (status) {
@@ -233,10 +236,11 @@ function SecondApplicationPage() {
   const [currentRoomRowId, setCurrentRoomRowId] = useState(null);
   const [currentRoomTableType, setCurrentRoomTableType] = useState(''); // 'unapplied' | 'unconfirmed'
 
+  const [examPeriod, setExamPeriod] = useState(null);
+
   const updateUnappliedRange = useCallback((rowId, range) => {
     patchRowByExamId(setUnappliedRows, rowId, { secondRange: range });
   }, []);
-
   const updateUnconfirmedRange = useCallback((rowId, range) => {
     patchRowByExamId(setUnconfirmedRows, rowId, { secondRange: range });
   }, []);
@@ -250,6 +254,22 @@ function SecondApplicationPage() {
   const handleSearch = useCallback(async () => {
     try {
       const semester = openSemester.replace('학기', '');
+
+      const periodRes = await apiClient.get('/api/exam-period', {
+        params: { year: String(openYear), semester },
+      });
+      if (!periodRes.data) {
+        alert('시험 신청 기간이 설정되지 않았습니다.');
+        setExamPeriod(null);
+        setUnappliedRows([]);
+        setUnconfirmedRows([]);
+        setConfirmedRows([]);
+        setSelectedUnappliedIds([]);
+        setSelectedUnconfirmedIds([]);
+        return;
+      }
+      setExamPeriod(periodRes.data);
+
       const res = await apiClient.get('/api/exam/search', {
         params: { year: String(openYear), semester, professorId: memberId },
       });
@@ -284,6 +304,7 @@ function SecondApplicationPage() {
       setSelectedUnconfirmedIds([]);
     } catch (error) {
       console.error('2차 시험 목록 조회 실패:', error);
+      setExamPeriod(null);
       setUnappliedRows([]);
       setUnconfirmedRows([]);
       setConfirmedRows([]);
@@ -304,6 +325,16 @@ function SecondApplicationPage() {
       alert('신청/수정할 과목을 선택해주세요.');
       return;
     }
+    if (!examPeriod) {
+      alert('시험 신청 기간 정보가 없습니다. 먼저 조회 버튼을 눌러주세요.');
+      return;
+    }
+
+    const examType = getSecondExamTypeForNow(examPeriod);
+    if (!examType) {
+      alert('지금은 2차 시험 신청 기간이 아닙니다.');
+      return;
+    }
 
     try {
       for (const row of rows) {
@@ -319,7 +350,7 @@ function SecondApplicationPage() {
 
         await apiClient.post('/api/exam/apply/second', {
           examId: row.examId,
-          examType: 'MID',
+          examType,
           startTime: range.from.toISOString(),
           endTime: range.to.toISOString(),
           examRoomId: row.examRoomId,

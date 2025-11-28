@@ -143,7 +143,7 @@ function FirstApplicationPage() {
         params: { year: openYear, semester, professorId: memberId },
       });
       if (!examRes.data || examRes.data.length === 0) {
-        alert('신청 가능한 시험이 없습니다.');
+        alert('조회할 과목이 없습니다.');
         setUnconfirmedRows([]);
         setConfirmedRows([]);
         return;

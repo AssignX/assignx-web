@@ -297,6 +297,30 @@ const getFirstExamTypeForNow = (examPeriod, now = new Date()) => {
   return null;
 };
 
+// 2차 시험 신청 기간 체크 & MID/FINAL 구분
+const getSecondExamTypeForNow = (examPeriod, now = new Date()) => {
+  if (!examPeriod) return null;
+
+  const inMidSecond = isWithinPeriod(
+    now,
+    examPeriod.midSecondStartDateTime,
+    examPeriod.midSecondEndDateTime
+  );
+
+  const inFinalSecond = isWithinPeriod(
+    now,
+    examPeriod.finalSecondStartDateTime,
+    examPeriod.finalSecondEndDateTime
+  );
+
+  if (inMidSecond && !inFinalSecond) return 'MID';
+  if (!inMidSecond && inFinalSecond) return 'FINAL';
+
+  // 둘 다 겹치면 일단 MID 우선, 둘 다 아니면 null
+  if (inMidSecond && inFinalSecond) return 'MID';
+  return null;
+};
+
 export {
   // 1차 신청 관련
   buildApplicationOptions,
@@ -308,6 +332,7 @@ export {
   minutesToSlotLabel,
   SLOT_INTERVAL_MINUTES,
   WEEKDAYS,
-  // 1차 시험
+  // 시험
   getFirstExamTypeForNow,
+  getSecondExamTypeForNow,
 };
