@@ -1,4 +1,4 @@
-import Section from '@/components/layout/Section';
+import Layout from '@/components/Layout';
 import PageHeader from '@/components/headers/PageHeader';
 import VerticalTable from '@/components/table/VerticalTable';
 
@@ -6,6 +6,8 @@ import DeleteConfirmModal from './DeleteConfirmModal';
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '@/store/useAuthStore';
+import apiClient from '@/api/apiClient';
 
 const buildingColumns = [
   { header: 'No', accessorKey: 'number', size: 50 },
@@ -36,6 +38,24 @@ const dummyData = [
 
 function BuildingListPage() {
   const navigate = useNavigate();
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const logout = useAuthStore((state) => state.logout);
+  const { name: userNameFromStore, departmentName } = useAuthStore();
+
+  useEffect(() => {
+    if (!accessToken) navigate('/login');
+  }, [accessToken, navigate]);
+
+  const handleLogout = async () => {
+    try {
+      await apiClient.post('/api/auth/logout');
+    } catch (err) {
+      console.warn('logout failed', err);
+    }
+    logout();
+    navigate('/login');
+  };
+
   const [buildingData, setBuildingData] = useState([]);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
 
@@ -57,7 +77,23 @@ function BuildingListPage() {
   };
 
   return (
-    <Section>
+    <Layout
+      username={`${userNameFromStore ?? '사용자'} 님`}
+      headerTitle={`${departmentName ?? ''} 메뉴`}
+      onLogout={handleLogout}
+      menus={[
+        {
+          title: '학과 관리',
+          subItems: [{ label: '학과 목록', path: '/admin/department' }],
+        },
+        {
+          title: '건물 관리',
+          subItems: [
+            { label: '건물 목록', path: '/admin/building', isSelected: true },
+          ],
+        },
+      ]}
+    >
       <div>
         <PageHeader
           title='건물 목록'
@@ -108,7 +144,7 @@ function BuildingListPage() {
           message='선택한 건물을 삭제하시겠습니까?'
         />
       )}
-    </Section>
+    </Layout>
   );
 }
 

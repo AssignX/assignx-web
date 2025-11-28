@@ -1,10 +1,11 @@
-import Section from '@/components/layout/Section';
+import Layout from '@/components/Layout';
 import PageHeader from '@/components/headers/PageHeader';
 import VerticalTable from '@/components/table/VerticalTable';
 
 import DeleteConfirmModal from './DeleteConfirmModal';
 
 import apiClient from '@/api/apiClient';
+import { useAuthStore } from '@/store/useAuthStore';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -25,6 +26,24 @@ const departmentColumns = [
 
 function DepartmentListPage() {
   const navigate = useNavigate();
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const logout = useAuthStore((state) => state.logout);
+  const { name: userNameFromStore, departmentName } = useAuthStore();
+
+  useEffect(() => {
+    if (!accessToken) navigate('/login');
+  }, [accessToken, navigate]);
+
+  const handleLogout = async () => {
+    try {
+      await apiClient.post('/api/auth/logout');
+    } catch (err) {
+      console.warn('logout failed', err);
+    }
+    logout();
+    navigate('/login');
+  };
+
   const [departmentData, setDepartmentData] = useState([]);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
 
@@ -74,7 +93,23 @@ function DepartmentListPage() {
   };
 
   return (
-    <Section>
+    <Layout
+      username={`${userNameFromStore ?? '사용자'} 님`}
+      headerTitle={`${departmentName ?? ''} 메뉴`}
+      onLogout={handleLogout}
+      menus={[
+        {
+          title: '학과 관리',
+          subItems: [
+            { label: '학과 목록', path: '/admin/department', isSelected: true },
+          ],
+        },
+        {
+          title: '건물 관리',
+          subItems: [{ label: '건물 목록', path: '/admin/building' }],
+        },
+      ]}
+    >
       <div>
         <PageHeader
           title='학과 목록'
@@ -127,7 +162,7 @@ function DepartmentListPage() {
           message='선택한 학과를 삭제하시겠습니까?'
         />
       )}
-    </Section>
+    </Layout>
   );
 }
 

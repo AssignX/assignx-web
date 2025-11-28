@@ -1,4 +1,4 @@
-import Section from '@/components/layout/Section';
+import Layout from '@/components/Layout';
 import PageHeader from '@/components/headers/PageHeader';
 import SectionHeader from '@/components/headers/SectionHeader';
 import HorizontalTable from '@/components/table/HorizontalTable';
@@ -10,6 +10,8 @@ import { SaveIcon } from '@/assets/icons';
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '@/store/useAuthStore';
+import apiClient from '@/api/apiClient';
 
 import SaveConfirmModal from './SaveConfirmModal';
 
@@ -39,13 +41,29 @@ roomId와 같은 id를 추가해야 함
 */
 function BuildingEditPage() {
   const navigate = useNavigate();
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const logout = useAuthStore((state) => state.logout);
+  const { name: userNameFromStore, departmentName } = useAuthStore();
+
+  useEffect(() => {
+    if (!accessToken) navigate('/login');
+  }, [accessToken, navigate]);
+
+  const handleLogout = async () => {
+    try {
+      await apiClient.post('/api/auth/logout');
+    } catch (err) {
+      console.warn('logout failed', err);
+    }
+    logout();
+    navigate('/login');
+  };
+
   const [buildingNumber, setBuildingNumber] = useState('');
   const [buildingName, setBuildingName] = useState('');
 
   const [classroomData, setClassroomData] = useState([]);
-
   const [classroomNewRows, setClassroomNewRows] = useState([]);
-
   const [classroomSelectedRows, setClassroomSelectedRows] = useState([]);
 
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
@@ -131,7 +149,23 @@ function BuildingEditPage() {
   };
 
   return (
-    <Section>
+    <Layout
+      username={`${userNameFromStore ?? '사용자'} 님`}
+      headerTitle={`${departmentName ?? ''} 메뉴`}
+      onLogout={handleLogout}
+      menus={[
+        {
+          title: '학과 관리',
+          subItems: [{ label: '학과 목록', path: '/admin/department' }],
+        },
+        {
+          title: '건물 관리',
+          subItems: [
+            { label: '건물 목록', path: '/admin/building', isSelected: true },
+          ],
+        },
+      ]}
+    >
       <div>
         <PageHeader
           title='건물 정보'
@@ -183,7 +217,7 @@ function BuildingEditPage() {
           onConfirm={handleConfirmSave}
         />
       )}
-    </Section>
+    </Layout>
   );
 }
 

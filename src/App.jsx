@@ -2,7 +2,6 @@ import { Routes, Route } from 'react-router';
 import './styles/font.css';
 
 import SyPage from './pages/sy/Sy.jsx';
-import AdminPage from './pages/admin/Admin.jsx';
 import ComponentTest from './pages/test/ComponentTest.jsx';
 import ButtonTestPage from './pages/test/ButtonTestPage.jsx';
 import BarTestPage from '@/pages/test/BarTestPage.jsx';
@@ -57,7 +56,7 @@ export default function App() {
       <Route path='login' element={<LoginPage />} />
 
       {/* Admin Pages */}
-      <Route path='admin' element={<AdminPage />}>
+      <Route path='admin'>
         <Route index element={<DepartmentListPage />} />
         {/* Department */}
         <Route path='department'>

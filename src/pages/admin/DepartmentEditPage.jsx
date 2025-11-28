@@ -1,4 +1,4 @@
-import Section from '@/components/layout/Section';
+import Layout from '@/components/Layout';
 import PageHeader from '@/components/headers/PageHeader';
 import SectionHeader from '@/components/headers/SectionHeader';
 import HorizontalTable from '@/components/table/HorizontalTable';
@@ -15,6 +15,7 @@ import SaveConfirmModal from './SaveConfirmModal';
 import apiClient from '@/api/apiClient';
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const employeeColumns = [
   {
@@ -48,6 +49,24 @@ const ClassroomColumns = [
 */
 function DepartmentEditPage() {
   const navigate = useNavigate();
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const logout = useAuthStore((state) => state.logout);
+  const { name: userNameFromStore, departmentName } = useAuthStore();
+
+  useEffect(() => {
+    if (!accessToken) navigate('/login');
+  }, [accessToken, navigate]);
+
+  const handleLogout = async () => {
+    try {
+      await apiClient.post('/api/auth/logout');
+    } catch (err) {
+      console.warn('logout failed', err);
+    }
+    logout();
+    navigate('/login');
+  };
+
   const { id } = useParams();
   const isEditMode = Boolean(id);
 
@@ -109,7 +128,7 @@ function DepartmentEditPage() {
       setDepartmentId(data.departmentId || '');
 
       const mappedEmployees = (data.employees || []).map((emp) => ({
-        id: String(emp.memberId), // 사용 안할듯?
+        id: String(emp.memberId),
         memberId: emp.memberId,
         idNumber: emp.idNumber,
         name: emp.name,
@@ -119,7 +138,7 @@ function DepartmentEditPage() {
       setEmployeeData(mappedEmployees);
 
       const mappedClassrooms = (data.rooms || []).map((room) => ({
-        id: String(room.roomId), // 사용 안할듯?
+        id: String(room.roomId),
         roomId: room.roomId,
         buildingNumber: room.buildingNumber,
         buildingName: room.buildingName,
@@ -240,7 +259,23 @@ function DepartmentEditPage() {
       ];
 
   return (
-    <Section>
+    <Layout
+      username={`${userNameFromStore ?? '사용자'} 님`}
+      headerTitle={`${departmentName ?? ''} 메뉴`}
+      onLogout={handleLogout}
+      menus={[
+        {
+          title: '학과 관리',
+          subItems: [
+            { label: '학과 목록', path: '/admin/department', isSelected: true },
+          ],
+        },
+        {
+          title: '건물 관리',
+          subItems: [{ label: '건물 목록', path: '/admin/building' }],
+        },
+      ]}
+    >
       <div>
         <PageHeader
           title='학과 목록'
@@ -323,7 +358,7 @@ function DepartmentEditPage() {
           onConfirm={handleConfirmSave}
         />
       )}
-    </Section>
+    </Layout>
   );
 }
 
