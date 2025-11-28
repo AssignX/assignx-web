@@ -1,4 +1,4 @@
-import Section from '@/components/common/Section';
+import Layout from '@/components/Layout';
 import PageHeader from '@/components/headers/PageHeader';
 import SectionHeader from '@/components/headers/SectionHeader';
 import HorizontalTable from '@/components/table/HorizontalTable';
@@ -12,8 +12,9 @@ import DateTimePickerCell from '@/components/table/cells/DateTimePickerCell.jsx'
 import ClassRoomModal from '@/components/ClassRoomModal.jsx';
 import ConfirmModal from '@/components/ConfirmModal.jsx';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import apiClient from '@/api/apiClient';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
 import { formatExamDateTimeRange } from './parsingTime';
 
@@ -191,6 +192,25 @@ const getRowsBySelectedIds = (selectedIds, rows) => {
 };
 
 function SecondApplicationPage() {
+  const navigate = useNavigate();
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const logout = useAuthStore((state) => state.logout);
+  const { name: userNameFromStore } = useAuthStore();
+
+  useEffect(() => {
+    if (!accessToken) navigate('/login');
+  }, [accessToken, navigate]);
+
+  const handleLogout = async () => {
+    try {
+      await apiClient.post('/api/auth/logout');
+    } catch (err) {
+      console.warn('logout failed', err);
+    }
+    logout();
+    navigate('/login');
+  };
+
   const [openYear] = useState(2025);
   const [openSemester] = useState('2학기');
 
@@ -438,7 +458,29 @@ function SecondApplicationPage() {
   );
 
   return (
-    <Section>
+    <Layout
+      username={`${userNameFromStore ?? '사용자'} 님`}
+      headerTitle={`${departmentName ?? ''} 메뉴`}
+      onLogout={handleLogout}
+      menus={[
+        {
+          title: '강의 조회',
+          subItems: [{ label: '시간표 조회', path: '/professor/schedule' }],
+        },
+        {
+          title: '시험 신청',
+          subItems: [
+            { label: '1차 시험 신청', path: '/professor/first' },
+            {
+              label: '2차 시험 신청',
+              path: '/professor/second',
+              isSelected: true,
+            },
+            { label: '신청 현황 조회', path: '/professor/status' },
+          ],
+        },
+      ]}
+    >
       <div className='flex flex-col'>
         <PageHeader
           title='2차 시험 신청'
@@ -531,7 +573,7 @@ function SecondApplicationPage() {
           onSelect={handleSelectRoom}
         />
       )}
-    </Section>
+    </Layout>
   );
 }
 

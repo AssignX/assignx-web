@@ -1,4 +1,4 @@
-import Section from '@/components/common/Section';
+import Layout from '@/components/Layout';
 import PageHeader from '@/components/headers/PageHeader';
 import SectionHeader from '@/components/headers/SectionHeader';
 import TimeTable from '@/components/TimeTable';
@@ -6,9 +6,12 @@ import TimeTable from '@/components/TimeTable';
 import ClassRoomSearchTable from '@/components/table/ClassRoomSearchTable';
 
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '@/store/useAuthStore';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import apiClient from '@/api/apiClient';
+
 import {
   minutesToSlotLabel,
   SLOT_INTERVAL_MINUTES,
@@ -64,6 +67,25 @@ const buildWeekEntriesFromExams = (exams, currentWeek) => {
 };
 
 function CourseSchedulePage() {
+  const navigate = useNavigate();
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const logout = useAuthStore((state) => state.logout);
+  const { name: userNameFromStore, departmentName } = useAuthStore();
+
+  useEffect(() => {
+    if (!accessToken) navigate('/login');
+  }, [accessToken, navigate]);
+
+  const handleLogout = async () => {
+    try {
+      await apiClient.post('/api/auth/logout');
+    } catch (err) {
+      console.warn('logout failed', err);
+    }
+    logout();
+    navigate('/login');
+  };
+
   const [examRows, setExamRows] = useState([]);
   const [date, setDate] = useState(dayjs());
   const [selected, setSelected] = useState(true); // true: 수업, false: 시험
@@ -109,10 +131,34 @@ function CourseSchedulePage() {
   );
 
   return (
-    <Section>
+    <Layout
+      username={`${userNameFromStore ?? '사용자'} 님`}
+      headerTitle={`${departmentName ?? ''} 메뉴`}
+      onLogout={handleLogout}
+      menus={[
+        {
+          title: '강의 조회',
+          subItems: [
+            {
+              label: '시간표 조회',
+              path: '/professor/schedule',
+              isSelected: true,
+            },
+          ],
+        },
+        {
+          title: '시험 신청',
+          subItems: [
+            { label: '1차 시험 신청', path: '/professor/first' },
+            { label: '2차 시험 신청', path: '/professor/second' },
+            { label: '신청 현황 조회', path: '/professor/status' },
+          ],
+        },
+      ]}
+    >
       <div>
         <PageHeader
-          title='시간표 조회'
+          title='신청 현황 조회(강의실)'
           helperText='※해당 시간표는 시스템 선정 기준 유력 후보 1순위만 표기하고 있습니다.'
         />
         <ClassRoomSearchTable onSearch={handleSearchCondition} />
@@ -137,7 +183,7 @@ function CourseSchedulePage() {
           maxHeight='550px'
         />
       </div>
-    </Section>
+    </Layout>
   );
 }
 

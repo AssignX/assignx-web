@@ -1,4 +1,4 @@
-import Section from '@/components/common/Section';
+import Layout from '@/components/Layout';
 import PageHeader from '@/components/headers/PageHeader';
 import SectionHeader from '@/components/headers/SectionHeader';
 import VerticalTable from '@/components/table/VerticalTable';
@@ -11,6 +11,7 @@ import { SearchIcon } from '@/assets/icons';
 import apiClient from '@/api/apiClient';
 import { useEffect, useState, useMemo } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useNavigate } from 'react-router-dom';
 
 import { buildCourseRealTime, buildTimeTableEntries } from './parsingTime';
 
@@ -51,6 +52,25 @@ const timetableEnd = '20:00';
 const timetableDays = ['월', '화', '수', '목', '금', '토'];
 
 function ExamStatusPage() {
+  const navigate = useNavigate();
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const logout = useAuthStore((state) => state.logout);
+  const { name: userNameFromStore } = useAuthStore();
+
+  useEffect(() => {
+    if (!accessToken) navigate('/login');
+  }, [accessToken, navigate]);
+
+  const handleLogout = async () => {
+    try {
+      await apiClient.post('/api/auth/logout');
+    } catch (err) {
+      console.warn('logout failed', err);
+    }
+    logout();
+    navigate('/login');
+  };
+
   const [openYear, setOpenYear] = useState(2025);
   const [openSemester, setOpenSemester] = useState('2학기');
 
@@ -161,7 +181,29 @@ function ExamStatusPage() {
   const subtitle = `${courseTableRows.length}건`;
 
   return (
-    <Section>
+    <Layout
+      username={`${userNameFromStore ?? '사용자'} 님`}
+      headerTitle={`${departmentName ?? ''} 메뉴`}
+      onLogout={handleLogout}
+      menus={[
+        {
+          title: '강의 조회',
+          subItems: [{ label: '시간표 조회', path: '/professor/schedule' }],
+        },
+        {
+          title: '시험 신청',
+          subItems: [
+            { label: '1차 시험 신청', path: '/professor/first' },
+            { label: '2차 시험 신청', path: '/professor/second' },
+            {
+              label: '신청 현황 조회',
+              path: '/professor/status',
+              isSelected: true,
+            },
+          ],
+        },
+      ]}
+    >
       <div className='flex flex-col'>
         <PageHeader
           title='시간표 조회'
@@ -198,7 +240,7 @@ function ExamStatusPage() {
           maxHeight='320px'
         />
       </div>
-    </Section>
+    </Layout>
   );
 }
 

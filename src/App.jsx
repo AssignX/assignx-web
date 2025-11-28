@@ -78,7 +78,7 @@ export default function App() {
       </Route>
 
       {/* Professor Pages */}
-      <Route path='professor' element={<Professor />}>
+      <Route path='professor'>
         <Route index element={<CourseSchedulePage />} />
         {/* 강의 조회 */}
         <Route path='schedule' element={<CourseSchedulePage />} />

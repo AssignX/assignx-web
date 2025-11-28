@@ -1,4 +1,4 @@
-import Section from '@/components/common/Section';
+import Layout from '@/components/Layout';
 import PageHeader from '@/components/headers/PageHeader';
 import SectionHeader from '@/components/headers/SectionHeader';
 import HorizontalTable from '@/components/table/HorizontalTable';
@@ -10,9 +10,10 @@ import InputCell from '@/components/table/cells/InputCell';
 import DropdownCell from '@/components/table/cells/DropdownCell';
 import { SearchIcon } from '@/assets/icons';
 
-import apiClient from '@/api/apiClient';
-import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
+import apiClient from '@/api/apiClient';
+import { useState, useMemo, useEffect } from 'react';
 
 import {
   buildApplicationOptions,
@@ -77,6 +78,25 @@ const confirmedTableColumns = [
 ];
 
 function FirstApplicationPage() {
+  const navigate = useNavigate();
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const logout = useAuthStore((state) => state.logout);
+  const { name: userNameFromStore } = useAuthStore();
+
+  useEffect(() => {
+    if (!accessToken) navigate('/login');
+  }, [accessToken, navigate]);
+
+  const handleLogout = async () => {
+    try {
+      await apiClient.post('/api/auth/logout');
+    } catch (err) {
+      console.warn('logout failed', err);
+    }
+    logout();
+    navigate('/login');
+  };
+
   const [openYear] = useState(2025);
   const [openSemester] = useState('2학기');
 
@@ -255,7 +275,29 @@ function FirstApplicationPage() {
   );
 
   return (
-    <Section>
+    <Layout
+      username={`${userNameFromStore ?? '사용자'} 님`}
+      headerTitle={`${departmentName ?? ''} 메뉴`}
+      onLogout={handleLogout}
+      menus={[
+        {
+          title: '강의 조회',
+          subItems: [{ label: '시간표 조회', path: '/professor/schedule' }],
+        },
+        {
+          title: '시험 신청',
+          subItems: [
+            {
+              label: '1차 시험 신청',
+              path: '/professor/first',
+              isSelected: true,
+            },
+            { label: '2차 시험 신청', path: '/professor/second' },
+            { label: '신청 현황 조회', path: '/professor/status' },
+          ],
+        },
+      ]}
+    >
       <div className='flex flex-col'>
         <PageHeader
           title='1차 시험 신청'
@@ -315,7 +357,7 @@ function FirstApplicationPage() {
             .join(', ')})`}
         />
       )}
-    </Section>
+    </Layout>
   );
 }
 
