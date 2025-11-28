@@ -1,5 +1,5 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import Sidebar from '@/components/Sidebar';
+import Sidebar from '@/components/SideBar';
 import NavBar from '@/components/NavBar';
 import Body from '@/components/layout/Body';
 import PageWrapper from '@/components/layout/PageWrapper';

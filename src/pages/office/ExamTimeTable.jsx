@@ -1,15 +1,19 @@
+// src/pages/office/ExamTimeTable.jsx
 import { useEffect, useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import apiClient from '@/api/apiClient';
 import TimeTable from '@/components/TimeTable';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
+import isBetween from 'dayjs/plugin/isBetween';
 
 dayjs.extend(isoWeek);
+dayjs.extend(isBetween);
 
-export default function SyExamTimeTable({ selectedRoom, date }) {
+export default function ExamTimeTable({ selectedRoom, weekDate }) {
   const [entries, setEntries] = useState({});
 
+  /** 1) 30분 단위 슬롯 생성 (SyExamTimeTable와 동일) */
   const slots = useMemo(() => {
     const toMinutes = (hhmm) => {
       const [h, m] = hhmm.split(':').map((n) => parseInt(n, 10));
@@ -47,9 +51,11 @@ export default function SyExamTimeTable({ selectedRoom, date }) {
 
     return buildSlots('08:00', '22:30');
   }, []);
-
   useEffect(() => {
-    if (!selectedRoom || !date) return;
+    if (!selectedRoom || !selectedRoom.roomId) {
+      console.warn('⚠️ selectedRoom 또는 roomId 없음 → 렌더 중단');
+      return;
+    }
 
     const fetchExams = async () => {
       try {
@@ -57,31 +63,39 @@ export default function SyExamTimeTable({ selectedRoom, date }) {
           params: {
             year: selectedRoom.year,
             semester: selectedRoom.semester,
-            roomId: selectedRoom.id,
+            departmentId: selectedRoom.departmentId,
+            roomId: selectedRoom.roomId,
           },
         });
 
         const exams = res.data || [];
+
+        const weekStart = dayjs(weekDate).startOf('isoWeek');
+        const weekEnd = dayjs(weekDate).endOf('isoWeek');
+
+        // 필터링된 시험 리스트
+        const filtered = exams.filter((exam) => {
+          const start = dayjs(exam.startTime);
+          return start.isBetween(weekStart, weekEnd, 'day', '[]');
+        });
+
         const newEntries = {};
 
-        const weekStart = dayjs(date).startOf('isoWeek');
-        const weekEnd = dayjs(date).endOf('isoWeek');
+        filtered.forEach((exam) => {
+          const { courseName, courseCode, startTime, endTime, examType } = exam;
 
-        exams.forEach((exam) => {
-          const { courseName, courseCode, startTime, endTime } = exam;
+          const start = dayjs(startTime, 'YYYY-MM-DDTHH:mm:ss', true);
+          const end = dayjs(endTime, 'YYYY-MM-DDTHH:mm:ss', true);
 
-          const start = dayjs(startTime);
-          const end = dayjs(endTime);
-
-          if (!start.isValid() || !end.isValid()) return;
-
-          if (start.isBefore(weekStart) || start.isAfter(weekEnd)) {
+          if (!start.isValid() || !end.isValid()) {
+            console.warn('❌ Invalid Date exam:', exam);
             return;
           }
 
           const dayMap = ['일', '월', '화', '수', '목', '금', '토'];
           const day = dayMap[start.day()];
 
+          // slot 기반 매칭
           slots.forEach((slot) => {
             const slotStart = dayjs(
               `${start.format('YYYY-MM-DD')} ${slot.from}`
@@ -89,41 +103,41 @@ export default function SyExamTimeTable({ selectedRoom, date }) {
             const slotEnd = dayjs(`${start.format('YYYY-MM-DD')} ${slot.to}`);
 
             const isInside =
-              (slotStart.isAfter(start) || slotStart.isSame(start)) &&
-              (slotEnd.isBefore(end) || slotEnd.isSame(end));
+              (slotStart.isSame(start) || slotStart.isAfter(start)) &&
+              (slotEnd.isSame(end) || slotEnd.isBefore(end));
 
             if (isInside) {
               const key = `${day}-${slot.label}`;
-              const value = `${courseName}\n${courseCode}`;
+              const val = `${courseName}\n${courseCode}\n(${examType})`;
 
-              newEntries[key] = value;
+              newEntries[key] = val;
             }
           });
         });
 
         setEntries(newEntries);
       } catch (err) {
-        console.error('시험 목록 조회 실패:', err);
+        console.error('❌ 시험 목록 조회 실패:', err);
         setEntries({});
       }
     };
 
     fetchExams();
-  }, [selectedRoom, date, slots]);
+  }, [selectedRoom, weekDate, slots]);
 
   return (
     <TimeTable
       key={selectedRoom?.roomNumber}
       startTime='08:00'
       endTime='22:30'
-      dayRange={['월', '화', '수', '목', '금', '토']}
+      dayRange={['월', '화', '수', '목', '금', '토', '일']}
       entries={entries}
-      maxHeight='560px'
+      maxHeight='440px'
     />
   );
 }
 
-SyExamTimeTable.propTypes = {
+ExamTimeTable.propTypes = {
   selectedRoom: PropTypes.object,
-  date: PropTypes.object,
+  weekDate: PropTypes.object,
 };

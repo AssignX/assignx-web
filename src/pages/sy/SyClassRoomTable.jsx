@@ -13,8 +13,8 @@ export default function SyClassRoomTable({
   const columns = useMemo(
     () => [
       { accessorKey: 'no', header: 'No', size: 40 },
-      { accessorKey: 'buildingName', header: '건물명', size: 235 },
-      { accessorKey: 'roomNumber', header: '강의실', size: 185 },
+      { accessorKey: 'buildingName', header: '건물명', size: 230 },
+      { accessorKey: 'roomNumber', header: '강의실', size: 175 },
     ],
     []
   );

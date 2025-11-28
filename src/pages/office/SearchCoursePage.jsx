@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import Layout from '@/pages/office/Layout';
+import Layout from '@/components/Layout';
 import CourseSearchTable from './CourseSearchTable';
 import VerticalTable from '@/components/table/VerticalTable';
 import apiClient from '@/api/apiClient';
@@ -10,6 +10,7 @@ import ToggleSwitch from '@/components/ToggleSwitch';
 import Button from '@/components/buttons/Button';
 import ProfessorMappingModal from './ProfessorMappingModal';
 import { TriangleAlertIcon } from '@/assets/icons/index.js';
+import TableWrapper from '@/components/layout/TableWrapper';
 
 export default function SearchCoursePage() {
   const [allCourses, setAllCourses] = useState([]);
@@ -128,7 +129,6 @@ export default function SearchCoursePage() {
   }, [filters, toggleUnassigned, allCourses, applyFilter]);
 
   const handleSearch = (newFilters) => {
-    console.log('현재 검색 필터:', filters);
     setFilters(newFilters);
   };
 
@@ -192,11 +192,9 @@ export default function SearchCoursePage() {
           subItems: [{ label: '강의실 목록', path: '/office/classrooms' }],
         },
         {
-          title: '일정',
-          subItems: [
-            { label: '확정 목록', path: '/confirmed' },
-            { label: '미확정 목록', path: '/unconfirmed' },
-          ],
+          title: '시험',
+          isOpen: true,
+          subItems: [{ label: '시험 일정', path: '/office/exam' }],
         },
       ]}
     >
@@ -209,7 +207,7 @@ export default function SearchCoursePage() {
           />
         </div>
 
-        <div className='flex h-[764px] w-full flex-col gap-y-2.5'>
+        <div className='flex h-full w-full flex-col gap-y-2.5'>
           <div className='flex w-full items-center justify-end gap-2'>
             <span className='text-[16px]'>담당교수 미배정 과목</span>
             <ToggleSwitch
@@ -223,14 +221,14 @@ export default function SearchCoursePage() {
             />
           </div>
 
-          <div className='bg-white'>
+          <TableWrapper height='450px'>
             <VerticalTable
               columns={columns}
               data={courses}
               selectable={true}
               singleSelect={true}
               headerHeight={32}
-              maxHeight={670}
+              maxHeight={450}
               resetSelection={resetSelection}
               updateSelection={(rows) => {
                 const idx = rows[0];
@@ -239,7 +237,7 @@ export default function SearchCoursePage() {
                 );
               }}
             />
-          </div>
+          </TableWrapper>
         </div>
       </div>
 
