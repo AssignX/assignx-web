@@ -65,7 +65,7 @@ function Timetable({ startTime, endTime, dayRange, entries = {}, maxHeight }) {
 
   return (
     <div
-      className={`w-full ${maxHeight ? 'overflow-y-auto' : ''}`}
+      className={`w-full ${maxHeight ? 'overflow-y-auto' : ''} whitespace-pre-line`}
       style={maxHeight ? { maxHeight } : undefined}
     >
       <table className='w-full table-fixed border-collapse text-[13px]'>

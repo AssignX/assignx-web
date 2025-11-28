@@ -31,6 +31,10 @@ import BuildingListPage from './pages/admin/BuildingListPage.jsx';
 import BuildingEditPage from './pages/admin/BuildingEditPage.jsx';
 import SearchClassPage from './pages/office/SearchClassPage.jsx';
 import LoginPage from './pages/login/LoginPage.jsx';
+import SearchProfessorPage from './pages/office/SearchProfessorPage.jsx';
+import SchedulePage from './pages/office/SchedulePage.jsx';
+import ApproveExamPage from './pages/office/ApproveExamPage.jsx';
+import SearchCoursePage from './pages/office/SearchCoursePage.jsx';
 
 export default function App() {
   return (
@@ -50,6 +54,10 @@ export default function App() {
 
       <Route path='office'>
         <Route path='classrooms' element={<SearchClassPage />} />
+        <Route path='professors' element={<SearchProfessorPage />} />
+        <Route path='exam' element={<SchedulePage />} />
+        <Route path='exam/approve/:id' element={<ApproveExamPage />} />
+        <Route path='courses' element={<SearchCoursePage />} />
       </Route>
       <Route path='login' element={<LoginPage />} />
 

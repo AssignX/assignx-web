@@ -26,12 +26,17 @@ export default function BuildingSearchResultTable({ keyword, onSelect }) {
         const res = await apiClient.get('/api/building');
         const buildings = res.data || [];
 
-        const filtered = buildings.filter(
-          (b) =>
-            String(b.buildingId).includes(keyword) ||
-            String(b.buildingNumber).includes(keyword) ||
-            b.buildingName.includes(keyword)
-        );
+        const lower = keyword.toLowerCase();
+
+        const filtered = buildings.filter((b) => {
+          const id = String(b.buildingId).toLowerCase();
+          const number = String(b.buildingNumber).toLowerCase();
+          const name = b.buildingName.toLowerCase();
+
+          return (
+            id.includes(lower) || number.includes(lower) || name.includes(lower)
+          );
+        });
 
         setData(
           filtered.map((b, i) => ({

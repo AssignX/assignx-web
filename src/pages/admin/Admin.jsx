@@ -1,8 +1,8 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from '@/components/Sidebar';
 import NavBar from '@/components/NavBar';
-import Body from '@/components/common/Body';
-import PageWrapper from '@/components/common/PageWrapper';
+import Body from '@/components/layout/Body';
+import PageWrapper from '@/components/layout/PageWrapper';
 
 function Admin() {
   const location = useLocation();

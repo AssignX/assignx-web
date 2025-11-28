@@ -7,6 +7,9 @@ import Modal from '@/components/modal/Modal';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '@/api/apiClient';
+import Body from '@/components/layout/Body';
+import PageWrapper from '@/components/layout/PageWrapper';
+import Section from '@/components/layout/Section';
 
 /**
  * 공용 페이지 레이아웃
@@ -29,17 +32,15 @@ export default function Layout({ username, headerTitle, menus, children }) {
   };
 
   return (
-    <div className='relative min-h-screen bg-[var(--color-background)]'>
+    <PageWrapper>
       {/* 상단 네비게이션 바 */}
       <NavBar username={username} onLogout={() => setShowLogoutModal(true)} />
 
       {/* 메인 콘텐츠 영역 */}
-      <div className='flex flex-1 gap-5 px-5 py-5'>
+      <Body>
         <SideBar headerTitle={headerTitle} menus={menus} />
-        <main className='border-border-contents flex-1 border p-5 pt-[40px] pb-[40px]'>
-          {children}
-        </main>
-      </div>
+        <Section>{children}</Section>
+      </Body>
 
       {/* 공용 Modal 컴포넌트 활용 */}
       {showLogoutModal && (
@@ -58,7 +59,7 @@ export default function Layout({ username, headerTitle, menus, children }) {
           height='auto'
         />
       )}
-    </div>
+    </PageWrapper>
   );
 }
 
