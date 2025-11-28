@@ -10,7 +10,7 @@ import { SaveIcon } from '@/assets/icons';
 
 import EmployeeModal from './EmployeeModal';
 import ClassRoomModal from './ClassRoomModal';
-import SaveConfirmModal from './SaveConfirmModal';
+import ConfirmModal from '@/components/ConfirmModal';
 
 import apiClient from '@/api/apiClient';
 import { useEffect, useState } from 'react';
@@ -353,9 +353,11 @@ function DepartmentEditPage() {
         />
       )}
       {isSaveModalOpen && (
-        <SaveConfirmModal
+        <ConfirmModal
           setIsOpen={setIsSaveModalOpen}
           onConfirm={handleConfirmSave}
+          title='저장하시겠습니까?'
+          body='학과 정보를 저장하시겠습니까?'
         />
       )}
     </Layout>

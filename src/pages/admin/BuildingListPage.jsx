@@ -2,7 +2,7 @@ import Layout from '@/components/Layout';
 import PageHeader from '@/components/headers/PageHeader';
 import VerticalTable from '@/components/table/VerticalTable';
 
-import DeleteConfirmModal from './DeleteConfirmModal';
+import ConfirmModal from '@/components/ConfirmModal';
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -138,10 +138,11 @@ function BuildingListPage() {
         />
       </div>
       {isDeleteModalOpen && (
-        <DeleteConfirmModal
+        <ConfirmModal
           setIsOpen={setIsDeleteModalOpen}
           onConfirm={handleConfirmDelete}
-          message='선택한 건물을 삭제하시겠습니까?'
+          title='삭제하시겠습니까?'
+          body='선택한 건물을 삭제하시겠습니까?'
         />
       )}
     </Layout>

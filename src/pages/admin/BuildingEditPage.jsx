@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
 import apiClient from '@/api/apiClient';
 
-import SaveConfirmModal from './SaveConfirmModal';
+import ConfirmModal from '@/components/ConfirmModal';
 
 const ClassroomColumns = [
   {
@@ -212,9 +212,11 @@ function BuildingEditPage() {
       </div>
 
       {isSaveModalOpen && (
-        <SaveConfirmModal
+        <ConfirmModal
           setIsOpen={setIsSaveModalOpen}
           onConfirm={handleConfirmSave}
+          title='저장하시겠습니까?'
+          body='건물 정보를 저장하시겠습니까?'
         />
       )}
     </Layout>
