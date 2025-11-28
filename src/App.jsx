@@ -17,7 +17,6 @@ import ModalTableTestPage from './pages/test/ModalTableTestPage.jsx';
 import IconTestPage from './pages/test/IconTestPage.jsx';
 import TableTestPage from './pages/test/TableTestPage.jsx';
 import TimetableTest from './pages/test/TimetableTest.jsx';
-import Professor from './pages/professor/Professor.jsx';
 import ExamStatusPage from './pages/professor/ExamStatusPage.jsx';
 import CourseSchedulePage from './pages/professor/CourseSchedulePage.jsx';
 import FirstApplicationPage from './pages/professor/FirstApplicationPage.jsx';

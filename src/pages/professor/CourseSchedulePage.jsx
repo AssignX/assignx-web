@@ -1,76 +1,61 @@
 import Layout from '@/components/Layout';
 import PageHeader from '@/components/headers/PageHeader';
 import SectionHeader from '@/components/headers/SectionHeader';
+import VerticalTable from '@/components/table/VerticalTable';
+import HorizontalTable from '@/components/table/HorizontalTable';
 import TimeTable from '@/components/TimeTable';
 
-import ClassRoomSearchTable from '@/components/table/ClassRoomSearchTable';
+import InputCell from '@/components/table/cells/InputCell';
+import { SearchIcon } from '@/assets/icons';
 
-import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '@/store/useAuthStore';
-import dayjs from 'dayjs';
-import isoWeek from 'dayjs/plugin/isoWeek';
 import apiClient from '@/api/apiClient';
+import { useEffect, useState, useMemo } from 'react';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useNavigate } from 'react-router-dom';
 
-import {
-  minutesToSlotLabel,
-  SLOT_INTERVAL_MINUTES,
-  WEEKDAYS,
-} from './parsingTime';
+import { buildCourseRealTime, buildTimeTableEntries } from './parsingTime';
 
-dayjs.extend(isoWeek);
+const courseTableColumns = [
+  { id: 'no', accessorKey: 'no', header: 'No', size: 40 },
+  { id: 'courseName', accessorKey: 'courseName', header: '과목명', size: 120 },
+  {
+    id: 'courseCode',
+    accessorKey: 'courseCode',
+    header: '과목코드',
+    size: 120,
+  },
+  { id: 'classSection', accessorKey: 'classSection', header: '분반', size: 40 },
+  {
+    id: 'courseTime',
+    accessorKey: 'courseTime',
+    header: '강의시간',
+    size: 220,
+  },
+  {
+    id: 'courseRealTime',
+    accessorKey: 'courseRealTime',
+    header: '강의시간(실제시간)',
+    size: 220,
+  },
+  { id: 'classroom', accessorKey: 'classroom', header: '강의실', size: 120 },
+  {
+    id: 'enrolledCount',
+    accessorKey: 'enrolledCount',
+    header: '수강인원',
+    size: 40,
+  },
+];
 
+// 시간표 범위/요일
 const timetableStart = '08:00';
 const timetableEnd = '20:00';
 const timetableDays = ['월', '화', '수', '목', '금', '토'];
-
-const buildExamEntryLabel = (exam) => {
-  const lines = [exam.courseName];
-  const secondLine = exam.roomNumber || exam.courseCode;
-  if (secondLine) lines.push(secondLine);
-  return lines.filter(Boolean).join('\n');
-};
-
-const buildWeekEntriesFromExams = (exams, currentWeek) => {
-  if (!Array.isArray(exams) || !currentWeek) return {};
-
-  const weekStart = currentWeek.isoWeekday(1).startOf('day');
-  const weekEnd = currentWeek.isoWeekday(7).endOf('day');
-  const entries = {};
-
-  exams.forEach((exam) => {
-    if (exam.examAssigned !== 'WAITING_HIGH_PRIORITY') return;
-
-    const start = dayjs(exam.startTime);
-    const end = dayjs(exam.endTime);
-
-    if (!start.isValid() || !end.isValid() || !end.isAfter(start)) return;
-    if (start.isAfter(weekEnd) || end.isBefore(weekStart)) return;
-
-    const dayChar = WEEKDAYS[start.day()];
-    if (!dayChar) return;
-
-    const display = buildExamEntryLabel(exam);
-    let cursor = start.startOf('minute');
-
-    while (cursor.isBefore(end)) {
-      const minutes = cursor.hour() * 60 + cursor.minute();
-      const slotLabel = minutesToSlotLabel(minutes);
-      if (slotLabel) {
-        entries[`${dayChar}-${slotLabel}`] = display;
-      }
-      cursor = cursor.add(SLOT_INTERVAL_MINUTES, 'minute');
-    }
-  });
-
-  return entries;
-};
 
 function CourseSchedulePage() {
   const navigate = useNavigate();
   const accessToken = useAuthStore((state) => state.accessToken);
   const logout = useAuthStore((state) => state.logout);
-  const { name: userNameFromStore, departmentName } = useAuthStore();
+  const { name: userNameFromStore } = useAuthStore();
 
   useEffect(() => {
     if (!accessToken) navigate('/login');
@@ -86,49 +71,114 @@ function CourseSchedulePage() {
     navigate('/login');
   };
 
-  const [examRows, setExamRows] = useState([]);
-  const [date, setDate] = useState(dayjs());
-  const [selected, setSelected] = useState(true); // true: 수업, false: 시험
+  const [openYear, setOpenYear] = useState(2025);
+  const [openSemester, setOpenSemester] = useState('2학기');
 
-  const [searchFilters, setSearchFilters] = useState(null);
+  const departmentName = useAuthStore((state) => state.departmentName);
+  const idNumber = useAuthStore((state) => state.idNumber);
+  const name = useAuthStore((state) => state.name);
 
-  const handleSearchCondition = (filters) => {
-    setSearchFilters(filters);
-  };
+  const [courseTableRows, setCourseTableRows] = useState([]);
+  const [timeTableEntries, setTimeTableEntries] = useState({});
 
   useEffect(() => {
-    if (!searchFilters) return;
+    setOpenYear(2025);
+    setOpenSemester('2학기');
+  }, []);
 
-    const { year, semester, roomId } = searchFilters;
-    if (!year || !semester || !roomId) {
-      setExamRows([]);
-      return;
+  const handleSearch = async () => {
+    try {
+      const semesterQuery =
+        typeof openSemester === 'string'
+          ? openSemester.replace('학기', '')
+          : String(openSemester);
+
+      const res = await apiClient.get('/api/course/search', {
+        params: {
+          year: String(openYear),
+          semester: semesterQuery,
+          professorName: name,
+        },
+      });
+      const data = Array.isArray(res.data) ? res.data : [];
+      const mappedRows = data.map((course, index) => {
+        const [code, section] = course.courseCode?.split('-') ?? ['', ''];
+        return {
+          no: index + 1,
+          courseName: course.courseName,
+          courseCode: code,
+          classSection: section,
+          courseTime: course.courseTime,
+          courseRealTime: buildCourseRealTime(course.courseTime),
+          classroom:
+            `${course.buildingName ?? ''} ${course.roomNumber ?? ''}`.trim(),
+          enrolledCount: course.enrolledCount,
+        };
+      });
+      setCourseTableRows(mappedRows);
+
+      const entries = buildTimeTableEntries(data);
+      setTimeTableEntries(entries);
+    } catch (error) {
+      console.error('과목 조회 실패:', error);
+      setCourseTableRows([]);
+      setTimeTableEntries({});
     }
+  };
 
-    const fetchExamSchedule = async () => {
-      try {
-        const res = await apiClient.get('/api/exam/search', {
-          params: {
-            year: String(year),
-            semester: String(semester),
-            roomId: String(roomId),
-          },
-        });
-        const list = Array.isArray(res.data) ? res.data : [];
-        setExamRows(list);
-      } catch (error) {
-        console.error('시험 일정 조회 실패:', error);
-        setExamRows([]);
-      }
-    };
-
-    fetchExamSchedule();
-  }, [searchFilters]);
-
-  const weekEntries = useMemo(
-    () => buildWeekEntriesFromExams(examRows, date),
-    [examRows, date]
+  const filterItems = useMemo(
+    () => [
+      {
+        id: 'openYear',
+        label: '개설연도',
+        required: true,
+        labelWidth: '80px',
+        contentWidth: '80px',
+        content: (
+          <InputCell value={String(openYear)} height={32} disabled={true} />
+        ),
+      },
+      {
+        id: 'openSemester',
+        label: '개설학기',
+        required: true,
+        labelWidth: '80px',
+        contentWidth: '80px',
+        content: (
+          <InputCell value={String(openSemester)} height={32} disabled={true} />
+        ),
+      },
+      {
+        id: 'department',
+        label: '소속학과',
+        required: true,
+        labelWidth: '80px',
+        contentWidth: '220px', // fill
+        content: (
+          <InputCell value={departmentName} height={32} disabled={true} />
+        ),
+      },
+      {
+        id: 'professorId',
+        label: '학번',
+        required: true,
+        labelWidth: '60px',
+        contentWidth: '120px',
+        content: <InputCell value={idNumber} height={32} disabled={true} />,
+      },
+      {
+        id: 'professorName',
+        label: '이름',
+        required: true,
+        labelWidth: '60px',
+        contentWidth: '80px',
+        content: <InputCell value={name} height={32} disabled={true} />,
+      },
+    ],
+    [departmentName, openSemester, openYear, idNumber, name]
   );
+
+  const subtitle = `${courseTableRows.length}건`;
 
   return (
     <Layout
@@ -156,31 +206,40 @@ function CourseSchedulePage() {
         },
       ]}
     >
-      <div>
+      <div className='flex flex-col'>
         <PageHeader
-          title='신청 현황 조회(강의실)'
-          helperText='※해당 시간표는 시스템 선정 기준 유력 후보 1순위만 표기하고 있습니다.'
+          title='시간표 조회'
+          buttonsData={[
+            {
+              text: '조회',
+              color: 'lightgray',
+              Icon: SearchIcon,
+              onClick: handleSearch,
+            },
+          ]}
         />
-        <ClassRoomSearchTable onSearch={handleSearchCondition} />
+        <HorizontalTable items={filterItems} />
       </div>
 
-      {/* 시간표 카드 */}
-      <div>
-        <SectionHeader
-          title='시간표'
-          controlGroup='weekPicker'
-          hasConfirmSelection={true}
-          selected={selected}
-          setSelected={setSelected}
-          date={date}
-          setDate={setDate}
+      <div className='flex h-[240px] flex-col'>
+        <SectionHeader title='과목 조회 목록' subtitle={subtitle} />
+        <VerticalTable
+          columns={courseTableColumns}
+          data={courseTableRows}
+          headerHeight={40}
+          maxHeight={200}
+          selectable={false}
         />
+      </div>
+
+      <div className='flex flex-col'>
+        <SectionHeader title='강의 시간표' />
         <TimeTable
           startTime={timetableStart}
           endTime={timetableEnd}
           dayRange={timetableDays}
-          entries={weekEntries}
-          maxHeight='550px'
+          entries={timeTableEntries}
+          maxHeight='320px'
         />
       </div>
     </Layout>
