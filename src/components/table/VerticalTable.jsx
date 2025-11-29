@@ -18,6 +18,7 @@ import InputCell from './cells/InputCell';
  * @param {function} updateSelection - 행 선택 상태가 변경될 때 호출되는 콜백 함수. 선택된 row ID 배열을 인자로 받음
  * @param {boolean} selectable - 행 선택 체크박스 표시 여부 (기본값: false)
  * @param {boolean} singleSelect - 단일 선택 모드 여부로 true: 한 번에 한 행만 선택 가능, false: 여러 행 동시 선택 가능 (기본값: false)
+ * @param {boolean} showSelectionCheckbox - 체크박스 대신 행 클릭으로"만" 선택 여부 (기본값: false) - true: 체크박스 열이 사라짐
  * @param {array} newRows - 테이블 하단에 추가할 새로운 행들의 데이터 배열 (기본값: [])
  * @param {function} onNewRowChange - '새로운 행'의 InputCell 값이 변경될 때 호출되는 콜백 함수. (rowIndex, columnKey, value)를 인자로 받음
  * @param {function} renderNewRowActions - '새로운 행'의 첫 번째 액션 셀을 렌더링하는 함수. (rowIndex)를 인자로 받음
@@ -31,6 +32,7 @@ export default function VerticalTable({
   updateSelection,
   selectable = false,
   singleSelect = false,
+  showSelectionCheckbox = false,
   newRows = [],
   onNewRowChange = () => {},
   renderNewRowActions = () => null,
@@ -73,9 +75,17 @@ export default function VerticalTable({
     }
   };
 
-  const tableColumns = selectable
-    ? [SelectionColumn(singleSelect), ...columns]
-    : columns;
+  let tableColumns;
+
+  if (selectable) {
+    if (singleSelect && showSelectionCheckbox) {
+      tableColumns = [...columns];
+    } else {
+      tableColumns = [SelectionColumn(singleSelect, false), ...columns];
+    }
+  } else {
+    tableColumns = columns;
+  }
 
   const table = useReactTable({
     data,
@@ -124,7 +134,22 @@ export default function VerticalTable({
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-              className={selectable && row.getIsSelected() ? 'select_row' : ''}
+              className={
+                selectable && row.getIsSelected()
+                  ? 'bg-select-row cursor-pointer'
+                  : 'cursor-pointer'
+              }
+              onClick={(e) => {
+                if (!selectable) return;
+                if (e.target.closest('input, button, textarea')) return;
+
+                if (showSelectionCheckbox) {
+                  row.toggleSelected(true);
+                } else {
+                  const current = row.getIsSelected();
+                  row.toggleSelected(!current);
+                }
+              }}
             >
               {row.getVisibleCells().map((cell) => (
                 <td
@@ -186,6 +211,7 @@ VerticalTable.propTypes = {
   updateSelection: PropTypes.func,
   selectable: PropTypes.bool,
   singleSelect: PropTypes.bool,
+  showSelectionCheckbox: PropTypes.bool,
   newRows: PropTypes.array,
   onNewRowChange: PropTypes.func,
   renderNewRowActions: PropTypes.func,
