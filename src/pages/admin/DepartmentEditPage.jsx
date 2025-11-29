@@ -164,14 +164,6 @@ function DepartmentEditPage() {
       )
     );
   };
-  const handleEditEmployeeRows = () => {
-    // 수정은 추후 구현 예정
-    if (employeeSelectedRows.length === 0) {
-      alert('수정할 직원을 선택해주세요.');
-      return;
-    }
-    console.log('수정', employeeSelectedRows);
-  };
   const handleDeleteEmployeeRows = () => {
     if (employeeSelectedRows.length === 0) {
       alert('삭제할 직원을 선택해주세요.');
@@ -248,6 +240,8 @@ function DepartmentEditPage() {
       roomIds: classroomData.map((room) => Number(room.roomId)),
     };
 
+    console.log(payload);
+
     try {
       if (isEditMode) {
         await apiClient.put('/api/department/admin', payload);
@@ -263,25 +257,6 @@ function DepartmentEditPage() {
       alert('학과 정보를 저장하는 중 오류가 발생했습니다.');
     }
   };
-
-  const employeeSectionButtons = isEditMode
-    ? [
-        {
-          text: '추가',
-          color: 'lightgray',
-          onClick: () => setIsEmployeeModalOpen(true),
-        },
-        { text: '수정', color: 'lightgray', onClick: handleEditEmployeeRows },
-        { text: '삭제', color: 'lightgray', onClick: handleDeleteEmployeeRows },
-      ]
-    : [
-        {
-          text: '추가',
-          color: 'lightgray',
-          onClick: () => setIsEmployeeModalOpen(true),
-        },
-        { text: '삭제', color: 'lightgray', onClick: handleDeleteEmployeeRows },
-      ];
 
   return (
     <Layout
@@ -320,7 +295,18 @@ function DepartmentEditPage() {
         <SectionHeader
           title='직원 목록'
           controlGroup='buttonGroup'
-          buttonsData={employeeSectionButtons}
+          buttonsData={[
+            {
+              text: '추가',
+              color: 'lightgray',
+              onClick: () => setIsEmployeeModalOpen(true),
+            },
+            {
+              text: '삭제',
+              color: 'lightgray',
+              onClick: handleDeleteEmployeeRows,
+            },
+          ]}
         />
         <VerticalTable
           columns={employeeColumns}
