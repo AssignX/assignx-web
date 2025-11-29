@@ -186,22 +186,26 @@ const buildApplicationOptions = (courseTime, examPeriod) => {
 // "2025/10/23(목) 09:00~10:00, 11:00~12:00" → ISO 시작/끝
 const parseApplicationTimeToISO = (applicationTime) => {
   if (!applicationTime) return { startTime: null, endTime: null };
+  const trimmed = applicationTime.trim();
+  const dateMatch = trimmed.match(/(\d{4})\/(\d{2})\/(\d{2})/);
+  if (!dateMatch) return { startTime: null, endTime: null };
+  const [, yyyy, mm, dd] = dateMatch;
+  const indexAfterDate = trimmed.indexOf(dateMatch[0]) + dateMatch[0].length;
+  const timePartFull = trimmed
+    .slice(indexAfterDate)
+    .replace(/^\s*\(.+?\)\s*/, '')
+    .trim();
 
-  const [datePart, timePart] = applicationTime.split(' ');
-  if (!datePart || !timePart) return { startTime: null, endTime: null };
+  if (!timePartFull) return { startTime: null, endTime: null };
 
-  const m = datePart.match(/(\d{4})\/(\d{2})\/(\d{2})/);
-  if (!m) return { startTime: null, endTime: null };
-  const [, yyyy, mm, dd] = m;
-
-  const firstRange = timePart.split(',')[0].trim();
+  const firstRange = timePartFull.split(',')[0].trim();
   const [startHHMM, endHHMM] = firstRange.split('~').map((s) => s.trim());
   if (!startHHMM || !endHHMM) return { startTime: null, endTime: null };
-
   const datePrefix = `${yyyy}-${mm}-${dd}`;
+
   return {
-    startTime: `${datePrefix}T${startHHMM}:00Z`,
-    endTime: `${datePrefix}T${endHHMM}:00Z`,
+    startTime: `${datePrefix}T${startHHMM}:00`,
+    endTime: `${datePrefix}T${endHHMM}:00`,
   };
 };
 

@@ -336,6 +336,18 @@ function SecondApplicationPage() {
       return;
     }
 
+    const toLocalDateTimeString = (d) => {
+      if (!(d instanceof Date)) return null;
+      const pad = (n) => String(n).padStart(2, '0');
+      const yyyy = d.getFullYear();
+      const mm = pad(d.getMonth() + 1);
+      const dd = pad(d.getDate());
+      const HH = pad(d.getHours());
+      const MM = pad(d.getMinutes());
+      const SS = pad(d.getSeconds());
+      return `${yyyy}-${mm}-${dd}T${HH}:${MM}:${SS}`;
+    };
+
     try {
       for (const row of rows) {
         const range = row.secondRange;
@@ -351,8 +363,8 @@ function SecondApplicationPage() {
         await apiClient.post('/api/exam/apply/second', {
           examId: row.examId,
           examType,
-          startTime: range.from.toISOString(),
-          endTime: range.to.toISOString(),
+          startTime: toLocalDateTimeString(range.from),
+          endTime: toLocalDateTimeString(range.to),
           examRoomId: row.examRoomId,
           isApply: true,
         });
