@@ -36,7 +36,11 @@ export default function ClassRoomSearchTable({ onSearch }) {
   };
 
   const handleModalSelect = ({ buildingId, buildingNum, buildingName }) => {
-    setFilters((prev) => ({ ...prev, buildingId, buildingNum, buildingName }));
+    const newFilters = { ...filters, buildingId, buildingNum, buildingName };
+
+    setFilters(newFilters);
+
+    if (onSearch) onSearch(newFilters);
   };
 
   const handleSearch = () => {
