@@ -379,7 +379,6 @@ function SecondApplicationPage() {
       alert('신청할 과목을 선택해주세요.');
       return;
     }
-    console.log('[2차 신청 대상 rows]', targetRows);
     setConfirmMode('apply');
     setIsConfirmModalOpen(true);
   };
@@ -393,7 +392,6 @@ function SecondApplicationPage() {
       alert('수정할 과목을 선택해주세요.');
       return;
     }
-    console.log('[2차 수정 대상 rows]', targetRows);
     setConfirmMode('update');
     setIsConfirmModalOpen(true);
   };

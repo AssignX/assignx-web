@@ -3,7 +3,15 @@ import PageHeader from '@/components/headers/PageHeader';
 import SectionHeader from '@/components/headers/SectionHeader';
 import TimeTable from '@/components/TimeTable';
 
-import ClassRoomSearchTable from '@/components/table/ClassRoomSearchTable';
+import HorizontalTable from '@/components/table/HorizontalTable';
+import YearPickerCell from '@/components/table/cells/YearPickerCell';
+import DropdownCell from '@/components/table/cells/DropdownCell';
+import InputCell from '@/components/table/cells/InputCell';
+import SearchCell from '@/components/table/cells/SearchCell';
+import Button from '@/components/buttons/Button';
+import { SearchIcon } from '@/assets/icons';
+
+import ClassRoomModal from '@/components/ClassRoomModal';
 
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -23,6 +31,11 @@ dayjs.extend(isoWeek);
 const timetableStart = '08:00';
 const timetableEnd = '20:00';
 const timetableDays = ['월', '화', '수', '목', '금', '토'];
+
+const semesterOptions = [
+  { value: '1', label: '1학기' },
+  { value: '2', label: '2학기' },
+];
 
 const buildExamEntryLabel = (exam) => {
   const lines = [exam.courseName];
@@ -90,11 +103,116 @@ function ExamStatusPage() {
   const [date, setDate] = useState(dayjs());
   const [selected, setSelected] = useState(true); // true: 수업, false: 시험
 
-  const [searchFilters, setSearchFilters] = useState(null);
+  const [filters, setFilters] = useState({
+    year: String(dayjs().year()),
+    semester: '1',
+    roomId: '',
+    buildingName: '',
+    roomNumber: '',
+  });
 
-  const handleSearchCondition = (filters) => {
-    setSearchFilters(filters);
+  const [searchFilters, setSearchFilters] = useState(null);
+  const [isClassRoomModalOpen, setIsClassRoomModalOpen] = useState(false);
+
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
   };
+
+  const updateFilters = (rowId, columnKey, value) => {
+    handleFilterChange(columnKey, value);
+  };
+
+  const handleOpenClassRoomModal = () => {
+    setIsClassRoomModalOpen(true);
+  };
+
+  const handleClassRoomSelect = (rooms) => {
+    if (!rooms || rooms.length === 0) return;
+    const room = rooms[0];
+
+    setFilters((prev) => ({
+      ...prev,
+      roomId: room.roomId,
+      buildingName: room.buildingName,
+      roomNumber: room.roomNo ?? room.roomNumber ?? '',
+    }));
+  };
+
+  const handleSearch = () => {
+    const { year, semester, roomId } = filters;
+    if (!year || !semester || !roomId) {
+      alert('연도, 학기, 강의실을 모두 선택해주세요.');
+      return;
+    }
+    setSearchFilters({ year, semester, roomId });
+  };
+
+  const filterItems = [
+    {
+      id: 'year',
+      label: '개설연도',
+      labelWidth: '130px',
+      contentWidth: '150px',
+      content: (
+        <YearPickerCell
+          rowId='filters'
+          columnKey='year'
+          initialValue={Number(filters.year)}
+          updateData={updateFilters}
+        />
+      ),
+    },
+    {
+      id: 'semester',
+      label: '개설학기',
+      labelWidth: '130px',
+      contentWidth: '150px',
+      content: (
+        <DropdownCell
+          initialValue={filters.semester}
+          options={semesterOptions}
+          rowId='filters'
+          columnKey='semester'
+          updateData={updateFilters}
+          height={32}
+        />
+      ),
+    },
+    {
+      id: 'classroom',
+      label: '건물상세검색',
+      labelWidth: '130px',
+      contentWidth: '200px',
+      content: (
+        <SearchCell
+          initialValue={
+            filters.roomId
+              ? `${filters.buildingName ?? ''} ${filters.roomNumber ?? ''}`
+              : ''
+          }
+          height={32}
+          disabled={true}
+          onSearch={() => {
+            handleOpenClassRoomModal();
+          }}
+        />
+      ),
+    },
+
+    {
+      id: 'searchButton',
+      contentWidth: '200px',
+      content: (
+        <Button
+          text='조회'
+          color='lightgray'
+          textSize='text-sm'
+          Icon={SearchIcon}
+          onClick={handleSearch}
+        />
+      ),
+    },
+  ];
 
   useEffect(() => {
     if (!searchFilters) return;
@@ -114,6 +232,7 @@ function ExamStatusPage() {
             roomId: String(roomId),
           },
         });
+        console.log('Exam schedule response:', res.data);
         const list = Array.isArray(res.data) ? res.data : [];
         setExamRows(list);
       } catch (error) {
@@ -159,7 +278,7 @@ function ExamStatusPage() {
           title='신청 현황 조회(강의실)'
           helperText='※해당 시간표는 시스템 선정 기준 유력 후보 1순위만 표기하고 있습니다.'
         />
-        <ClassRoomSearchTable onSearch={handleSearchCondition} />
+        <HorizontalTable items={filterItems} />
       </div>
 
       {/* 시간표 카드 */}
@@ -181,6 +300,13 @@ function ExamStatusPage() {
           maxHeight='550px'
         />
       </div>
+
+      {isClassRoomModalOpen && (
+        <ClassRoomModal
+          setIsOpen={setIsClassRoomModalOpen}
+          onSelect={handleClassRoomSelect}
+        />
+      )}
     </Layout>
   );
 }
