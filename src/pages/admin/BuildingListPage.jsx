@@ -10,7 +10,12 @@ import { useAuthStore } from '@/store/useAuthStore';
 import apiClient from '@/api/apiClient';
 
 const buildingColumns = [
-  { header: 'No', accessorKey: 'number', size: 50 },
+  {
+    header: 'No',
+    accessorKey: 'number',
+    size: 50,
+    cell: ({ row }) => row.index + 1,
+  },
   { header: '건물 번호', accessorKey: 'buildingNumber', size: 200 },
   {
     header: '건물 이름',

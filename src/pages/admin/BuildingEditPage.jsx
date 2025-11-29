@@ -9,7 +9,7 @@ import PlusCell from '@/components/table/cells/PlusCell';
 import { SaveIcon } from '@/assets/icons';
 
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
 import apiClient from '@/api/apiClient';
 
@@ -26,24 +26,14 @@ const ClassroomColumns = [
   { header: '수용인원', accessorKey: 'capacity', size: 400 },
 ];
 
-const classroomDummyData = [
-  { id: 1, number: 1, classRoomNumber: '123', capacity: 30 },
-  { id: 2, number: 2, classRoomNumber: '124', capacity: 50 },
-];
-
-/* 남은 할 일
-1. dummyData 대신 API 연동하여 데이터 불러오기
-2. 간격 조정
-3. Row 수정 기능 구현 필요 (VerticalTable의 button)
-
-++ buildingData를 받아와서, classRoomData로 변경할 때 (fetch 함수에서)
-roomId와 같은 id를 추가해야 함
-*/
 function BuildingEditPage() {
   const navigate = useNavigate();
   const accessToken = useAuthStore((state) => state.accessToken);
   const logout = useAuthStore((state) => state.logout);
   const { name: userNameFromStore, departmentName } = useAuthStore();
+
+  const { id } = useParams();
+  const isEditMode = Boolean(id);
 
   useEffect(() => {
     if (!accessToken) navigate('/login');
@@ -98,19 +88,50 @@ function BuildingEditPage() {
   ];
 
   useEffect(() => {
-    // Fetch classroom data from API
-    setClassroomData(classroomDummyData);
-  }, []);
+    if (!isEditMode || !id) {
+      setBuildingNumber('');
+      setBuildingName('');
+      setClassroomData([]);
+      setClassroomNewRows([]);
+      return;
+    }
+
+    const fetchBuildingDetail = async () => {
+      try {
+        const res = await apiClient.get(`/api/building/${id}`);
+        const data = res.data || {};
+
+        setBuildingNumber(String(data.buildingNumber ?? ''));
+        setBuildingName(data.buildingName ?? '');
+
+        const rooms = Array.isArray(data.rooms) ? data.rooms : [];
+        const mappedRooms = rooms.map((room, idx) => ({
+          id: String(room.roomId ?? idx),
+          roomId: room.roomId,
+          classRoomNumber: room.roomNumber,
+          capacity: room.roomCapacity,
+        }));
+        setClassroomData(mappedRooms);
+        setClassroomNewRows([]);
+      } catch (error) {
+        console.error('건물 상세 조회 실패:', error);
+        setClassroomData([]);
+        setClassroomNewRows([]);
+      }
+    };
+
+    fetchBuildingDetail();
+  }, [id, isEditMode]);
 
   const handleAddClassroomRow = () => {
     const newRow = {
       id: `new-${Date.now()}`,
       classRoomNumber: '',
       capacity: '',
-      isNew: true,
     };
     setClassroomNewRows((prev) => [...prev, newRow]);
   };
+
   const handleClassroomNewRowChange = (rowId, key, value) => {
     setClassroomNewRows((prev) =>
       prev.map((row) => (row.id === rowId ? { ...row, [key]: value } : row))
@@ -122,13 +143,12 @@ function BuildingEditPage() {
       alert('삭제할 강의실을 선택해주세요.');
       return;
     }
-    // modal
-
-    // delete API 호출
     setClassroomData((prev) =>
       prev.filter((row) => !classroomSelectedRows.includes(row.id))
     );
-
+    setClassroomNewRows((prev) =>
+      prev.filter((row) => !classroomSelectedRows.includes(row.id))
+    );
     setClassroomSelectedRows([]);
   };
 
@@ -136,16 +156,44 @@ function BuildingEditPage() {
     setIsSaveModalOpen(true);
   };
 
-  const handleConfirmSave = () => {
-    // TODO: 실제 저장 API 호출
-    const payload = {
-      buildingNumber,
-      buildingName,
-      classrooms: [...classroomData, ...classroomNewRows],
-    };
-    console.log('저장 payload:', payload);
+  const handleConfirmSave = async () => {
+    if (!buildingNumber || !buildingName) {
+      alert('건물 번호와 건물 이름을 입력해주세요.');
+      return;
+    }
 
-    navigate(-1); // 저장 후 이전 페이지로 이동
+    const allRooms = [...classroomData, ...classroomNewRows];
+    const roomsPayload = allRooms
+      .filter(
+        (room) =>
+          String(room.classRoomNumber ?? room.roomNumber ?? '').trim() !== ''
+      )
+      .map((room) => ({
+        actionType: 'CREATE', // 일단 CREATE 고정?
+        roomId: Number(room.roomId ?? 0),
+        roomNumber: String(room.classRoomNumber ?? room.roomNumber ?? ''),
+        roomCapacity: Number(room.capacity ?? room.roomCapacity ?? 0),
+      }));
+    const payload = {
+      buildingNumber: Number(buildingNumber ?? 0),
+      buildingName,
+      rooms: roomsPayload,
+    };
+
+    try {
+      if (isEditMode) {
+        await apiClient.put('/api/building', payload);
+      } else {
+        await apiClient.post('/api/building', payload);
+      }
+
+      alert('건물 정보가 저장되었습니다.');
+      setIsSaveModalOpen(false);
+      navigate(-1);
+    } catch (error) {
+      console.error('건물 저장 실패:', error);
+      alert('건물 정보를 저장하는 중 오류가 발생했습니다.');
+    }
   };
 
   return (
@@ -197,7 +245,6 @@ function BuildingEditPage() {
               onClick: handleDeleteClassroomRows,
             },
           ]}
-          // 추가일 경우 buttonsDat 그대로 하고 수정일 경우 수정 버튼 추가 필요
         />
         <VerticalTable
           columns={ClassroomColumns}
