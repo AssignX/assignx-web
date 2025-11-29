@@ -255,8 +255,8 @@ export default function SchedulePage() {
       <div className='h-full'>
         <ScheduleSearchTable onSearch={handleSearch} />
 
-        <div className='mt-[10px] bg-white'>
-          <TableWrapper height='470px'>
+        <div className='mt-[10px] overflow-x-auto bg-white'>
+          <TableWrapper height='470px' className='min-w-[1100px]'>
             <VerticalTable
               columns={columns}
               selectable={true}
