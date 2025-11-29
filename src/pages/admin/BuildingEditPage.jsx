@@ -169,8 +169,7 @@ function BuildingEditPage() {
           String(room.classRoomNumber ?? room.roomNumber ?? '').trim() !== ''
       )
       .map((room) => ({
-        actionType: 'CREATE', // 일단 CREATE 고정?
-        roomId: Number(room.roomId ?? 0),
+        actionType: isEditMode ? 'UPDATE' : 'CREATE',
         roomNumber: String(room.classRoomNumber ?? room.roomNumber ?? ''),
         roomCapacity: Number(room.capacity ?? room.roomCapacity ?? 0),
       }));
