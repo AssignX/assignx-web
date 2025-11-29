@@ -29,7 +29,7 @@ const employeeColumns = [
   { header: '소속학과', accessorKey: 'departmentName', size: 400 },
 ];
 
-const ClassroomColumns = [
+const classroomColumns = [
   {
     header: 'No',
     accessorKey: 'number',
@@ -42,11 +42,6 @@ const ClassroomColumns = [
   { header: '수용 인원', accessorKey: 'roomCapacity', size: 100 },
 ];
 
-/* 남은 할 일
-1. dummyData 대신 API 연동하여 데이터 불러오기
-2. 간격 조정
-3. Row 수정 기능 구현 필요 (VerticalTable의 button)
-*/
 function DepartmentEditPage() {
   const navigate = useNavigate();
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -81,11 +76,7 @@ function DepartmentEditPage() {
   const [employeeData, setEmployeeData] = useState([]);
   const [classroomData, setClassroomData] = useState([]);
 
-  const [employeeSelectedRows, setEmployeeSelectedRows] = useState([]);
   const [classroomSelectedRows, setClassroomSelectedRows] = useState([]);
-
-  const [employeeNewRows, setEmployeeNewRows] = useState([]);
-  const [classroomNewRows, setClassroomNewRows] = useState([]);
 
   const departmentInfo = [
     {
@@ -118,14 +109,14 @@ function DepartmentEditPage() {
     },
   ];
 
-  const fetchDepartmentDetails = async (departmentId) => {
+  const fetchDepartmentDetails = async (deptId) => {
     try {
-      const res = await apiClient.get(`/api/department/admin/${departmentId}`);
+      const res = await apiClient.get(`/api/department/admin/${deptId}`);
       const data = res.data;
 
       setCollege(data.college || '');
       setDepartment(data.major || '');
-      setDepartmentId(data.departmentId || '');
+      setDepartmentId(data.departmentId ?? null);
 
       const mappedEmployees = (data.employees || []).map((emp) => ({
         id: String(emp.memberId),
@@ -152,36 +143,10 @@ function DepartmentEditPage() {
   };
 
   useEffect(() => {
-    if (isEditMode) {
+    if (isEditMode && id) {
       fetchDepartmentDetails(id);
     }
   }, [id, isEditMode]);
-
-  const handleEmployeeNewRowChange = (rowId, columnKey, value) => {
-    setEmployeeNewRows((prev) =>
-      prev.map((row) =>
-        row.id === rowId ? { ...row, [columnKey]: value } : row
-      )
-    );
-  };
-  const handleDeleteEmployeeRows = () => {
-    if (employeeSelectedRows.length === 0) {
-      alert('삭제할 직원을 선택해주세요.');
-      return;
-    }
-    setEmployeeData((prev) =>
-      prev.filter((row) => !employeeSelectedRows.includes(row.id))
-    );
-    setEmployeeSelectedRows([]);
-  };
-
-  const handleClassroomNewRowChange = (rowId, columnKey, value) => {
-    setClassroomNewRows((prev) =>
-      prev.map((row) =>
-        row.id === rowId ? { ...row, [columnKey]: value } : row
-      )
-    );
-  };
 
   const handleDeleteClassroomRows = () => {
     if (classroomSelectedRows.length === 0) {
@@ -197,15 +162,17 @@ function DepartmentEditPage() {
   const handleSelectEmployee = (employees) => {
     setEmployeeData((prev) => {
       const newOnes = employees.filter(
-        (emp) => !prev.some((row) => row.id === emp.id)
+        (emp) =>
+          !prev.some((row) => String(row.memberId) === String(emp.memberId))
       );
       return [...prev, ...newOnes];
     });
   };
+
   const handleSelectClassRoom = (rooms) => {
     setClassroomData((prev) => {
       const mappedNew = rooms.map((room) => ({
-        id: String(room.id ?? room.roomId),
+        id: String(room.roomId ?? room.id),
         roomId: room.roomId,
         buildingNumber: room.buildingNumber ?? room.buildingNo ?? '',
         buildingName: room.buildingName ?? '',
@@ -230,8 +197,10 @@ function DepartmentEditPage() {
   const handleOpenSaveModal = () => {
     setIsSaveModalOpen(true);
   };
+
   const handleConfirmSave = async () => {
     const deptId = isEditMode ? Number(departmentId) : 0;
+
     const payload = {
       departmentId: deptId,
       college: college,
@@ -240,7 +209,7 @@ function DepartmentEditPage() {
       roomIds: classroomData.map((room) => Number(room.roomId)),
     };
 
-    console.log(payload);
+    console.log('save payload:', payload);
 
     try {
       if (isEditMode) {
@@ -251,7 +220,7 @@ function DepartmentEditPage() {
 
       alert('학과 정보가 저장되었습니다.');
       setIsSaveModalOpen(false);
-      navigate(-1); // 저장 후 이전 페이지로 이동
+      navigate(-1);
     } catch (error) {
       console.error('학과 저장 실패:', error);
       alert('학과 정보를 저장하는 중 오류가 발생했습니다.');
@@ -292,32 +261,12 @@ function DepartmentEditPage() {
       </div>
 
       <div>
-        <SectionHeader
-          title='직원 목록'
-          controlGroup='buttonGroup'
-          buttonsData={[
-            {
-              text: '추가',
-              color: 'lightgray',
-              onClick: () => setIsEmployeeModalOpen(true),
-            },
-            {
-              text: '삭제',
-              color: 'lightgray',
-              onClick: handleDeleteEmployeeRows,
-            },
-          ]}
-        />
+        <SectionHeader title='직원 목록' />
         <VerticalTable
           columns={employeeColumns}
           data={employeeData}
           headerHeight={40}
-          maxHeight={160} // newRow에 의해 기존 Row가 짤리는 문제
-          selectable={true}
-          newRows={employeeNewRows}
-          updateSelection={setEmployeeSelectedRows}
-          onNewRowChange={handleEmployeeNewRowChange}
-          renderNewRowActions={() => <PlusCell />}
+          maxHeight={160}
         />
       </div>
 
@@ -339,14 +288,12 @@ function DepartmentEditPage() {
           ]}
         />
         <VerticalTable
-          columns={ClassroomColumns}
+          columns={classroomColumns}
           data={classroomData}
           headerHeight={40}
           maxHeight={600}
           selectable={true}
-          newRows={classroomNewRows}
           updateSelection={setClassroomSelectedRows}
-          onNewRowChange={handleClassroomNewRowChange}
           renderNewRowActions={() => <PlusCell />}
         />
       </div>
