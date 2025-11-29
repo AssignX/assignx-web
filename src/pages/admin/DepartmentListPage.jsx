@@ -1,9 +1,11 @@
-import Section from '@/components/layout/Section';
+import Layout from '@/components/Layout';
 import PageHeader from '@/components/headers/PageHeader';
 import VerticalTable from '@/components/table/VerticalTable';
 
-import DeleteConfirmModal from './DeleteConfirmModal';
+import ConfirmModal from '@/components/ConfirmModal';
 
+import apiClient from '@/api/apiClient';
+import { useAuthStore } from '@/store/useAuthStore';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -22,34 +24,92 @@ const departmentColumns = [
   },
 ];
 
-const dummyData = [
-  { id: '1', number: 1, college: '공과대학', major: '컴퓨터공학과' },
-  { id: '2', number: 2, college: '공과대학', major: '전자공학과' },
-];
-
 function DepartmentListPage() {
   const navigate = useNavigate();
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const logout = useAuthStore((state) => state.logout);
+  const { name: userNameFromStore, departmentName } = useAuthStore();
+
+  useEffect(() => {
+    if (!accessToken) navigate('/login');
+  }, [accessToken, navigate]);
+
+  const handleLogout = async () => {
+    try {
+      await apiClient.post('/api/auth/logout');
+    } catch (err) {
+      console.warn('logout failed', err);
+    }
+    logout();
+    navigate('/login');
+  };
+
   const [departmentData, setDepartmentData] = useState([]);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
+  const fetchDepartments = async () => {
+    try {
+      const res = await apiClient.get('/api/department/admin');
+      const list = Array.isArray(res.data) ? res.data : [];
+
+      const mapped = list.map((item, index) => ({
+        id: String(item.departmentId),
+        number: index + 1,
+        college: item.college,
+        major: item.major,
+      }));
+
+      setDepartmentData(mapped);
+    } catch (error) {
+      console.error('학과 목록 조회 실패:', error);
+      setDepartmentData([]);
+    }
+  };
+
   useEffect(() => {
-    // Fetch department data from API
-    setDepartmentData(dummyData);
+    fetchDepartments();
   }, []);
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     const targetId = selectedRowIds[0];
+    if (!targetId) return;
 
-    // TODO: /api/department/{departmentId} DELETE 요청
+    try {
+      await apiClient.delete(`/api/department/admin/${targetId}`);
 
-    setDepartmentData((prev) => prev.filter((row) => row.id !== targetId));
-    setSelectedRowIds([]);
+      setDepartmentData((prev) => prev.filter((row) => row.id !== targetId));
+
+      setSelectedRowIds([]);
+      setIsDeleteModalOpen(false);
+
+      alert('삭제가 완료되었습니다.'); // 추후 머지 이후 수정 예정
+      console.log('학과 삭제 완료');
+    } catch (error) {
+      console.error('학과 삭제 실패:', error);
+      alert('학과 삭제 중 오류가 발생했습니다.');
+    }
   };
 
   return (
-    <Section>
+    <Layout
+      username={`${userNameFromStore ?? '사용자'} 님`}
+      headerTitle={`${departmentName ?? ''} 메뉴`}
+      onLogout={handleLogout}
+      menus={[
+        {
+          title: '학과 관리',
+          subItems: [
+            { label: '학과 목록', path: '/admin/department', isSelected: true },
+          ],
+        },
+        {
+          title: '건물 관리',
+          subItems: [{ label: '건물 목록', path: '/admin/building' }],
+        },
+      ]}
+    >
       <div>
         <PageHeader
           title='학과 목록'
@@ -63,18 +123,20 @@ function DepartmentListPage() {
               text: '수정',
               color: 'lightgray',
               onClick: () => {
-                if (selectedRowIds.length > 0) {
-                  navigate(`/admin/department/edit/${selectedRowIds[0]}`); // +1을 해야 하나?
-                } else {
+                const targetId = selectedRowIds[0];
+                if (!targetId) {
                   alert('수정할 학과를 선택해주세요.');
+                  return;
                 }
+                navigate(`/admin/department/edit/${targetId}`);
               },
             },
             {
               text: '삭제',
               color: 'lightgray',
               onClick: () => {
-                if (selectedRowIds.length === 0) {
+                const targetId = selectedRowIds[0];
+                if (!targetId) {
                   alert('삭제할 학과를 선택해주세요.');
                   return;
                 }
@@ -94,13 +156,14 @@ function DepartmentListPage() {
       </div>
 
       {isDeleteModalOpen && (
-        <DeleteConfirmModal
+        <ConfirmModal
           setIsOpen={setIsDeleteModalOpen}
           onConfirm={handleConfirmDelete}
-          message='선택한 학과를 삭제하시겠습니까?'
+          title='삭제하시겠습니까?'
+          body='선택한 학과를 삭제하시겠습니까?'
         />
       )}
-    </Section>
+    </Layout>
   );
 }
 
