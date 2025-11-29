@@ -8,23 +8,12 @@ import InputCell from '@/components/table/cells/InputCell';
 import PlusCell from '@/components/table/cells/PlusCell';
 import { SaveIcon } from '@/assets/icons';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
 import apiClient from '@/api/apiClient';
 
 import ConfirmModal from '@/components/ConfirmModal';
-
-const ClassroomColumns = [
-  {
-    header: 'No',
-    accessorKey: 'number',
-    size: 50,
-    cell: ({ row }) => row.index + 1,
-  },
-  { header: '강의실 번호', accessorKey: 'classRoomNumber', size: 400 },
-  { header: '수용인원', accessorKey: 'capacity', size: 400 },
-];
 
 function BuildingEditPage() {
   const navigate = useNavigate();
@@ -110,6 +99,7 @@ function BuildingEditPage() {
           roomId: room.roomId,
           classRoomNumber: room.roomNumber,
           capacity: room.roomCapacity,
+          isEditing: false,
         }));
         setClassroomData(mappedRooms);
         setClassroomNewRows([]);
@@ -123,6 +113,18 @@ function BuildingEditPage() {
     fetchBuildingDetail();
   }, [id, isEditMode]);
 
+  const handleExistingClassroomChange = useCallback((rowId, key, value) => {
+    setClassroomData((prev) =>
+      prev.map((row) => (row.id === rowId ? { ...row, [key]: value } : row))
+    );
+  }, []);
+
+  const handleClassroomNewRowChange = useCallback((rowId, key, value) => {
+    setClassroomNewRows((prev) =>
+      prev.map((row) => (row.id === rowId ? { ...row, [key]: value } : row))
+    );
+  }, []);
+
   const handleAddClassroomRow = () => {
     const newRow = {
       id: `new-${Date.now()}`,
@@ -130,12 +132,6 @@ function BuildingEditPage() {
       capacity: '',
     };
     setClassroomNewRows((prev) => [...prev, newRow]);
-  };
-
-  const handleClassroomNewRowChange = (rowId, key, value) => {
-    setClassroomNewRows((prev) =>
-      prev.map((row) => (row.id === rowId ? { ...row, [key]: value } : row))
-    );
   };
 
   const handleDeleteClassroomRows = () => {
@@ -152,6 +148,32 @@ function BuildingEditPage() {
     setClassroomSelectedRows([]);
   };
 
+  const isAnyClassroomEditing = useMemo(
+    () => classroomData.some((row) => row.isEditing),
+    [classroomData]
+  );
+
+  const handleStartEditClassroomRow = () => {
+    if (classroomSelectedRows.length === 0) {
+      alert('수정할 강의실을 선택해주세요.');
+      return;
+    }
+
+    setClassroomData((prev) =>
+      prev.map((row) =>
+        classroomSelectedRows.includes(row.id)
+          ? { ...row, isEditing: true }
+          : row
+      )
+    );
+  };
+
+  const handleFinishEditClassroomRow = () => {
+    setClassroomData((prev) =>
+      prev.map((row) => ({ ...row, isEditing: false }))
+    );
+  };
+
   const handleOpenSaveModal = () => {
     setIsSaveModalOpen(true);
   };
@@ -162,30 +184,63 @@ function BuildingEditPage() {
       return;
     }
 
-    const allRooms = [...classroomData, ...classroomNewRows];
-    const roomsPayload = allRooms
-      .filter(
-        (room) =>
-          String(room.classRoomNumber ?? room.roomNumber ?? '').trim() !== ''
-      )
-      .map((room) => ({
-        actionType: isEditMode ? 'UPDATE' : 'CREATE',
-        roomNumber: String(room.classRoomNumber ?? room.roomNumber ?? ''),
-        roomCapacity: Number(room.capacity ?? room.roomCapacity ?? 0),
-      }));
-    const payload = {
-      buildingNumber: Number(buildingNumber ?? 0),
-      buildingName,
-      rooms: roomsPayload,
-    };
-
     try {
+      let payload;
       if (isEditMode) {
+        const existingRoomsPayload = classroomData
+          .filter(
+            (room) =>
+              String(room.classRoomNumber ?? room.roomNumber ?? '').trim() !==
+              ''
+          )
+          .map((room) => ({
+            actionType: 'UPDATE',
+            roomId: room.roomId,
+            roomNumber: String(room.classRoomNumber ?? room.roomNumber ?? ''),
+            roomCapacity: Number(room.capacity ?? room.roomCapacity ?? 0),
+          }));
+
+        const newRoomsPayload = classroomNewRows
+          .filter(
+            (room) =>
+              String(room.classRoomNumber ?? room.roomNumber ?? '').trim() !==
+              ''
+          )
+          .map((room) => ({
+            actionType: 'CREATE',
+            roomNumber: String(room.classRoomNumber ?? room.roomNumber ?? ''),
+            roomCapacity: Number(room.capacity ?? room.roomCapacity ?? 0),
+          }));
+
+        payload = {
+          buildingId: Number(id),
+          buildingNumber: Number(buildingNumber ?? 0),
+          buildingName,
+          rooms: [...existingRoomsPayload, ...newRoomsPayload],
+        };
+
         await apiClient.put('/api/building', payload);
       } else {
+        const allRooms = [...classroomData, ...classroomNewRows];
+        const roomsPayload = allRooms
+          .filter(
+            (room) =>
+              String(room.classRoomNumber ?? room.roomNumber ?? '').trim() !==
+              ''
+          )
+          .map((room) => ({
+            actionType: 'CREATE',
+            roomNumber: String(room.classRoomNumber ?? room.roomNumber ?? ''),
+            roomCapacity: Number(room.capacity ?? room.roomCapacity ?? 0),
+          }));
+
+        payload = {
+          buildingNumber: Number(buildingNumber ?? 0),
+          buildingName,
+          rooms: roomsPayload,
+        };
         await apiClient.post('/api/building', payload);
       }
-
       alert('건물 정보가 저장되었습니다.');
       setIsSaveModalOpen(false);
       navigate(-1);
@@ -194,6 +249,62 @@ function BuildingEditPage() {
       alert('건물 정보를 저장하는 중 오류가 발생했습니다.');
     }
   };
+
+  const ClassroomColumns = useMemo(
+    () => [
+      {
+        header: 'No',
+        accessorKey: 'number',
+        size: 50,
+        cell: ({ row }) => row.index + 1,
+      },
+      {
+        header: '강의실 번호',
+        accessorKey: 'classRoomNumber',
+        size: 400,
+        cell: ({ row }) => {
+          const { id, classRoomNumber, isEditing } = row.original;
+          if (isEditing) {
+            return (
+              <InputCell
+                value={classRoomNumber ?? ''}
+                height={32}
+                onChange={(e) =>
+                  handleExistingClassroomChange(
+                    id,
+                    'classRoomNumber',
+                    e.target.value
+                  )
+                }
+              />
+            );
+          }
+          return String(classRoomNumber ?? '');
+        },
+      },
+      {
+        header: '수용인원',
+        accessorKey: 'capacity',
+        size: 400,
+        cell: ({ row }) => {
+          const { id, capacity, isEditing } = row.original;
+          if (isEditing) {
+            return (
+              <InputCell
+                value={capacity ?? ''}
+                height={32}
+                onChange={(e) =>
+                  handleExistingClassroomChange(id, 'capacity', e.target.value)
+                }
+              />
+            );
+          }
+          return String(capacity ?? '');
+        },
+      },
+    ],
+    [handleExistingClassroomChange]
+  );
 
   return (
     <Layout
@@ -238,6 +349,17 @@ function BuildingEditPage() {
               color: 'lightgray',
               onClick: handleAddClassroomRow,
             },
+            ...(isEditMode
+              ? [
+                  {
+                    text: isAnyClassroomEditing ? '완료' : '수정',
+                    color: 'lightgray',
+                    onClick: isAnyClassroomEditing
+                      ? handleFinishEditClassroomRow
+                      : handleStartEditClassroomRow,
+                  },
+                ]
+              : []),
             {
               text: '삭제',
               color: 'lightgray',
