@@ -254,7 +254,7 @@ const buildTimeTableEntries = (courses) => {
     const { courseTime, courseName, courseCode } = course;
     if (!courseTime) return;
 
-    const display = `${courseName}\n${courseCode}`;
+    const display = `${courseCode}\n${courseName}`;
     const daySlotsList = parseCourseTimeToDaySlots(courseTime);
 
     daySlotsList.forEach(({ day, slots }) => {

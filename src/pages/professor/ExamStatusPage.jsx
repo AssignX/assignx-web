@@ -6,7 +6,6 @@ import TimeTable from '@/components/TimeTable';
 import HorizontalTable from '@/components/table/HorizontalTable';
 import YearPickerCell from '@/components/table/cells/YearPickerCell';
 import DropdownCell from '@/components/table/cells/DropdownCell';
-import InputCell from '@/components/table/cells/InputCell';
 import SearchCell from '@/components/table/cells/SearchCell';
 import Button from '@/components/buttons/Button';
 import { SearchIcon } from '@/assets/icons';
@@ -24,6 +23,7 @@ import {
   minutesToSlotLabel,
   SLOT_INTERVAL_MINUTES,
   WEEKDAYS,
+  buildTimeTableEntries,
 } from './parsingTime';
 
 dayjs.extend(isoWeek);
@@ -38,10 +38,9 @@ const semesterOptions = [
 ];
 
 const buildExamEntryLabel = (exam) => {
-  const lines = [exam.courseName];
-  const secondLine = exam.roomNumber || exam.courseCode;
-  if (secondLine) lines.push(secondLine);
-  return lines.filter(Boolean).join('\n');
+  const code = exam.courseCode ?? '';
+  const name = exam.courseName ?? '';
+  return `${code}\n${name}`;
 };
 
 const buildWeekEntriesFromExams = (exams, currentWeek) => {
@@ -99,7 +98,9 @@ function ExamStatusPage() {
     navigate('/login');
   };
 
+  const [courseRows, setCourseRows] = useState([]);
   const [examRows, setExamRows] = useState([]);
+
   const [date, setDate] = useState(dayjs());
   const [selected, setSelected] = useState(true); // true: 수업, false: 시험
 
@@ -216,38 +217,52 @@ function ExamStatusPage() {
 
   useEffect(() => {
     if (!searchFilters) return;
-
     const { year, semester, roomId } = searchFilters;
     if (!year || !semester || !roomId) {
       setExamRows([]);
+      setCourseRows([]);
       return;
     }
 
-    const fetchExamSchedule = async () => {
+    const fetchData = async () => {
       try {
-        const res = await apiClient.get('/api/exam/search', {
+        const examRes = await apiClient.get('/api/exam/search', {
           params: {
             year: String(year),
             semester: String(semester),
             roomId: String(roomId),
           },
         });
-        console.log('Exam schedule response:', res.data);
-        const list = Array.isArray(res.data) ? res.data : [];
-        setExamRows(list);
+
+        const courseRes = await apiClient.get('/api/course/search', {
+          params: {
+            year: String(year),
+            semester: String(semester),
+            roomId: String(roomId),
+          },
+        });
+
+        const examList = Array.isArray(examRes.data) ? examRes.data : [];
+        const courseList = Array.isArray(courseRes.data) ? courseRes.data : [];
+
+        setExamRows(examList);
+        setCourseRows(courseList);
       } catch (error) {
-        console.error('시험 일정 조회 실패:', error);
+        console.error('시험/강의 일정 조회 실패:', error);
         setExamRows([]);
+        setCourseRows([]);
       }
     };
 
-    fetchExamSchedule();
+    fetchData();
   }, [searchFilters]);
 
-  const weekEntries = useMemo(
-    () => buildWeekEntriesFromExams(examRows, date),
-    [examRows, date]
-  );
+  const weekEntries = useMemo(() => {
+    if (selected) {
+      return buildTimeTableEntries(courseRows);
+    }
+    return buildWeekEntriesFromExams(examRows, date);
+  }, [selected, courseRows, examRows, date]);
 
   return (
     <Layout
