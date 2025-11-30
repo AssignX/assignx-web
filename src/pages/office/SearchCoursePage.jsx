@@ -207,7 +207,7 @@ export default function SearchCoursePage() {
           />
         </div>
 
-        <div className='overflow-x flex h-full w-full flex-col gap-y-2.5'>
+        <div className='flex h-full w-full flex-col gap-y-2.5'>
           <div className='flex w-full items-center justify-end gap-2'>
             <span className='text-[16px]'>담당교수 미배정 과목</span>
             <ToggleSwitch
