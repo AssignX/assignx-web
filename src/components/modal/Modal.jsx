@@ -74,12 +74,14 @@ export default function Modal({
               onClick={onConfirm}
               textSize='text-sm'
             />
-            <Button
-              text={cancelText}
-              color='lightgray'
-              onClick={onCancel}
-              textSize='text-sm'
-            />
+            {cancelText && (
+              <Button
+                text={cancelText}
+                color='lightgray'
+                onClick={onCancel}
+                textSize='text-sm'
+              />
+            )}
           </div>
         </div>
       </div>
