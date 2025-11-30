@@ -20,7 +20,7 @@ export default function SearchClassPage() {
   const [rooms, setRooms] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [filteredRooms, setFilteredRooms] = useState([]);
-  const { name, departmentName, departmentId } = useAuthStore();
+  const { name, departmentId } = useAuthStore();
   const navigate = useNavigate();
   const accessToken = useAuthStore((state) => state.accessToken);
   const logout = useAuthStore((state) => state.logout);
@@ -124,7 +124,7 @@ export default function SearchClassPage() {
   return (
     <Layout
       username={`${name ?? '사용자'} 님`}
-      headerTitle={`${departmentName ?? ''} 메뉴`}
+      headerTitle={`사무실 메뉴`}
       onLogout={handleLogout}
       menus={[
         {
