@@ -154,13 +154,12 @@ export default function SearchProfessorPage() {
 
       <div className='h-full w-full space-y-[10px]'>
         <HorizontalTable items={searchFormItems} />
-        <TableWrapper height='470px'>
+        <TableWrapper height='600px'>
           <VerticalTable
             columns={columns}
             data={professors}
             selectable={false}
             headerHeight={32}
-            maxHeight={470}
           />
         </TableWrapper>
       </div>

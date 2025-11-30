@@ -25,7 +25,6 @@ export default function SchedulePage() {
     navigate(`/office/exam/approve/${selectedExam.examId}`);
   };
 
-  // 교수 조회 페이지와 동일한 방식으로 스토어 사용
   const { name: userNameFromStore, departmentId } = useAuthStore();
 
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -55,22 +54,25 @@ export default function SchedulePage() {
         },
       ];
 
-  // 기본 필터 (초기 진입 시 한 번 조회용)
+  const getDefaultSemester = () => {
+    const month = new Date().getMonth() + 1;
+    if (month >= 3 && month <= 6) return '1';
+    if (month >= 9) return '2';
+    return '1';
+  };
   const defaultFilters = {
     year: '2025',
-    semester: '2',
+    semester: getDefaultSemester(),
     division: '',
     keyword: '',
   };
 
-  // 로그인 체크
   useEffect(() => {
     if (!accessToken) {
       navigate('/login');
     }
   }, [accessToken, navigate]);
 
-  // 로그아웃 처리 (교수 조회 페이지와 동일 패턴)
   const handleLogout = async () => {
     try {
       await apiClient.post('/api/auth/logout');
@@ -83,9 +85,7 @@ export default function SchedulePage() {
     }
   };
 
-  // 시험 조회 + 확정/미확정 + division + keyword 필터링
   const handleSearch = async (filters) => {
-    // departmentId가 아직 없으면 굳이 호출하지 않음
     if (!departmentId) {
       setRows([]);
       return;
@@ -96,15 +96,13 @@ export default function SchedulePage() {
         params: {
           year: filters.year,
           semester: filters.semester,
-          departmentId, // 로그인한 사용자의 학과 기준
-          // professorId, roomId 등은 추후 필요 시 추가
+          departmentId,
         },
       });
 
       const data = res.data;
       const confirmedStates = ['COMPLETED_FIRST', 'COMPLETED_SECOND'];
 
-      // 확정/미확정 필터
       let filtered = data.filter(
         (item) =>
           selected
@@ -112,7 +110,6 @@ export default function SchedulePage() {
             : item.examAssigned === 'NOT_YET' // 미확정
       );
 
-      // 구분 필터 (중간/기말/기타)
       if (filters.division) {
         filtered = filtered.filter((item) => {
           if (filters.division === '중간') return item.examType === 'MID';
@@ -122,7 +119,6 @@ export default function SchedulePage() {
         });
       }
 
-      // 강좌 검색(강좌명/코드/건물/강의실)
       if (filters.keyword.trim()) {
         const kw = filters.keyword.trim();
         filtered = filtered.filter(
@@ -137,7 +133,7 @@ export default function SchedulePage() {
       setRows(
         filtered.map((item) => ({
           ...item,
-          id: item.examId, // 체크박스 선택 기능이 동작하려면 반드시 필요
+          id: item.examId,
           roomId: item.roomId,
         }))
       );
@@ -147,7 +143,6 @@ export default function SchedulePage() {
     }
   };
 
-  // 페이지 첫 진입 + 확정/미확정 토글 변경 시 기본 필터로 자동 조회
   useEffect(() => {
     handleSearch(defaultFilters);
   }, [location, selected, departmentId]);
@@ -252,13 +247,12 @@ export default function SchedulePage() {
         <ScheduleSearchTable onSearch={handleSearch} />
 
         <div className='mt-[10px] overflow-x-auto bg-white'>
-          <TableWrapper height='470px' className='min-w-[1100px]'>
+          <TableWrapper height='600px' className='min-w-[1100px]'>
             <VerticalTable
               columns={columns}
               selectable={true}
               singleSelect={true}
               data={rows}
-              maxHeight={470}
               updateSelection={(ids) => {
                 if (ids.length === 0) {
                   setSelectedExam(null);
@@ -280,7 +274,7 @@ export default function SchedulePage() {
           confirmText='확인'
           cancelText=''
           onConfirm={() => setShowSelectExamModal(false)}
-          onClose={() => setShowSelectExamModal(false)} // X 버튼도 닫기
+          onClose={() => setShowSelectExamModal(false)}
           width='360px'
           height='180px'
         />
