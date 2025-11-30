@@ -105,9 +105,16 @@ function ExamStatusPage() {
   const [date, setDate] = useState(dayjs());
   const [selected, setSelected] = useState(true); // true: 수업, false: 시험
 
+  const getDefaultSemester = () => {
+    const month = new Date().getMonth() + 1;
+    if (month >= 3 && month <= 6) return '1';
+    if (month >= 9) return '2';
+    return '1';
+  };
+
   const [filters, setFilters] = useState({
     year: String(dayjs().year()),
-    semester: '1',
+    semester: getDefaultSemester(),
     roomId: '',
     buildingName: '',
     roomNumber: '',
@@ -182,7 +189,7 @@ function ExamStatusPage() {
     },
     {
       id: 'classroom',
-      label: '건물상세검색',
+      label: '강의실상세검색',
       labelWidth: '130px',
       contentWidth: '200px',
       content: (
