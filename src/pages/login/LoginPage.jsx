@@ -23,13 +23,13 @@ export default function LoginPage() {
 
       switch (data.role) {
         case 'ADMIN':
-          navigate('/admin'); // 관리자 페이지 route 설정 필요
+          navigate('/admin/department');
           break;
         case 'PROFESSOR':
-          navigate('/professor'); // 교수 페이지 route 설정 필요
+          navigate('/professor/schedule');
           break;
         case 'EMPLOYEE':
-          navigate('/office/classrooms');
+          navigate('/office/courses');
           break;
         default:
           navigate('/');
