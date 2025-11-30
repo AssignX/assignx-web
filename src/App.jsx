@@ -20,6 +20,7 @@ import DepartmentListPage from './pages/admin/DepartmentListPage.jsx';
 import DepartmentEditPage from './pages/admin/DepartmentEditPage.jsx';
 import BuildingListPage from './pages/admin/BuildingListPage.jsx';
 import BuildingEditPage from './pages/admin/BuildingEditPage.jsx';
+import ExamPeriodPage from './pages/admin/ExamPeriodPage.jsx';
 
 import NotFoundPage from './pages/NotFoundPage.jsx';
 
@@ -71,6 +72,7 @@ export default function App() {
           <Route path='edit' element={<BuildingEditPage />} />
           <Route path='edit/:id' element={<BuildingEditPage />} />
         </Route>
+        <Route path='period' element={<ExamPeriodPage />} />
       </Route>
 
       <Route path='*' element={<NotFoundPage />} />
