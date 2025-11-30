@@ -99,7 +99,7 @@ function Timetable({ startTime, endTime, dayRange, entries = {} }) {
                 return (
                   <td
                     key={cellKey}
-                    className='border-table-border text-text-main h-[50px] min-h-[50px] w-full border px-[8px] py-[4px] text-center'
+                    className='border-table-border text-text-main h-[50px] min-h-[50px] w-full overflow-x-auto border px-[8px] py-[4px] text-center break-words'
                   >
                     <div className='whitespace-pre-line'>
                       {entries[cellKey] || ''}

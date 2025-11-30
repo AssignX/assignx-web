@@ -96,6 +96,11 @@ export default function ScheduleSearchTable({ onSearch }) {
             setFilters((prev) => ({ ...prev, keyword: e.target.value }))
           }
           height={32}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              onSearch(filters);
+            }
+          }}
         />
       ),
     },
