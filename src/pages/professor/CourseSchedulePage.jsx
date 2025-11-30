@@ -1,4 +1,5 @@
 import Layout from '@/components/Layout';
+import TableWrapper from '@/components/layout/TableWrapper';
 import PageHeader from '@/components/headers/PageHeader';
 import SectionHeader from '@/components/headers/SectionHeader';
 import VerticalTable from '@/components/table/VerticalTable';
@@ -12,7 +13,6 @@ import apiClient from '@/api/apiClient';
 import { useEffect, useState, useMemo } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
-
 import { buildCourseRealTime, buildTimeTableEntries } from './parsingTime';
 
 const courseTableColumns = [
@@ -46,7 +46,6 @@ const courseTableColumns = [
   },
 ];
 
-// 시간표 범위/요일
 const timetableStart = '08:00';
 const timetableEnd = '20:00';
 const timetableDays = ['월', '화', '수', '목', '금', '토'];
@@ -116,7 +115,6 @@ function CourseSchedulePage() {
         };
       });
       setCourseTableRows(mappedRows);
-
       const entries = buildTimeTableEntries(data);
       setTimeTableEntries(entries);
     } catch (error) {
@@ -153,7 +151,7 @@ function CourseSchedulePage() {
         label: '소속학과',
         required: true,
         labelWidth: '80px',
-        contentWidth: '220px', // fill
+        contentWidth: '220px',
         content: (
           <InputCell value={departmentName} height={32} disabled={true} />
         ),
@@ -183,7 +181,7 @@ function CourseSchedulePage() {
   return (
     <Layout
       username={`${userNameFromStore ?? '사용자'} 님`}
-      headerTitle={`${departmentName ?? ''} 메뉴`}
+      headerTitle='교수 메뉴'
       onLogout={handleLogout}
       menus={[
         {
@@ -221,26 +219,28 @@ function CourseSchedulePage() {
         <HorizontalTable items={filterItems} />
       </div>
 
-      <div className='flex h-[240px] flex-col'>
+      <div className='flex flex-col'>
         <SectionHeader title='과목 조회 목록' subtitle={subtitle} />
-        <VerticalTable
-          columns={courseTableColumns}
-          data={courseTableRows}
-          headerHeight={40}
-          maxHeight={200}
-          selectable={false}
-        />
+        <TableWrapper height='200px'>
+          <VerticalTable
+            columns={courseTableColumns}
+            data={courseTableRows}
+            headerHeight={40}
+            selectable={false}
+          />
+        </TableWrapper>
       </div>
 
       <div className='flex flex-col'>
         <SectionHeader title='강의 시간표' />
-        <TimeTable
-          startTime={timetableStart}
-          endTime={timetableEnd}
-          dayRange={timetableDays}
-          entries={timeTableEntries}
-          maxHeight='320px'
-        />
+        <TableWrapper height='360px'>
+          <TimeTable
+            startTime={timetableStart}
+            endTime={timetableEnd}
+            dayRange={timetableDays}
+            entries={timeTableEntries}
+          />
+        </TableWrapper>
       </div>
     </Layout>
   );
