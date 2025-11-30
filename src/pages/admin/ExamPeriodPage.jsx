@@ -212,7 +212,7 @@ function ExamPeriodPage() {
         ),
       },
     ],
-    [filters.year, filters.semester, updateFilters]
+    [filters.year, filters.semester] // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const createEmptyRows = () => [
