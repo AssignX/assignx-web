@@ -1,4 +1,5 @@
 import Layout from '@/components/Layout';
+import TableWrapper from '@/components/layout/TableWrapper';
 import PageHeader from '@/components/headers/PageHeader';
 import SectionHeader from '@/components/headers/SectionHeader';
 import HorizontalTable from '@/components/table/HorizontalTable';
@@ -107,7 +108,11 @@ function FirstApplicationPage() {
   const [examPeriod, setExamPeriod] = useState(null);
 
   const convertAssignedStatus = (status) =>
-    status === 'COMPLETED_FIRST' ? 'Y' : '';
+    status === 'COMPLETED_FIRST' || status === 'COMPLETED_SECOND'
+      ? 'Y'
+      : status === 'WAITING_HIGH_PRIORITY' || status === 'WAITING_LOW_PRIORITY'
+        ? '대기(2차)'
+        : 'N';
 
   const handleSearch = async () => {
     try {
@@ -351,7 +356,7 @@ function FirstApplicationPage() {
   return (
     <Layout
       username={`${userNameFromStore ?? '사용자'} 님`}
-      headerTitle={`${departmentName ?? ''} 메뉴`}
+      headerTitle='교수 메뉴'
       onLogout={handleLogout}
       menus={[
         {
@@ -375,7 +380,7 @@ function FirstApplicationPage() {
       <div className='flex flex-col'>
         <PageHeader
           title='1차 시험 신청'
-          helperText='※ 시스템이 추천한 우선순위 기준으로 표시됩니다.'
+          helperText='※ 1차 시험 신청은 지정된 기간 내에만 가능하며, 확정된 과목에 대해 취소하시려면 학과 사무실로 문의해주십시오.'
           buttonsData={[
             {
               text: '조회',
@@ -388,7 +393,7 @@ function FirstApplicationPage() {
         <HorizontalTable items={filterItems} />
       </div>
 
-      <div className='flex h-[260px] flex-col'>
+      <div className='flex flex-col'>
         <SectionHeader
           title='미확정 과목 목록'
           subtitle={`${unconfirmedRows.length}건`}
@@ -397,27 +402,29 @@ function FirstApplicationPage() {
             { text: '신청', color: 'red', onClick: handleApplyFirstClick },
           ]}
         />
-        <VerticalTable
-          columns={unconfirmedTableColumns}
-          data={unconfirmedRows}
-          selectable={true}
-          singleSelect={true}
-          updateSelection={setSelectedIds}
-          maxHeight={260}
-        />
+        <TableWrapper height='220px'>
+          <VerticalTable
+            columns={unconfirmedTableColumns}
+            data={unconfirmedRows}
+            selectable={true}
+            singleSelect={true}
+            updateSelection={setSelectedIds}
+          />
+        </TableWrapper>
       </div>
 
-      <div className='flex h-[320px] flex-col'>
+      <div className='flex flex-col'>
         <SectionHeader
           title='확정 과목 목록'
           subtitle={`${confirmedRows.length}건`}
         />
-        <VerticalTable
-          columns={confirmedTableColumns}
-          data={confirmedRows}
-          selectable={false}
-          maxHeight={320}
-        />
+        <TableWrapper height='320px'>
+          <VerticalTable
+            columns={confirmedTableColumns}
+            data={confirmedRows}
+            selectable={false}
+          />
+        </TableWrapper>
       </div>
 
       {isModalOpen && (

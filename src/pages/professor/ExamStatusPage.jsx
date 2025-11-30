@@ -1,4 +1,5 @@
 import Layout from '@/components/Layout';
+import TableWrapper from '@/components/layout/TableWrapper';
 import PageHeader from '@/components/headers/PageHeader';
 import SectionHeader from '@/components/headers/SectionHeader';
 import TimeTable from '@/components/TimeTable';
@@ -82,7 +83,7 @@ function ExamStatusPage() {
   const navigate = useNavigate();
   const accessToken = useAuthStore((state) => state.accessToken);
   const logout = useAuthStore((state) => state.logout);
-  const { name: userNameFromStore, departmentName } = useAuthStore();
+  const { name: userNameFromStore } = useAuthStore();
 
   useEffect(() => {
     if (!accessToken) navigate('/login');
@@ -104,9 +105,16 @@ function ExamStatusPage() {
   const [date, setDate] = useState(dayjs());
   const [selected, setSelected] = useState(true); // true: 수업, false: 시험
 
+  const getDefaultSemester = () => {
+    const month = new Date().getMonth() + 1;
+    if (month >= 3 && month <= 6) return '1';
+    if (month >= 9) return '2';
+    return '1';
+  };
+
   const [filters, setFilters] = useState({
     year: String(dayjs().year()),
-    semester: '1',
+    semester: getDefaultSemester(),
     roomId: '',
     buildingName: '',
     roomNumber: '',
@@ -181,7 +189,7 @@ function ExamStatusPage() {
     },
     {
       id: 'classroom',
-      label: '건물상세검색',
+      label: '강의실상세검색',
       labelWidth: '130px',
       contentWidth: '200px',
       content: (
@@ -267,7 +275,7 @@ function ExamStatusPage() {
   return (
     <Layout
       username={`${userNameFromStore ?? '사용자'} 님`}
-      headerTitle={`${departmentName ?? ''} 메뉴`}
+      headerTitle='교수 메뉴'
       onLogout={handleLogout}
       menus={[
         {
@@ -288,7 +296,7 @@ function ExamStatusPage() {
         },
       ]}
     >
-      <div>
+      <div className='flex flex-col'>
         <PageHeader
           title='신청 현황 조회(강의실)'
           helperText='※해당 시간표는 시스템 선정 기준 유력 후보 1순위만 표기하고 있습니다.'
@@ -296,8 +304,7 @@ function ExamStatusPage() {
         <HorizontalTable items={filterItems} />
       </div>
 
-      {/* 시간표 카드 */}
-      <div>
+      <div className='flex flex-col'>
         <SectionHeader
           title='시간표'
           controlGroup='weekPicker'
@@ -307,13 +314,14 @@ function ExamStatusPage() {
           date={date}
           setDate={setDate}
         />
-        <TimeTable
-          startTime={timetableStart}
-          endTime={timetableEnd}
-          dayRange={timetableDays}
-          entries={weekEntries}
-          maxHeight='550px'
-        />
+        <TableWrapper height='600px'>
+          <TimeTable
+            startTime={timetableStart}
+            endTime={timetableEnd}
+            dayRange={timetableDays}
+            entries={weekEntries}
+          />
+        </TableWrapper>
       </div>
 
       {isClassRoomModalOpen && (
