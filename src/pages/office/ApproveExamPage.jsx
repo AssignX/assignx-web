@@ -15,6 +15,7 @@ import Modal from '@/components/modal/Modal';
 import BuildingSearchModal from '@/components/BuildingSearchModal';
 import RoomSearchModal from '@/components/RoomSearchModal';
 import TableWrapper from '@/components/layout/TableWrapper';
+import SearchCell from '@/components/table/cells/SearchCell';
 
 export default function ApproveExamPage() {
   const { id } = useParams();
@@ -38,6 +39,7 @@ export default function ApproveExamPage() {
   const [showInvalidTimeModal, setShowInvalidTimeModal] = useState(false);
   const [showNoRoomModal, setShowNoRoomModal] = useState(false);
   const closeNoRoomModal = () => setShowNoRoomModal(false);
+  const [buildingKeyword, setBuildingKeyword] = useState('');
 
   const [updated, setUpdated] = useState({
     examType: '',
@@ -134,14 +136,18 @@ export default function ApproveExamPage() {
       labelWidth: '100px',
       contentWidth: '200px',
       content: (
-        <div
-          className='cursor-pointer rounded p-1 hover:bg-yellow-50'
-          onClick={() => setShowBuildingModal(true)}
-        >
-          {exam.buildingName && exam.roomNumber
-            ? `${exam.buildingName} ${exam.roomNumber}`
-            : '미배정'}
-        </div>
+        <SearchCell
+          initialValue={
+            exam.buildingName && exam.roomNumber
+              ? `${exam.buildingName} ${exam.roomNumber}`
+              : ''
+          }
+          onSearch={(searchValue) => {
+            setBuildingKeyword(searchValue);
+            setShowBuildingModal(true);
+          }}
+          height={32}
+        />
       ),
     },
 
@@ -332,14 +338,16 @@ export default function ApproveExamPage() {
       {showBuildingModal && (
         <BuildingSearchModal
           isOpen={showBuildingModal}
+          initialValue={buildingKeyword}
           onClose={() => setShowBuildingModal(false)}
           onSelect={(building) => {
             setSelectedBuilding(building);
             setShowBuildingModal(false);
-            setShowRoomModal(true); // 강의실 모달로 넘어감
+            setShowRoomModal(true);
           }}
         />
       )}
+
       {showRoomModal && (
         <RoomSearchModal
           isOpen={showRoomModal}
@@ -365,12 +373,11 @@ export default function ApproveExamPage() {
             <div className='p-3'>시험 일정이 성공적으로 확정되었습니다.</div>
           }
           confirmText='확인'
-          cancelText='취소'
+          cancelText=''
           onConfirm={() => {
             setShowSuccessModal(false);
             navigate('/office/exam');
           }}
-          onCancel={() => setShowSuccessModal(false)}
           onClose={() => setShowSuccessModal(false)}
           width='400px'
           height='200px'
@@ -387,9 +394,8 @@ export default function ApproveExamPage() {
             </div>
           }
           confirmText='확인'
-          cancelText='취소'
+          cancelText=''
           onConfirm={() => setShowOverlapModal(false)}
-          onCancel={() => setShowOverlapModal(false)}
           onClose={() => setShowOverlapModal(false)}
         />
       )}
@@ -405,9 +411,8 @@ export default function ApproveExamPage() {
             </div>
           }
           confirmText='확인'
-          cancelText='취소'
+          cancelText=''
           onConfirm={() => setShowErrorModal(false)}
-          onCancel={() => setShowErrorModal(false)}
           onClose={() => setShowErrorModal(false)}
           width='400px'
           height='200px'
@@ -425,9 +430,8 @@ export default function ApproveExamPage() {
             </div>
           }
           confirmText='확인'
-          cancelText='취소'
+          cancelText=''
           onConfirm={() => setShowInvalidTimeModal(false)}
-          onCancel={() => setShowInvalidTimeModal(false)}
           onClose={() => setShowInvalidTimeModal(false)}
           width='400px'
           height='200px'
@@ -439,9 +443,8 @@ export default function ApproveExamPage() {
           title='장소 선택 필요'
           content={<div className='p-3'>시험 장소가 선택되지 않았습니다.</div>}
           confirmText='확인'
-          cancelText='취소'
+          cancelText=''
           onConfirm={closeNoRoomModal}
-          onCancel={closeNoRoomModal}
           onClose={closeNoRoomModal}
           width='400px'
           height='200px'

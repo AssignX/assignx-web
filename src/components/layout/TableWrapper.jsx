@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
 
-export default function TableWrapper({ height, children }) {
+
+export default function TableWrapper({ height, children, className  }) {
   const style = height ? { height, maxHeight: height } : undefined;
 
   return (
     <div
-      className={`bg-white ${height ? 'overflow-y-auto' : ''}`}
+      className={`bg-white ${height ? 'overflow-y-auto' : ''} ${className ?? ''}`}
       style={style}
     >
       {children}
@@ -13,4 +14,8 @@ export default function TableWrapper({ height, children }) {
   );
 }
 
-TableWrapper.propTypes = { height: PropTypes.string, children: PropTypes.node };
+TableWrapper.propTypes = {
+  height: PropTypes.string,
+  children: PropTypes.node,
+  className: PropTypes.string,
+};

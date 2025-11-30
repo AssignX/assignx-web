@@ -251,8 +251,8 @@ export default function SchedulePage() {
       <div className='h-full'>
         <ScheduleSearchTable onSearch={handleSearch} />
 
-        <div className='mt-[10px] bg-white'>
-          <TableWrapper height='470px'>
+        <div className='mt-[10px] overflow-x-auto bg-white'>
+          <TableWrapper height='470px' className='min-w-[1100px]'>
             <VerticalTable
               columns={columns}
               selectable={true}
@@ -278,9 +278,8 @@ export default function SchedulePage() {
           title='알림'
           content={<div className='p-3'>{selectExamMessage}</div>}
           confirmText='확인'
-          cancelText='취소'
+          cancelText=''
           onConfirm={() => setShowSelectExamModal(false)}
-          onCancel={() => setShowSelectExamModal(false)} // 취소 버튼 기능 추가
           onClose={() => setShowSelectExamModal(false)} // X 버튼도 닫기
           width='360px'
           height='180px'
