@@ -21,6 +21,8 @@ import DepartmentEditPage from './pages/admin/DepartmentEditPage.jsx';
 import BuildingListPage from './pages/admin/BuildingListPage.jsx';
 import BuildingEditPage from './pages/admin/BuildingEditPage.jsx';
 
+import NotFoundPage from './pages/NotFoundPage.jsx';
+
 export default function App() {
   return (
     <Routes>
@@ -70,6 +72,8 @@ export default function App() {
           <Route path='edit/:id' element={<BuildingEditPage />} />
         </Route>
       </Route>
+
+      <Route path='*' element={<NotFoundPage />} />
     </Routes>
   );
 }
