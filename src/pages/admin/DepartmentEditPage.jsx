@@ -1,4 +1,5 @@
 import Layout from '@/components/Layout';
+import TableWrapper from '@/components/layout/TableWrapper';
 import PageHeader from '@/components/headers/PageHeader';
 import SectionHeader from '@/components/headers/SectionHeader';
 import HorizontalTable from '@/components/table/HorizontalTable';
@@ -46,7 +47,7 @@ function DepartmentEditPage() {
   const navigate = useNavigate();
   const accessToken = useAuthStore((state) => state.accessToken);
   const logout = useAuthStore((state) => state.logout);
-  const { name: userNameFromStore, departmentName } = useAuthStore();
+  const { name: userNameFromStore } = useAuthStore();
 
   useEffect(() => {
     if (!accessToken) navigate('/login');
@@ -68,6 +69,7 @@ function DepartmentEditPage() {
   const [isEmployeeModalOpen, setIsEmployeeModalOpen] = useState(false);
   const [isClassRoomModalOpen, setIsClassRoomModalOpen] = useState(false);
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
 
   const [college, setCollege] = useState('');
   const [department, setDepartment] = useState('');
@@ -209,8 +211,6 @@ function DepartmentEditPage() {
       roomIds: classroomData.map((room) => Number(room.roomId)),
     };
 
-    console.log('save payload:', payload);
-
     try {
       if (isEditMode) {
         await apiClient.put('/api/department/admin', payload);
@@ -230,7 +230,7 @@ function DepartmentEditPage() {
   return (
     <Layout
       username={`${userNameFromStore ?? '사용자'} 님`}
-      headerTitle={`${departmentName ?? ''} 메뉴`}
+      headerTitle='관리자 메뉴'
       onLogout={handleLogout}
       menus={[
         {
@@ -245,7 +245,7 @@ function DepartmentEditPage() {
         },
       ]}
     >
-      <div>
+      <div className='flex flex-col'>
         <PageHeader
           title='학과 목록'
           buttonsData={[
@@ -255,22 +255,28 @@ function DepartmentEditPage() {
               Icon: SaveIcon,
               onClick: handleOpenSaveModal,
             },
+            {
+              text: '취소',
+              color: 'lightgray',
+              onClick: () => setIsCancelModalOpen(true),
+            },
           ]}
         />
         <HorizontalTable items={departmentInfo} />
       </div>
 
-      <div>
+      <div className='flex flex-col'>
         <SectionHeader title='직원 목록' />
-        <VerticalTable
-          columns={employeeColumns}
-          data={employeeData}
-          headerHeight={40}
-          maxHeight={160}
-        />
+        <TableWrapper height='160px'>
+          <VerticalTable
+            columns={employeeColumns}
+            data={employeeData}
+            headerHeight={40}
+          />
+        </TableWrapper>
       </div>
 
-      <div className='mt-8'>
+      <div className='flex flex-col'>
         <SectionHeader
           title='강의실 목록'
           controlGroup='buttonGroup'
@@ -287,15 +293,16 @@ function DepartmentEditPage() {
             },
           ]}
         />
-        <VerticalTable
-          columns={classroomColumns}
-          data={classroomData}
-          headerHeight={40}
-          maxHeight={600}
-          selectable={true}
-          updateSelection={setClassroomSelectedRows}
-          renderNewRowActions={() => <PlusCell />}
-        />
+        <TableWrapper height='400px'>
+          <VerticalTable
+            columns={classroomColumns}
+            data={classroomData}
+            headerHeight={40}
+            selectable={true}
+            updateSelection={setClassroomSelectedRows}
+            renderNewRowActions={() => <PlusCell />}
+          />
+        </TableWrapper>
       </div>
 
       {isEmployeeModalOpen && (
@@ -316,6 +323,14 @@ function DepartmentEditPage() {
           onConfirm={handleConfirmSave}
           title='저장하시겠습니까?'
           body='학과 정보를 저장하시겠습니까?'
+        />
+      )}
+      {isCancelModalOpen && (
+        <ConfirmModal
+          setIsOpen={setIsCancelModalOpen}
+          onConfirm={() => navigate(-1)}
+          title='취소'
+          body='정말 취소하시겠습니까? 모든 변경사항은 저장되지 않습니다.'
         />
       )}
     </Layout>
