@@ -384,6 +384,7 @@ function BuildingEditPage() {
             newRows={classroomNewRows}
             onNewRowChange={handleClassroomNewRowChange}
             renderNewRowActions={() => <PlusCell />}
+            highlightSelectedRow={false}
           />
         </TableWrapper>
       </div>

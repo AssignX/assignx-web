@@ -555,6 +555,7 @@ function SecondApplicationPage() {
             headerHeight={40}
             selectable
             updateSelection={setSelectedUnappliedIds}
+            highlightSelectedRow={false}
           />
         </TableWrapper>
       </div>
