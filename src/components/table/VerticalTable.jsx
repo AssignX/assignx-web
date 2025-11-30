@@ -23,6 +23,7 @@ import InputCell from './cells/InputCell';
  * @param {function} onNewRowChange - '새로운 행'의 InputCell 값이 변경될 때 호출되는 콜백 함수. (rowIndex, columnKey, value)를 인자로 받음
  * @param {function} renderNewRowActions - '새로운 행'의 첫 번째 액션 셀을 렌더링하는 함수. (rowIndex)를 인자로 받음
  * @param {boolean} resetSelection - 새로고침/필터링 시 선택된 행(rowSelection) 초기화 기능 (기본값: false-초기화 기능 사용 X)
+ * @param {boolean} highlightSelectedRow - 행 선택 시 배경색 여부 (기본값: true) - false 시 색상 X
  */
 export default function VerticalTable({
   columns,
@@ -37,6 +38,7 @@ export default function VerticalTable({
   onNewRowChange = () => {},
   renderNewRowActions = () => null,
   resetSelection = false,
+  highlightSelectedRow = true,
 }) {
   const [rowSelection, setRowSelection] = useState({});
 
@@ -136,8 +138,10 @@ export default function VerticalTable({
               key={row.id}
               className={
                 selectable && row.getIsSelected()
-                  ? 'bg-select-row cursor-pointer'
-                  : 'cursor-pointer'
+                  ? `${highlightSelectedRow ? 'bg-select-row' : ''} cursor-pointer`
+                  : selectable
+                    ? 'cursor-pointer'
+                    : ''
               }
               onClick={(e) => {
                 if (!selectable) return;
@@ -214,4 +218,5 @@ VerticalTable.propTypes = {
   onNewRowChange: PropTypes.func,
   renderNewRowActions: PropTypes.func,
   resetSelection: PropTypes.bool,
+  highlightSelectedRow: PropTypes.bool,
 };
