@@ -60,14 +60,11 @@ function buildSlots(startHHMM, endHHMM) {
  *   }}
  * />
  */
-function Timetable({ startTime, endTime, dayRange, entries = {}, maxHeight }) {
+function Timetable({ startTime, endTime, dayRange, entries = {} }) {
   const slots = buildSlots(startTime, endTime);
 
   return (
-    <div
-      className={`w-full ${maxHeight ? 'overflow-y-auto' : ''} whitespace-pre-line`}
-      style={maxHeight ? { maxHeight } : undefined}
-    >
+    <div className='w-full overflow-y-auto whitespace-pre-line'>
       <table className='w-full table-fixed border-collapse text-[13px]'>
         {/* 헤더 */}
         <thead>

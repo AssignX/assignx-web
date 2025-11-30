@@ -1,10 +1,11 @@
 import Layout from '@/components/Layout';
+import TableWrapper from '@/components/layout/TableWrapper';
 import PageHeader from '@/components/headers/PageHeader';
 import SectionHeader from '@/components/headers/SectionHeader';
 import HorizontalTable from '@/components/table/HorizontalTable';
 import VerticalTable from '@/components/table/VerticalTable';
-import { SearchIcon } from '@/assets/icons';
 
+import { SearchIcon } from '@/assets/icons';
 import InputCell from '@/components/table/cells/InputCell';
 import SearchCell from '@/components/table/cells/SearchCell';
 import DateTimePickerCell from '@/components/table/cells/DateTimePickerCell.jsx';
@@ -501,7 +502,7 @@ function SecondApplicationPage() {
   return (
     <Layout
       username={`${userNameFromStore ?? '사용자'} 님`}
-      headerTitle={`${departmentName ?? ''} 메뉴`}
+      headerTitle='교수 메뉴'
       onLogout={handleLogout}
       menus={[
         {
@@ -538,8 +539,7 @@ function SecondApplicationPage() {
         <HorizontalTable items={filterItems} />
       </div>
 
-      {/* 미신청 과목 목록 */}
-      <div className='flex h-[180px] flex-col'>
+      <div className='flex flex-col'>
         <SectionHeader
           title='미신청 과목 목록'
           subtitle={`${unappliedRows.length}건`}
@@ -548,18 +548,18 @@ function SecondApplicationPage() {
             { text: '신청', color: 'red', onClick: handleOpenApplyModal },
           ]}
         />
-        <VerticalTable
-          columns={unconfirmedTableColumns}
-          data={unappliedRows}
-          headerHeight={40}
-          maxHeight={160}
-          selectable
-          updateSelection={setSelectedUnappliedIds}
-        />
+        <TableWrapper height='160px'>
+          <VerticalTable
+            columns={unconfirmedTableColumns}
+            data={unappliedRows}
+            headerHeight={40}
+            selectable
+            updateSelection={setSelectedUnappliedIds}
+          />
+        </TableWrapper>
       </div>
 
-      {/* 미확정 과목 목록 */}
-      <div className='flex h-[200px] flex-col'>
+      <div className='flex flex-col'>
         <SectionHeader
           title='미확정 과목 목록'
           subtitle={`${unconfirmedRows.length}건`}
@@ -568,32 +568,33 @@ function SecondApplicationPage() {
             { text: '수정', color: 'red', onClick: handleOpenUpdateModal },
           ]}
         />
-        <VerticalTable
-          columns={unconfirmedTableColumns}
-          data={unconfirmedRows}
-          headerHeight={40}
-          maxHeight={160}
-          selectable
-          updateSelection={setSelectedUnconfirmedIds}
-        />
+        <TableWrapper height='160px'>
+          <VerticalTable
+            columns={unconfirmedTableColumns}
+            data={unconfirmedRows}
+            headerHeight={40}
+            maxHeight={160}
+            selectable
+            updateSelection={setSelectedUnconfirmedIds}
+          />
+        </TableWrapper>
       </div>
 
-      {/* 확정 과목 목록 */}
-      <div className='flex h-[200px] flex-col'>
+      <div className='flex flex-col'>
         <SectionHeader
           title='확정 과목 목록'
           subtitle={`${confirmedRows.length}건`}
         />
-        <VerticalTable
-          columns={confirmedTableColumns}
-          data={confirmedRows}
-          headerHeight={40}
-          maxHeight={160}
-          selectable={false}
-        />
+        <TableWrapper height='160px'>
+          <VerticalTable
+            columns={confirmedTableColumns}
+            data={confirmedRows}
+            headerHeight={40}
+            selectable={false}
+          />
+        </TableWrapper>
       </div>
 
-      {/* 신청/수정 확인 모달 */}
       {isConfirmModalOpen && (
         <ConfirmModal
           title='2차 시험 신청'
@@ -606,8 +607,6 @@ function SecondApplicationPage() {
           onConfirm={handleConfirmSecond}
         />
       )}
-
-      {/* 강의실 검색 모달 */}
       {isRoomModalOpen && (
         <ClassRoomModal
           setIsOpen={setIsRoomModalOpen}
