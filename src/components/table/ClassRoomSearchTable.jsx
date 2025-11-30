@@ -14,7 +14,7 @@ const semesterOptions = [
   { value: '2', label: '2학기' },
 ];
 
-export default function ClassRoomSearchTable({ onSearch }) {
+export default function ClassRoomSearchTable({ onSearch, onFilterDirty }) {
   const getDefaultSemester = () => {
     const month = new Date().getMonth() + 1;
     if (month >= 3 && month <= 6) return '1';
@@ -34,16 +34,24 @@ export default function ClassRoomSearchTable({ onSearch }) {
   const [initialSearch, setInitialSearch] = useState('');
 
   const handleFilterChange = (columnKey, value) => {
-    setFilters((prev) => ({ ...prev, [columnKey]: value }));
+    setFilters((prev) => {
+      const next = { ...prev, [columnKey]: value };
+
+      if (onFilterDirty) onFilterDirty();
+
+      return next;
+    });
   };
 
   const handleBuildingSearch = (searchValue) => {
+    if (onFilterDirty) onFilterDirty();
     setInitialSearch(searchValue ?? '');
     setIsModalOpen(true);
   };
 
   const handleModalSelect = ({ buildingId, buildingNum, buildingName }) => {
     const newFilters = { ...filters, buildingId, buildingNum, buildingName };
+    if (onFilterDirty) onFilterDirty();
 
     setFilters(newFilters);
 
@@ -141,4 +149,7 @@ export default function ClassRoomSearchTable({ onSearch }) {
   );
 }
 
-ClassRoomSearchTable.propTypes = { onSearch: PropTypes.func };
+ClassRoomSearchTable.propTypes = {
+  onSearch: PropTypes.func,
+  onFilterDirty: PropTypes.func,
+};

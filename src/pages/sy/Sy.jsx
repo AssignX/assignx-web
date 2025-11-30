@@ -13,6 +13,7 @@ export default function Sy() {
   const [date, setDate] = useState(dayjs());
   const [searchFilters, setSearchFilters] = useState(null);
   const [selectedRoom, setSelectedRoom] = useState(null);
+  const [resetSelectionKey, setResetSelectionKey] = useState(0); // ← 추가
 
   const handleSearchCondition = (filters) => {
     setSearchFilters(filters);
@@ -22,10 +23,19 @@ export default function Sy() {
     setSelectedRoom(roomData);
   };
 
+  const resetAfterFilterChange = () => {
+    setSearchFilters(null);
+    setSelectedRoom(null);
+    setResetSelectionKey((prev) => prev + 1); // ← 여기가 포인트
+  };
+
   return (
     <div className='bg-light-gray flex h-screen flex-col p-5'>
       <PageHeader title='강의실 시간표 조회' />
-      <ClassRoomSearchTable onSearch={handleSearchCondition} />
+      <ClassRoomSearchTable
+        onSearch={handleSearchCondition}
+        onFilterDirty={resetAfterFilterChange}
+      />
       <section className='flex h-full flex-row gap-2.5 overflow-hidden py-2.5'>
         <div className='w-[45%] p-2.5'>
           <SectionHeader title='강의실 목록' />
@@ -33,6 +43,7 @@ export default function Sy() {
             maxHeight='560'
             filters={searchFilters}
             onSelect={handleRoomSelect}
+            resetSelection={resetSelectionKey} // ← 추가
           />
         </div>
         <div className='p-2.5'>
