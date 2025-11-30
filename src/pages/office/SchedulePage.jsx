@@ -26,11 +26,7 @@ export default function SchedulePage() {
   };
 
   // 교수 조회 페이지와 동일한 방식으로 스토어 사용
-  const {
-    name: userNameFromStore,
-    departmentName,
-    departmentId,
-  } = useAuthStore();
+  const { name: userNameFromStore, departmentId } = useAuthStore();
 
   const accessToken = useAuthStore((state) => state.accessToken);
   const logout = useAuthStore((state) => state.logout);
@@ -220,7 +216,7 @@ export default function SchedulePage() {
   return (
     <Layout
       username={`${userNameFromStore ?? '사용자'} 님`}
-      headerTitle={`${departmentName ?? ''} 메뉴`}
+      headerTitle={`사무실 메뉴`}
       onLogout={handleLogout} // 교수 페이지와 동일
       menus={[
         {
