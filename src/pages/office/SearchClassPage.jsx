@@ -156,13 +156,12 @@ export default function SearchClassPage() {
       <PageHeader title='강의실 목록' />
       <div className='h-full w-full space-y-[10px]'>
         <HorizontalTable items={searchFormItems} />
-        <TableWrapper height='470px'>
+        <TableWrapper height='600px'>
           <VerticalTable
             columns={columns}
             data={filteredRooms}
             selectable={false}
             headerHeight={32}
-            maxHeight={470}
           />
         </TableWrapper>
       </div>
