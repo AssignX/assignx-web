@@ -409,6 +409,7 @@ function FirstApplicationPage() {
             selectable={true}
             singleSelect={true}
             updateSelection={setSelectedIds}
+            highlightSelectedRow={false}
           />
         </TableWrapper>
       </div>
