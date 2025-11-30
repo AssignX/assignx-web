@@ -87,7 +87,7 @@ function Timetable({ startTime, endTime, dayRange, entries = {}, maxHeight }) {
         </thead>
 
         {/* 바디 */}
-        <tbody>
+        <tbody className='bg-white'>
           {slots.map((slot) => (
             <tr key={slot.key}>
               {/* 왼쪽 시간 라벨 */}
@@ -104,7 +104,9 @@ function Timetable({ startTime, endTime, dayRange, entries = {}, maxHeight }) {
                     key={cellKey}
                     className='border-table-border text-text-main h-[50px] min-h-[50px] w-full border px-[8px] py-[4px] text-center'
                   >
-                    {entries[cellKey] || ''}
+                    <div className='whitespace-pre-line'>
+                      {entries[cellKey] || ''}
+                    </div>
                   </td>
                 );
               })}
