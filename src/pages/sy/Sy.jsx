@@ -13,7 +13,7 @@ export default function Sy() {
   const [date, setDate] = useState(dayjs());
   const [searchFilters, setSearchFilters] = useState(null);
   const [selectedRoom, setSelectedRoom] = useState(null);
-  const [resetSelectionKey, setResetSelectionKey] = useState(0); // ← 추가
+  const [resetSelectionKey, setResetSelectionKey] = useState(0);
 
   const handleSearchCondition = (filters) => {
     setSearchFilters(filters);
@@ -26,7 +26,7 @@ export default function Sy() {
   const resetAfterFilterChange = () => {
     setSearchFilters(null);
     setSelectedRoom(null);
-    setResetSelectionKey((prev) => prev + 1); // ← 여기가 포인트
+    setResetSelectionKey((prev) => prev + 1);
   };
 
   return (
@@ -43,7 +43,7 @@ export default function Sy() {
             maxHeight='560'
             filters={searchFilters}
             onSelect={handleRoomSelect}
-            resetSelection={resetSelectionKey} // ← 추가
+            resetSelection={resetSelectionKey}
           />
         </div>
         <div className='p-2.5'>
