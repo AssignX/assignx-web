@@ -207,10 +207,10 @@ export default function SchedulePage() {
       size: 100,
       cell: ({ row }) => {
         const v = row.original.examAssigned;
-        if (v === 'COMPLETED_FIRST') return '1순위';
-        if (v === 'COMPLETED_SECOND') return '2순위';
-        if (v === 'WAITING_HIGH_PRIORITY') return '대기–우선';
-        if (v === 'WAITING_LOW_PRIORITY') return '대기–일반';
+        if (v === 'COMPLETED_FIRST') return '확정';
+        if (v === 'COMPLETED_SECOND') return '확정';
+        if (v === 'WAITING_HIGH_PRIORITY') return '1순위';
+        if (v === 'WAITING_LOW_PRIORITY') return '후순위';
         if (v === 'NOT_YET') return '미확정';
         return v;
       },
