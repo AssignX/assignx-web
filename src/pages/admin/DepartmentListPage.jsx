@@ -103,6 +103,10 @@ function DepartmentListPage() {
           title: '건물 관리',
           subItems: [{ label: '건물 목록', path: '/admin/building' }],
         },
+        {
+          title: '일정 관리',
+          subItems: [{ label: '일정 수정', path: '/admin/period' }],
+        },
       ]}
     >
       <div className='flex flex-col'>
