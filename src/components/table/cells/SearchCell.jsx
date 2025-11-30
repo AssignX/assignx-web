@@ -10,7 +10,12 @@ import InputCell from './InputCell';
  * @param {number} height - 입력 필드와 검색 버튼의 높이(px) (기본값(VerticalTable): 26px(row=35px일 때), HorizontalTable은 32px로 설정(row=41px일 때))
  */
 
-export default function SearchCell({ initialValue, onSearch, height = 26 }) {
+export default function SearchCell({
+  initialValue,
+  onSearch,
+  height = 26,
+  disabled = false,
+}) {
   const [value, setValue] = useState(initialValue);
 
   useEffect(() => {
@@ -40,6 +45,7 @@ export default function SearchCell({ initialValue, onSearch, height = 26 }) {
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
         height={height}
+        disabled={disabled}
       />
       <button
         type='button'
@@ -58,6 +64,7 @@ SearchCell.propTypes = {
   initialValue: PropTypes.string,
   onSearch: PropTypes.func.isRequired,
   height: PropTypes.number,
+  disabled: PropTypes.bool,
 };
 
-SearchCell.defaultProps = { initialValue: '' };
+SearchCell.defaultProps = { initialValue: '', disabled: false };

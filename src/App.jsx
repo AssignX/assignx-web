@@ -16,10 +16,14 @@ import ModalTableTestPage from './pages/test/ModalTableTestPage.jsx';
 import IconTestPage from './pages/test/IconTestPage.jsx';
 import TableTestPage from './pages/test/TableTestPage.jsx';
 import TimetableTest from './pages/test/TimetableTest.jsx';
+import ExamStatusPage from './pages/professor/ExamStatusPage.jsx';
+import CourseSchedulePage from './pages/professor/CourseSchedulePage.jsx';
+import FirstApplicationPage from './pages/professor/FirstApplicationPage.jsx';
+import SecondApplicationPage from './pages/professor/SecondApplicationPage.jsx';
 import DepartmentListPage from './pages/admin/DepartmentListPage.jsx';
 import DepartmentEditPage from './pages/admin/DepartmentEditPage.jsx';
 import EmployeeModal from './pages/admin/EmployeeModal.jsx';
-import ClassRoomModal from './pages/admin/ClassRoomModal.jsx';
+import ClassRoomModal from './components/ClassRoomModal.jsx';
 
 import BuildingListPage from './pages/admin/BuildingListPage.jsx';
 import BuildingEditPage from './pages/admin/BuildingEditPage.jsx';
@@ -70,6 +74,17 @@ export default function App() {
           <Route path='edit' element={<BuildingEditPage />} />
           <Route path='edit/:id' element={<BuildingEditPage />} />
         </Route>
+      </Route>
+
+      {/* Professor Pages */}
+      <Route path='professor'>
+        <Route index element={<CourseSchedulePage />} />
+        {/* 강의 조회 */}
+        <Route path='schedule' element={<CourseSchedulePage />} />
+        {/* 시험 신청 */}
+        <Route path='first' element={<FirstApplicationPage />} />
+        <Route path='second' element={<SecondApplicationPage />} />
+        <Route path='status' element={<ExamStatusPage />} />
       </Route>
 
       {/* Modal test */}
