@@ -28,6 +28,7 @@ export default function DropdownCell({
     <select
       value={initialValue}
       onChange={onChange}
+      onClick={(e) => e.stopPropagation()}
       className='border-table-border w-full border px-2.5 text-[13px]'
       style={{ height: `${height}px` }}
     >

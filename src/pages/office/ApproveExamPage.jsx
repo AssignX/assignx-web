@@ -20,7 +20,7 @@ import SearchCell from '@/components/table/cells/SearchCell';
 export default function ApproveExamPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { name: userNameFromStore, departmentName } = useAuthStore();
+  const { name: userNameFromStore } = useAuthStore();
 
   const accessToken = useAuthStore((state) => state.accessToken);
   const logout = useAuthStore((state) => state.logout);
@@ -285,7 +285,7 @@ export default function ApproveExamPage() {
   return (
     <Layout
       username={`${userNameFromStore ?? '사용자'} 님`}
-      headerTitle={`${departmentName ?? ''} 메뉴`}
+      headerTitle={`사무실 메뉴`}
       onLogout={handleLogout}
       menus={[
         {

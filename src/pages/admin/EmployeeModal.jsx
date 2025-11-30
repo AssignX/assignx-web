@@ -9,6 +9,8 @@ import Button from '@/components/buttons/Button.jsx';
 import { SearchIcon } from '@/assets/icons';
 
 import { useEffect, useState } from 'react';
+import apiClient from '@/api/apiClient';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const employeeColumns = [
   {
@@ -17,15 +19,9 @@ const employeeColumns = [
     size: 50,
     cell: ({ row }) => row.index + 1,
   },
-  { header: '교번', accessorKey: 'employeeId', size: 150 },
+  { header: '교번', accessorKey: 'idNumber', size: 150 },
   { header: '이름', accessorKey: 'name', size: 150 },
   { header: '소속학과', accessorKey: 'department', size: 300 },
-];
-
-const dummyEmployeeData = [
-  { id: '4', employeeId: 'EMP001', name: '홍길동', department: '컴퓨터공학' },
-  { id: '5', employeeId: 'EMP002', name: '김철수', department: '전자공학과' },
-  { id: '6', employeeId: 'EMP003', name: '이영희', department: '기계공학' },
 ];
 
 function EmployeeModal({ setIsOpen, onSelect }) {
@@ -33,15 +29,41 @@ function EmployeeModal({ setIsOpen, onSelect }) {
   const [employeeData, setEmployeeData] = useState([]);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
 
-  const handleEmployeeSearch = (searchValue) => {
-    setEmployeeName(searchValue);
-    // search API function
+  const departmentId = useAuthStore((state) => state.departmentId);
+  const handleEmployeeSearch = async (searchValue) => {
+    const keyword = searchValue ?? employeeName;
+    setEmployeeName(keyword);
+
+    try {
+      const res = await apiClient.get('/api/member/search/employee', {
+        params: {
+          name: keyword || undefined,
+          departmentId: departmentId ?? undefined,
+        },
+      });
+
+      const list = Array.isArray(res.data) ? res.data : [];
+      const mapped = list.map((emp) => ({
+        id: String(emp.memberId),
+        memberId: emp.memberId,
+        idNumber: emp.idNumber,
+        name: emp.name,
+        department: emp.departmentName,
+        departmentId: emp.departmentId,
+        departmentName: emp.departmentName,
+      }));
+
+      setEmployeeData(mapped);
+    } catch (error) {
+      console.error('직원 검색 실패:', error);
+      alert('직원 검색 중 오류가 발생했습니다.');
+      setEmployeeData([]);
+    }
   };
 
   useEffect(() => {
-    // 이걸 제거하고, handleEmployeeSearch에서 API 호출하도록 변경 필요
-    setEmployeeData(dummyEmployeeData);
-  }, []);
+    handleEmployeeSearch('');
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const employeeSearchItems = [
     {
@@ -63,7 +85,7 @@ function EmployeeModal({ setIsOpen, onSelect }) {
             color='lightgray'
             textSize='text-sm'
             Icon={SearchIcon}
-            onClick={() => {}}
+            onClick={() => handleEmployeeSearch(employeeName)}
           />
         </div>
       ),
@@ -117,8 +139,6 @@ function EmployeeModal({ setIsOpen, onSelect }) {
       onConfirm={handleConfirm}
       onCancel={handleCancel}
       onClose={handleClose}
-      width
-      height
       maxWidth='900px'
       maxHeight='600px'
     />

@@ -60,14 +60,11 @@ function buildSlots(startHHMM, endHHMM) {
  *   }}
  * />
  */
-function Timetable({ startTime, endTime, dayRange, entries = {}, maxHeight }) {
+function Timetable({ startTime, endTime, dayRange, entries = {} }) {
   const slots = buildSlots(startTime, endTime);
 
   return (
-    <div
-      className={`w-full ${maxHeight ? 'overflow-y-auto' : ''} whitespace-pre-line`}
-      style={maxHeight ? { maxHeight } : undefined}
-    >
+    <div className='w-full overflow-y-auto whitespace-pre-line'>
       <table className='w-full table-fixed border-collapse text-[13px]'>
         {/* 헤더 */}
         <thead>
@@ -87,7 +84,7 @@ function Timetable({ startTime, endTime, dayRange, entries = {}, maxHeight }) {
         </thead>
 
         {/* 바디 */}
-        <tbody>
+        <tbody className='bg-white'>
           {slots.map((slot) => (
             <tr key={slot.key}>
               {/* 왼쪽 시간 라벨 */}
@@ -102,9 +99,11 @@ function Timetable({ startTime, endTime, dayRange, entries = {}, maxHeight }) {
                 return (
                   <td
                     key={cellKey}
-                    className='border-table-border text-text-main h-[50px] min-h-[50px] w-full border px-[8px] py-[4px] text-center'
+                    className='border-table-border text-text-main h-[50px] min-h-[50px] w-full overflow-x-auto border px-[8px] py-[4px] text-center break-words'
                   >
-                    {entries[cellKey] || ''}
+                    <div className='whitespace-pre-line'>
+                      {entries[cellKey] || ''}
+                    </div>
                   </td>
                 );
               })}

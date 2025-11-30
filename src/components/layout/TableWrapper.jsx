@@ -1,8 +1,14 @@
 import PropTypes from 'prop-types';
 
-export default function TableWrapper({ height, children, className }) {
+
+export default function TableWrapper({ height, children, className  }) {
+  const style = height ? { height, maxHeight: height } : undefined;
+
   return (
-    <div className={`bg-white ${className ?? ''}`} style={{ height }}>
+    <div
+      className={`bg-white ${height ? 'overflow-y-auto' : ''} ${className ?? ''}`}
+      style={style}
+    >
       {children}
     </div>
   );

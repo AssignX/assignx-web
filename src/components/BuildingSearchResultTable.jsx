@@ -67,6 +67,7 @@ export default function BuildingSearchResultTable({ keyword, onSelect }) {
       data={data}
       selectable={true}
       singleSelect={true}
+      showSelectionCheckbox={true}
       updateSelection={handleSelectionChange}
     />
   );

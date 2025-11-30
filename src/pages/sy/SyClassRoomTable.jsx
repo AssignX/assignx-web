@@ -7,6 +7,7 @@ export default function SyClassRoomTable({
   filters,
   maxHeight = 1040.8,
   onSelect,
+  resetSelection,
 }) {
   const [data, setData] = useState([]);
 
@@ -72,8 +73,10 @@ export default function SyClassRoomTable({
       data={data}
       selectable={true}
       singleSelect={true}
+      showSelectionCheckbox={true}
       updateSelection={handleSelectionChange}
       maxHeight={maxHeight}
+      resetSelection={resetSelection}
     />
   );
 }
@@ -82,4 +85,5 @@ SyClassRoomTable.propTypes = {
   filters: PropTypes.object,
   maxHeight: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onSelect: PropTypes.func,
+  resetSelection: PropTypes.func,
 };

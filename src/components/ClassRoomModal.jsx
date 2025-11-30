@@ -93,10 +93,6 @@ function ClassRoomModal({ setIsOpen, onSelect }) {
     [mapBuildingList]
   );
 
-  useEffect(() => {
-    fetchBuildings('');
-  }, [fetchBuildings]);
-
   const handleBuildingSearch = () => {
     fetchBuildings(buildingKeyword);
   };
@@ -113,12 +109,6 @@ function ClassRoomModal({ setIsOpen, onSelect }) {
             <InputCell
               value={buildingKeyword}
               height={32}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  handleBuildingSearch();
-                }
-              }}
               onChange={(e) => setBuildingKeyword(e.target.value)}
             />
           </div>

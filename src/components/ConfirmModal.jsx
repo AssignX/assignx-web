@@ -1,10 +1,9 @@
 import Modal from '@/components/modal/Modal.jsx';
 import PropTypes from 'prop-types';
 
-function SaveConfirmModal({ setIsOpen, onConfirm }) {
+function ConfirmModal({ setIsOpen, onConfirm, title, body }) {
   const handleConfirm = () => {
     if (onConfirm) {
-      // 실제 저장 함수
       onConfirm();
     }
     setIsOpen(false);
@@ -20,8 +19,8 @@ function SaveConfirmModal({ setIsOpen, onConfirm }) {
 
   return (
     <Modal
-      title='저장'
-      content={<div>저장하시겠습니까?</div>}
+      title={title}
+      content={<div>{body}</div>}
       confirmText='확인'
       cancelText='취소'
       onConfirm={handleConfirm}
@@ -35,9 +34,11 @@ function SaveConfirmModal({ setIsOpen, onConfirm }) {
   );
 }
 
-SaveConfirmModal.propTypes = {
+ConfirmModal.propTypes = {
   setIsOpen: PropTypes.func.isRequired,
   onConfirm: PropTypes.func,
+  title: PropTypes.string.isRequired,
+  body: PropTypes.string.isRequired,
 };
 
-export default SaveConfirmModal;
+export default ConfirmModal;

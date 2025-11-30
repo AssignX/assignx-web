@@ -15,11 +15,7 @@ import TableWrapper from '@/components/layout/TableWrapper';
 export default function SearchProfessorPage() {
   const [professors, setProfessors] = useState([]);
   const [name, setName] = useState('');
-  const {
-    name: userNameFromStore,
-    departmentName,
-    departmentId,
-  } = useAuthStore();
+  const { name: userNameFromStore, departmentId } = useAuthStore();
   const navigate = useNavigate();
   const accessToken = useAuthStore((state) => state.accessToken);
   const logout = useAuthStore((state) => state.logout);
@@ -125,7 +121,7 @@ export default function SearchProfessorPage() {
   return (
     <Layout
       username={`${userNameFromStore ?? '사용자'} 님`}
-      headerTitle={`${departmentName ?? ''} 메뉴`}
+      headerTitle={`사무실 메뉴`}
       onLogout={handleLogout}
       menus={[
         {
@@ -158,13 +154,12 @@ export default function SearchProfessorPage() {
 
       <div className='h-full w-full space-y-[10px]'>
         <HorizontalTable items={searchFormItems} />
-        <TableWrapper height='470px'>
+        <TableWrapper height='600px'>
           <VerticalTable
             columns={columns}
             data={professors}
             selectable={false}
             headerHeight={32}
-            maxHeight={470}
           />
         </TableWrapper>
       </div>
