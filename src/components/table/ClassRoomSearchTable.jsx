@@ -15,9 +15,16 @@ const semesterOptions = [
 ];
 
 export default function ClassRoomSearchTable({ onSearch }) {
+  const getDefaultSemester = () => {
+    const month = new Date().getMonth() + 1;
+    if (month >= 3 && month <= 6) return '1';
+    if (month >= 9) return '2';
+    return '1';
+  };
+
   const [filters, setFilters] = useState({
     year: '2025',
-    semester: '1',
+    semester: getDefaultSemester(),
     buildingId: '',
     buildingNum: '',
     buildingName: '',
