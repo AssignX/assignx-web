@@ -78,6 +78,11 @@ export default function CourseSearchTable({ filters, onSearch }) {
             onChange={(e) => updateLocal('keyword', e.target.value)}
             height={32}
             placeholder='검색어'
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                onSearch(localFilters);
+              }
+            }}
           />
         </div>
       ),
