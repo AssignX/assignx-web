@@ -115,7 +115,7 @@ export default function VerticalTable({
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className={`border-table-border bg-table-header-background text-table-header-text border-t border-b border-l p-1 text-center first:border-l last:border-r`}
+                  className='border-table-border bg-table-header-background text-table-header-text border-t border-b border-l p-1 text-center first:border-l last:border-r'
                   style={{
                     width: header.getSize(),
                     height: `${headerHeight}px`,
@@ -145,7 +145,7 @@ export default function VerticalTable({
               }
               onClick={(e) => {
                 if (!selectable) return;
-                if (e.target.closest('input, button, textarea')) return;
+                if (e.target.closest('input, button, textarea, select')) return;
 
                 if (showSelectionCheckbox) {
                   row.toggleSelected(true);
@@ -165,10 +165,9 @@ export default function VerticalTable({
               ))}
             </tr>
           ))}
-        </tbody>
-        {newRows.length > 0 && (
-          <tfoot className='sticky bottom-0 z-10'>
-            {newRows.map((newRowData, rowIndex) => (
+
+          {newRows.length > 0 &&
+            newRows.map((newRowData, rowIndex) => (
               <tr
                 key={newRowData.id || `new-row-${rowIndex}`}
                 className='bg-white'
@@ -200,8 +199,7 @@ export default function VerticalTable({
                 ))}
               </tr>
             ))}
-          </tfoot>
-        )}
+        </tbody>
       </table>
     </div>
   );
