@@ -1,4 +1,5 @@
 import Layout from '@/components/Layout';
+import TableWrapper from '@/components/layout/TableWrapper';
 import PageHeader from '@/components/headers/PageHeader';
 import VerticalTable from '@/components/table/VerticalTable';
 
@@ -17,18 +18,14 @@ const departmentColumns = [
     cell: ({ row }) => row.index + 1,
   },
   { header: '단과 대학', accessorKey: 'college', size: 200 },
-  {
-    header: '학과',
-    accessorKey: 'major',
-    size: 700, // fill 수정 필요
-  },
+  { header: '학과', accessorKey: 'major', size: 700 },
 ];
 
 function DepartmentListPage() {
   const navigate = useNavigate();
   const accessToken = useAuthStore((state) => state.accessToken);
   const logout = useAuthStore((state) => state.logout);
-  const { name: userNameFromStore, departmentName } = useAuthStore();
+  const { name: userNameFromStore } = useAuthStore();
 
   useEffect(() => {
     if (!accessToken) navigate('/login');
@@ -80,12 +77,10 @@ function DepartmentListPage() {
       await apiClient.delete(`/api/department/admin/${targetId}`);
 
       setDepartmentData((prev) => prev.filter((row) => row.id !== targetId));
-
       setSelectedRowIds([]);
       setIsDeleteModalOpen(false);
 
-      alert('삭제가 완료되었습니다.'); // 추후 머지 이후 수정 예정
-      console.log('학과 삭제 완료');
+      alert('삭제가 완료되었습니다.');
     } catch (error) {
       console.error('학과 삭제 실패:', error);
       alert('학과 삭제 중 오류가 발생했습니다.');
@@ -95,7 +90,7 @@ function DepartmentListPage() {
   return (
     <Layout
       username={`${userNameFromStore ?? '사용자'} 님`}
-      headerTitle={`${departmentName ?? ''} 메뉴`}
+      headerTitle='관리자 메뉴'
       onLogout={handleLogout}
       menus={[
         {
@@ -110,7 +105,7 @@ function DepartmentListPage() {
         },
       ]}
     >
-      <div>
+      <div className='flex flex-col'>
         <PageHeader
           title='학과 목록'
           buttonsData={[
@@ -145,14 +140,16 @@ function DepartmentListPage() {
             },
           ]}
         />
-        <VerticalTable
-          columns={departmentColumns}
-          data={departmentData}
-          headerHeight={40}
-          selectable={true}
-          singleSelect={true}
-          updateSelection={setSelectedRowIds}
-        />
+        <TableWrapper height='700px'>
+          <VerticalTable
+            columns={departmentColumns}
+            data={departmentData}
+            headerHeight={40}
+            selectable={true}
+            singleSelect={true}
+            updateSelection={setSelectedRowIds}
+          />
+        </TableWrapper>
       </div>
 
       {isDeleteModalOpen && (
