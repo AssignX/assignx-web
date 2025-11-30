@@ -23,11 +23,11 @@ export default function Sy() {
   };
 
   return (
-    <div className='bg-light-gray h-screen p-5'>
+    <div className='bg-light-gray flex h-screen flex-col p-5'>
       <PageHeader title='강의실 시간표 조회' />
       <ClassRoomSearchTable onSearch={handleSearchCondition} />
-      <section className='flex flex-row gap-2.5 py-2.5'>
-        <div className='w-[510px] p-2.5'>
+      <section className='flex h-full flex-row gap-2.5 overflow-hidden py-2.5'>
+        <div className='w-[565px] p-2.5'>
           <SectionHeader title='강의실 목록' />
           <SyClassRoomTable
             maxHeight='560'
