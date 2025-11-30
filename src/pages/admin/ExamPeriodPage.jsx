@@ -12,7 +12,7 @@ import { SaveIcon, SearchIcon } from '@/assets/icons';
 
 import ConfirmModal from '@/components/ConfirmModal';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
 import apiClient from '@/api/apiClient';
@@ -123,89 +123,97 @@ function ExamPeriodPage() {
     handleFilterChange(columnKey, value);
   };
 
-  const updatePeriodData = (rowId, columnKey, value) => {
+  const updatePeriodData = useCallback((rowId, columnKey, value) => {
     setPeriodData((prev) =>
       prev.map((row) =>
         row.id === rowId ? { ...row, [columnKey]: value } : row
       )
     );
-  };
+  }, []);
 
   useEffect(() => {
     setPeriodData([]);
   }, [filters.year, filters.semester]);
 
-  const periodColumn = [
-    {
-      header: 'No',
-      accessorKey: 'number',
-      size: 50,
-      cell: ({ row }) => row.index + 1,
-    },
-    { header: '구분', accessorKey: 'type', size: 150 },
-    { header: '차수', accessorKey: 'sequence', size: 100 },
-    {
-      header: '시작 일시',
-      accessorKey: 'startDateTime',
-      size: 200,
-      cell: ({ row }) => (
-        <InputCell
-          value={row.original.startDateTime || ''}
-          onChange={(e) =>
-            updatePeriodData(row.original.id, 'startDateTime', e.target.value)
-          }
-          height={26}
-        />
-      ),
-    },
-    {
-      header: '종료 일시',
-      accessorKey: 'endDateTime',
-      size: 200,
-      cell: ({ row }) => (
-        <InputCell
-          value={row.original.endDateTime || ''}
-          onChange={(e) =>
-            updatePeriodData(row.original.id, 'endDateTime', e.target.value)
-          }
-          height={26}
-        />
-      ),
-    },
-  ];
+  const periodColumn = useMemo(
+    () => [
+      {
+        header: 'No',
+        accessorKey: 'number',
+        size: 50,
+        cell: ({ row }) => row.index + 1,
+      },
+      { header: '구분', accessorKey: 'type', size: 150 },
+      { header: '차수', accessorKey: 'sequence', size: 100 },
+      {
+        header: '시작 일시',
+        accessorKey: 'startDateTime',
+        size: 200,
+        cell: ({ row }) => (
+          <InputCell
+            key={`${row.original.id}-start`}
+            value={row.original.startDateTime || ''}
+            onChange={(e) =>
+              updatePeriodData(row.original.id, 'startDateTime', e.target.value)
+            }
+            height={26}
+          />
+        ),
+      },
+      {
+        header: '종료 일시',
+        accessorKey: 'endDateTime',
+        size: 200,
+        cell: ({ row }) => (
+          <InputCell
+            key={`${row.original.id}-end`}
+            value={row.original.endDateTime || ''}
+            onChange={(e) =>
+              updatePeriodData(row.original.id, 'endDateTime', e.target.value)
+            }
+            height={26}
+          />
+        ),
+      },
+    ],
+    [updatePeriodData]
+  );
 
-  const filterItems = [
-    {
-      id: 'year',
-      label: '개설연도',
-      labelWidth: '130px',
-      contentWidth: '150px',
-      content: (
-        <YearPickerCell
-          rowId='filters'
-          columnKey='year'
-          initialValue={Number(filters.year)}
-          updateData={updateFilters}
-        />
-      ),
-    },
-    {
-      id: 'semester',
-      label: '개설학기',
-      labelWidth: '130px',
-      contentWidth: '150px',
-      content: (
-        <DropdownCell
-          initialValue={filters.semester}
-          options={semesterOptions}
-          rowId='filters'
-          columnKey='semester'
-          updateData={updateFilters}
-          height={32}
-        />
-      ),
-    },
-  ];
+  const filterItems = useMemo(
+    () => [
+      {
+        id: 'year',
+        label: '개설연도',
+        labelWidth: '130px',
+        contentWidth: '150px',
+        content: (
+          <YearPickerCell
+            rowId='filters'
+            columnKey='year'
+            initialValue={Number(filters.year)}
+            updateData={updateFilters}
+          />
+        ),
+      },
+      {
+        id: 'semester',
+        label: '개설학기',
+        labelWidth: '130px',
+        contentWidth: '150px',
+        content: (
+          <DropdownCell
+            initialValue={filters.semester}
+            options={semesterOptions}
+            rowId='filters'
+            columnKey='semester'
+            updateData={updateFilters}
+            height={32}
+          />
+        ),
+      },
+    ],
+    [filters.year, filters.semester]
+  );
 
   const createEmptyRows = () => [
     {
@@ -370,8 +378,6 @@ function ExamPeriodPage() {
       await apiClient.post('/api/exam-period', payload);
       setIsSaveModalOpen(false);
       fetchExamPeriod();
-
-      alert('시험 기간이 성공적으로 저장되었습니다.');
     } catch (err) {
       console.error('Failed to save exam period', err);
     }
@@ -405,7 +411,7 @@ function ExamPeriodPage() {
           buttonsData={[
             {
               text: '조회',
-              color: 'whitegray',
+              color: 'lightgray',
               Icon: SearchIcon,
               onClick: fetchExamPeriod,
             },
@@ -420,7 +426,7 @@ function ExamPeriodPage() {
         <HorizontalTable items={filterItems} />
       </div>
 
-      <TableWrapper height='400px'>
+      <TableWrapper height='660px'>
         <VerticalTable
           columns={periodColumn}
           data={periodData}
