@@ -7,7 +7,10 @@ export default function CourseTimeTable({ selectedRoom }) {
   const [entries, setEntries] = useState({});
 
   useEffect(() => {
-    if (!selectedRoom) return;
+    if (!selectedRoom) {
+      setEntries({});
+      return;
+    }
 
     const fetchCourses = async () => {
       try {

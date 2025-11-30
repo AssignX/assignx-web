@@ -17,13 +17,13 @@ export default function SearchCoursePage() {
   const [courses, setCourses] = useState([]);
   const [filters, setFilters] = useState({
     year: '2025',
-    semester: '2',
+    semester: '1',
     detailType: '',
     keyword: '',
   });
   const [toggleUnassigned, setToggleUnassigned] = useState(false);
 
-  const { name, departmentName } = useAuthStore();
+  const { name } = useAuthStore();
   const navigate = useNavigate();
   const accessToken = useAuthStore((state) => state.accessToken);
 
@@ -174,7 +174,7 @@ export default function SearchCoursePage() {
   return (
     <Layout
       username={`${name ?? '사용자'} 님`}
-      headerTitle={`${departmentName ?? ''} 메뉴`}
+      headerTitle={`사무실 메뉴`}
       menus={[
         {
           title: '과목',

@@ -15,11 +15,13 @@ export default function BuildingSearchModal({
   const [selectedBuilding, setSelectedBuilding] = useState(null);
 
   useEffect(() => {
-    if (!isOpen) {
-      setSearchKeyword('');
-      setSelectedBuilding(null);
+    if (isOpen) {
+      setSearchKeyword(initialValue);
+      if (initialValue.trim()) {
+        setTimeout(() => handleSearch(initialValue), 0);
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, initialValue]);
 
   if (!isOpen) return null;
 
