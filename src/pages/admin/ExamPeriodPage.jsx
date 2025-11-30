@@ -212,7 +212,7 @@ function ExamPeriodPage() {
         ),
       },
     ],
-    [filters.year, filters.semester]
+    [filters.year, filters.semester, updateFilters]
   );
 
   const createEmptyRows = () => [
