@@ -27,7 +27,7 @@ export default function Sy() {
       <PageHeader title='강의실 시간표 조회' />
       <ClassRoomSearchTable onSearch={handleSearchCondition} />
       <section className='flex h-full flex-row gap-2.5 overflow-hidden py-2.5'>
-        <div className='w-[565px] p-2.5'>
+        <div className='w-[45%] p-2.5'>
           <SectionHeader title='강의실 목록' />
           <SyClassRoomTable
             maxHeight='560'
