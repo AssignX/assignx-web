@@ -1,4 +1,5 @@
 import Layout from '@/components/Layout';
+import TableWrapper from '@/components/layout/TableWrapper';
 import PageHeader from '@/components/headers/PageHeader';
 import SectionHeader from '@/components/headers/SectionHeader';
 import HorizontalTable from '@/components/table/HorizontalTable';
@@ -19,7 +20,7 @@ function BuildingEditPage() {
   const navigate = useNavigate();
   const accessToken = useAuthStore((state) => state.accessToken);
   const logout = useAuthStore((state) => state.logout);
-  const { name: userNameFromStore, departmentName } = useAuthStore();
+  const { name: userNameFromStore } = useAuthStore();
 
   const { id } = useParams();
   const isEditMode = Boolean(id);
@@ -46,6 +47,7 @@ function BuildingEditPage() {
   const [classroomSelectedRows, setClassroomSelectedRows] = useState([]);
 
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
 
   const departmentInfo = [
     {
@@ -309,7 +311,7 @@ function BuildingEditPage() {
   return (
     <Layout
       username={`${userNameFromStore ?? '사용자'} 님`}
-      headerTitle={`${departmentName ?? ''} 메뉴`}
+      headerTitle='관리자 메뉴'
       onLogout={handleLogout}
       menus={[
         {
@@ -324,7 +326,7 @@ function BuildingEditPage() {
         },
       ]}
     >
-      <div>
+      <div className='flex flex-col'>
         <PageHeader
           title='건물 정보'
           buttonsData={[
@@ -334,12 +336,17 @@ function BuildingEditPage() {
               Icon: SaveIcon,
               onClick: handleOpenSaveModal,
             },
+            {
+              text: '취소',
+              color: 'lightgray',
+              onClick: () => setIsCancelModalOpen(true),
+            },
           ]}
         />
         <HorizontalTable items={departmentInfo} />
       </div>
 
-      <div>
+      <div className='flex flex-col'>
         <SectionHeader
           title='강의실 목록'
           controlGroup='buttonGroup'
@@ -367,16 +374,18 @@ function BuildingEditPage() {
             },
           ]}
         />
-        <VerticalTable
-          columns={ClassroomColumns}
-          data={classroomData}
-          headerHeight={40}
-          selectable={true}
-          updateSelection={setClassroomSelectedRows}
-          newRows={classroomNewRows}
-          onNewRowChange={handleClassroomNewRowChange}
-          renderNewRowActions={() => <PlusCell />}
-        />
+        <TableWrapper height='600px'>
+          <VerticalTable
+            columns={ClassroomColumns}
+            data={classroomData}
+            headerHeight={40}
+            selectable={true}
+            updateSelection={setClassroomSelectedRows}
+            newRows={classroomNewRows}
+            onNewRowChange={handleClassroomNewRowChange}
+            renderNewRowActions={() => <PlusCell />}
+          />
+        </TableWrapper>
       </div>
 
       {isSaveModalOpen && (
@@ -385,6 +394,14 @@ function BuildingEditPage() {
           onConfirm={handleConfirmSave}
           title='저장하시겠습니까?'
           body='건물 정보를 저장하시겠습니까?'
+        />
+      )}
+      {isCancelModalOpen && (
+        <ConfirmModal
+          setIsOpen={setIsCancelModalOpen}
+          onConfirm={() => navigate(-1)}
+          title='취소'
+          body='정말 취소하시겠습니까? 모든 변경사항은 저장되지 않습니다.'
         />
       )}
     </Layout>
