@@ -2,10 +2,10 @@ import { useEffect, useState, useMemo } from 'react';
 import VerticalTable from '@/components/table/VerticalTable';
 import apiClient from '@/api/apiClient';
 import PropTypes from 'prop-types';
+import TableWrapper from '@/components/layout/TableWrapper';
 
 export default function SyClassRoomTable({
   filters,
-  maxHeight = 1040.8,
   onSelect,
   resetSelection,
 }) {
@@ -68,22 +68,22 @@ export default function SyClassRoomTable({
   };
 
   return (
-    <VerticalTable
-      columns={columns}
-      data={data}
-      selectable={true}
-      singleSelect={true}
-      showSelectionCheckbox={true}
-      updateSelection={handleSelectionChange}
-      maxHeight={maxHeight}
-      resetSelection={resetSelection}
-    />
+    <TableWrapper height='680px'>
+      <VerticalTable
+        columns={columns}
+        data={data}
+        selectable={true}
+        singleSelect={true}
+        showSelectionCheckbox={true}
+        updateSelection={handleSelectionChange}
+        resetSelection={resetSelection}
+      />
+    </TableWrapper>
   );
 }
 
 SyClassRoomTable.propTypes = {
   filters: PropTypes.object,
-  maxHeight: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onSelect: PropTypes.func,
   resetSelection: PropTypes.func,
 };
