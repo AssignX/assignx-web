@@ -1,4 +1,5 @@
 import Layout from '@/components/Layout';
+import TableWrapper from '@/components/layout/TableWrapper';
 import PageHeader from '@/components/headers/PageHeader';
 import VerticalTable from '@/components/table/VerticalTable';
 
@@ -17,22 +18,14 @@ const buildingColumns = [
     cell: ({ row }) => row.index + 1,
   },
   { header: '건물 번호', accessorKey: 'buildingNumber', size: 200 },
-  {
-    header: '건물 이름',
-    accessorKey: 'buildingName',
-    size: 700, // fill 수정 필요
-  },
+  { header: '건물 이름', accessorKey: 'buildingName', size: 700 },
 ];
 
 function BuildingListPage() {
   const navigate = useNavigate();
   const accessToken = useAuthStore((state) => state.accessToken);
   const logout = useAuthStore((state) => state.logout);
-  const {
-    name: userNameFromStore,
-    departmentName,
-    departmentId,
-  } = useAuthStore();
+  const { name: userNameFromStore, departmentId } = useAuthStore();
 
   useEffect(() => {
     if (!accessToken) navigate('/login');
@@ -110,7 +103,7 @@ function BuildingListPage() {
   return (
     <Layout
       username={`${userNameFromStore ?? '사용자'} 님`}
-      headerTitle={`${departmentName ?? ''} 메뉴`}
+      headerTitle='관리자 메뉴'
       onLogout={handleLogout}
       menus={[
         {
@@ -125,7 +118,7 @@ function BuildingListPage() {
         },
       ]}
     >
-      <div>
+      <div className='flex flex-col'>
         <PageHeader
           title='건물 목록'
           buttonsData={[
@@ -158,16 +151,18 @@ function BuildingListPage() {
             },
           ]}
         />
-        <VerticalTable
-          columns={buildingColumns}
-          data={buildingData}
-          headerHeight={40}
-          maxHeight={1200}
-          selectable={true}
-          singleSelect={true}
-          updateSelection={setSelectedRowIds}
-        />
+        <TableWrapper height='700px'>
+          <VerticalTable
+            columns={buildingColumns}
+            data={buildingData}
+            headerHeight={40}
+            selectable={true}
+            singleSelect={true}
+            updateSelection={setSelectedRowIds}
+          />
+        </TableWrapper>
       </div>
+
       {isDeleteModalOpen && (
         <ConfirmModal
           setIsOpen={setIsDeleteModalOpen}
