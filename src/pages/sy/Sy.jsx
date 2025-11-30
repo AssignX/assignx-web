@@ -36,11 +36,10 @@ export default function Sy() {
         onSearch={handleSearchCondition}
         onFilterDirty={resetAfterFilterChange}
       />
-      <section className='flex h-full flex-row gap-2.5 overflow-hidden py-2.5'>
+      <section className='flex h-full flex-row gap-2.5 overflow-y-auto py-2.5'>
         <div className='w-[45%] p-2.5'>
           <SectionHeader title='강의실 목록' />
           <SyClassRoomTable
-            maxHeight='560'
             filters={searchFilters}
             onSelect={handleRoomSelect}
             resetSelection={resetSelectionKey}
@@ -56,7 +55,7 @@ export default function Sy() {
             date={date}
             setDate={setDate}
           />
-          <TableWrapper height='560px'>
+          <TableWrapper height='680px'>
             {selected ? (
               <SyCourseTimeTable selectedRoom={selectedRoom} />
             ) : (

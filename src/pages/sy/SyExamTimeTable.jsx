@@ -118,7 +118,6 @@ export default function SyExamTimeTable({ selectedRoom, date }) {
       endTime='22:30'
       dayRange={['월', '화', '수', '목', '금', '토']}
       entries={entries}
-      maxHeight='560px'
     />
   );
 }
